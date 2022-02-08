@@ -1,0 +1,820 @@
+{
+    "name": "3.4",
+    "stage": "3",
+    "stagePosition": 40,
+    "seed": 19008,
+    "hasLeaderboards": true,
+    "scripts": [
+        "3.4.lua"
+    ],
+    "openRequirements": [
+        {
+            "type": "STARS",
+            "level": "3.3",
+            "amount": 1
+        }
+    ],
+    "quests": [
+        {
+            "id": "Q:3.4:1",
+            "statisticsType": "EK",
+            "value": 2000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "AGILITY"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:2",
+            "statisticsType": "CG",
+            "value": 3850,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "CASE_KEY",
+                        "caseType": "BLUE"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:3",
+            "statisticsType": "RG_V",
+            "value": 305,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 360
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:4",
+            "statisticsType": "SG",
+            "value": 39500,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 400
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "AGILITY"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:5",
+            "statisticsType": "EK",
+            "value": 3800,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 430
+                },
+                {
+                    "i": {
+                        "type": "CASE_KEY",
+                        "caseType": "BLUE"
+                    },
+                    "c": 2
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:6",
+            "statisticsType": "SG",
+            "value": 140000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 470
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "AGILITY"
+                    },
+                    "c": 2
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:7",
+            "statisticsType": "PT",
+            "value": 2750,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 500
+                },
+                {
+                    "i": {
+                        "type": "CASE_KEY",
+                        "caseType": "BLUE"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:8",
+            "statisticsType": "TMS",
+            "value": 22000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 550
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "EXPERIENCE"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:9",
+            "statisticsType": "TDD_S",
+            "value": 1950000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 600
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "SCALAR"
+                    },
+                    "c": 42
+                },
+                {
+                    "i": {
+                        "type": "GAME_VALUE_LEVEL",
+                        "gameValueType": "STARTING_MONEY",
+                        "delta": 10,
+                        "levelName": "3.4"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:10",
+            "statisticsType": "CG",
+            "value": 10500,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 650
+                },
+                {
+                    "i": {
+                        "type": "GAME_VALUE_LEVEL",
+                        "gameValueType": "STARTING_MONEY",
+                        "delta": 10,
+                        "levelName": "3.4"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:11",
+            "statisticsType": "TEK_C",
+            "value": 1050,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 650
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 3
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "AGILITY"
+                    },
+                    "c": 3
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:12",
+            "statisticsType": "PT",
+            "value": 3500,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 700
+                },
+                {
+                    "i": {
+                        "type": "CASE_KEY",
+                        "caseType": "BLUE"
+                    },
+                    "c": 4
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:13",
+            "statisticsType": "TMS",
+            "value": 15000,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 750
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "POWER"
+                    },
+                    "c": 5
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:14",
+            "statisticsType": "TEK_B",
+            "value": 1300,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 800
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:15",
+            "statisticsType": "TEK_BL",
+            "value": 1400,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 800
+                },
+                {
+                    "i": {
+                        "type": "CASE_KEY",
+                        "caseType": "PURPLE"
+                    },
+                    "c": 4
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:16",
+            "statisticsType": "CG",
+            "value": 64000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 850
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "MATRIX"
+                    },
+                    "c": 48
+                },
+                {
+                    "i": {
+                        "type": "GAME_VALUE_LEVEL",
+                        "gameValueType": "STARTING_MONEY",
+                        "delta": 10,
+                        "levelName": "3.4"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:17",
+            "statisticsType": "SG",
+            "value": 87500,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "MATRIX"
+                    },
+                    "c": 51
+                },
+                {
+                    "i": {
+                        "type": "GAME_VALUE_LEVEL",
+                        "gameValueType": "TOWERS_UPGRADE_PRICE",
+                        "delta": -2,
+                        "levelName": "3.4"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "RANDOM_TILE",
+                        "quality": 0.35
+                    }
+                },
+                {
+                    "i": {
+                        "type": "CASE",
+                        "caseType": "GREEN",
+                        "encrypted": false,
+                        "containsPapers": true
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:18",
+            "statisticsType": "RG_S",
+            "value": 855,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 950
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "SCALAR"
+                    },
+                    "c": 66
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:19",
+            "statisticsType": "TDD_BL",
+            "value": 9500000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 950
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "POWER"
+                    },
+                    "c": 10
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:20",
+            "statisticsType": "RG",
+            "value": 1100,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1000
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "AGILITY"
+                    },
+                    "c": 10
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:21",
+            "statisticsType": "SG",
+            "value": 360000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1050
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 2
+                },
+                {
+                    "i": {
+                        "type": "RANDOM_TILE",
+                        "quality": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:22",
+            "statisticsType": "EK",
+            "value": 2650,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1100
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "MATRIX"
+                    },
+                    "c": 61
+                },
+                {
+                    "i": {
+                        "type": "RANDOM_TILE",
+                        "quality": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:23",
+            "statisticsType": "TEK_S",
+            "value": 2100,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1150
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "POWER"
+                    },
+                    "c": 5
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:24",
+            "statisticsType": "CG",
+            "value": 31500,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1150
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "AGILITY"
+                    },
+                    "c": 2
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:25",
+            "statisticsType": "TMS",
+            "value": 120000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1200
+                },
+                {
+                    "i": {
+                        "type": "CASE_KEY",
+                        "caseType": "BLUE"
+                    },
+                    "c": 7
+                }
+            ]
+        },
+        {
+            "id": "Q:3.4:26",
+            "statisticsType": "RG",
+            "value": 1450,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1250
+                },
+                {
+                    "i": {
+                        "type": "GAME_VALUE_LEVEL",
+                        "gameValueType": "TOWERS_EXPERIENCE_MULTIPLIER",
+                        "delta": 10,
+                        "levelName": "3.4"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "CASE",
+                        "caseType": "PURPLE",
+                        "encrypted": false,
+                        "containsPapers": true
+                    }
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 7
+                }
+            ]
+        }
+    ],
+    "waveQuests": [
+        {
+            "id": "W:3.4:4",
+            "waves": 28,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "SPECIAL_III"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:S1",
+            "waves": 33,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "3.4"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "VECTOR"
+                    },
+                    "c": 230
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:5",
+            "waves": 39,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 2
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:6",
+            "waves": 44,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 500
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:S2",
+            "waves": 49,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "3.4"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "POWER"
+                    },
+                    "c": 4
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:7",
+            "waves": 55,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 600
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "SPECIAL_II"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:8",
+            "waves": 61,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 700
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "MATRIX"
+                    },
+                    "c": 215
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:S3",
+            "waves": 67,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "3.4"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 800
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 2
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:9",
+            "waves": 79,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 900
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 2
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:10",
+            "waves": 91,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1000
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 2
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:11",
+            "waves": 103,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1100
+                },
+                {
+                    "i": {
+                        "type": "CASE",
+                        "caseType": "GREEN",
+                        "encrypted": false,
+                        "containsPapers": true
+                    }
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:12",
+            "waves": 115,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1200
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "VECTOR"
+                    },
+                    "c": 308
+                }
+            ]
+        },
+        {
+            "id": "W:3.4:T",
+            "waves": 126,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "TROPHY",
+                        "trophyType": "MINER_MATRIX"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 1350
+                }
+            ]
+        }
+    ],
+    "difficultyMilestones": [
+        24,
+        39,
+        54
+    ]
+}

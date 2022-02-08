@@ -1,0 +1,207 @@
+{
+    "name": "5.b1",
+    "stage": "5",
+    "stagePosition": 90,
+    "seed": 38910,
+    "hasLeaderboards": true,
+    "fixedQuests": true,
+    "isBonus": true,
+    "openRequirements": [
+        {
+            "type": "STAGE_STARS",
+            "stage": "5",
+            "amount": 16
+        }
+    ],
+    "showRequirements": [
+        {
+            "type": "STAGE_STARS",
+            "stage": "5",
+            "amount": 13
+        }
+    ],
+    "quests": [
+        {
+            "id": "Q:5.b1:1",
+            "statisticsType": "CG",
+            "value": 5500,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 4000
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "INFIAR"
+                    },
+                    "c": 500
+                }
+            ]
+        },
+        {
+            "id": "Q:5.b1:2",
+            "statisticsType": "EK",
+            "value": 1000,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 4000
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 7
+                }
+            ]
+        },
+        {
+            "id": "Q:5.b1:3",
+            "statisticsType": "TDD",
+            "value": 1000000,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 5000
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "VECTOR"
+                    },
+                    "c": 2000
+                }
+            ]
+        },
+        {
+            "id": "Q:5.b1:4",
+            "statisticsType": "SG",
+            "value": 260000,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 8000
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 10
+                }
+            ]
+        },
+        {
+            "id": "Q:5.b1:5",
+            "statisticsType": "WCST",
+            "value": 2160,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 10000
+                },
+                {
+                    "i": {
+                        "type": "RANDOM_TILE",
+                        "quality": 0.9
+                    },
+                    "c": 5
+                },
+                {
+                    "i": {
+                        "type": "BIT_DUST"
+                    },
+                    "c": 5
+                }
+            ]
+        }
+    ],
+    "waveQuests": [
+        {
+            "id": "W:5.b1:S1",
+            "waves": 31,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "5.b1"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 5000
+                },
+                {
+                    "i": {
+                        "type": "ABILITY_TOKEN"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "W:5.b1:S2",
+            "waves": 46,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "5.b1"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 6000
+                }
+            ]
+        },
+        {
+            "id": "W:5.b1:S3",
+            "waves": 62,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "5.b1"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 7000
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "INFIAR"
+                    },
+                    "c": 500
+                }
+            ]
+        }
+    ],
+    "difficultyMilestones": [
+        20,
+        35,
+        50
+    ]
+}

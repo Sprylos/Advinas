@@ -1,0 +1,170 @@
+{
+    "name": "0.4",
+    "stage": "0",
+    "stagePosition": 40,
+    "seed": 9001,
+    "forcedDifficulty": "NORMAL",
+    "showRequirements": [
+        {
+            "type": "RESEARCH",
+            "name": "STORYLINE_RESOURCE_SCALAR",
+            "level": 1
+        }
+    ],
+    "quests": [
+        {
+            "id": "Q:0.4:1",
+            "scripted": true,
+            "title": "tutquest_meet_teleports_and_barriers",
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "0.4"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:0.4:2",
+            "scripted": true,
+            "title": "tutquest_meet_resources",
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "0.4"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:0.4:3",
+            "scripted": true,
+            "title": "tutquest_meet_miners",
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "0.4"
+                    }
+                }
+            ]
+        }
+    ],
+    "difficultyMilestones": [
+        0,
+        0,
+        0
+    ],
+    "enemyWaves": [
+        {
+            "message": "",
+            "enemyGroups": [
+                {
+                    "enemyType": "REGULAR",
+                    "interval": 0.5,
+                    "count": 6,
+                    "health": 200,
+                    "speed": 1,
+                    "bounty": 10,
+                    "exp": 1,
+                    "score": 10
+                }
+            ]
+        },
+        {
+            "message": "",
+            "enemyGroups": [
+                {
+                    "enemyType": "FAST",
+                    "interval": 0.5,
+                    "count": 6,
+                    "health": 200,
+                    "speed": 1.5,
+                    "bounty": 10,
+                    "exp": 1,
+                    "score": 10
+                }
+            ]
+        },
+        {
+            "message": "",
+            "enemyGroups": [
+                {
+                    "enemyType": "REGULAR",
+                    "interval": 0.5,
+                    "count": 5,
+                    "health": 200,
+                    "speed": 1,
+                    "bounty": 10,
+                    "exp": 1,
+                    "score": 10
+                },
+                {
+                    "enemyType": "FAST",
+                    "delay": 2.25,
+                    "interval": 0.5,
+                    "count": 5,
+                    "health": 200,
+                    "speed": 1.5,
+                    "bounty": 10,
+                    "exp": 1,
+                    "score": 10
+                }
+            ]
+        },
+        {
+            "message": "",
+            "enemyGroups": [
+                {
+                    "enemyType": "REGULAR",
+                    "interval": 0.5,
+                    "count": 6,
+                    "health": 200,
+                    "speed": 1,
+                    "bounty": 10,
+                    "exp": 1,
+                    "score": 10
+                },
+                {
+                    "enemyType": "FAST",
+                    "delay": 2.75,
+                    "interval": 0.6,
+                    "count": 4,
+                    "health": 200,
+                    "speed": 1.5,
+                    "bounty": 10,
+                    "exp": 1,
+                    "score": 10
+                },
+                {
+                    "enemyType": "STRONG",
+                    "delay": 1,
+                    "interval": 1.1,
+                    "count": 2,
+                    "health": 200,
+                    "speed": 0.85,
+                    "bounty": 20,
+                    "exp": 1,
+                    "score": 20
+                }
+            ]
+        },
+        {
+            "message": "",
+            "enemyGroups": [
+                {
+                    "enemyType": "STRONG",
+                    "interval": 1,
+                    "count": 10,
+                    "health": 200,
+                    "speed": 0.85,
+                    "bounty": 20,
+                    "exp": 1,
+                    "score": 20
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+	"name": "DQ2",
+	"stage": "1000",
+	"seed": 30000,
+	"hasLeaderboards": true,
+	"dailyQuest": true,
+	"scripts": [],
+	"difficultyMilestones": [15, 30, 45],
+	"enemyWaves": [],
+	"bossWaves": [],
+	"showRequirements": [],
+	"openRequirements": [],
+	"price": [],
+	"quests": [
+		{
+			"id": "Q:DQ2:1",
+			"scripted": false,
+			"title": "",
+			"oneGame": true,
+			"statisticsType": "SG",
+			"value": 30000,
+			"prizes": [
+				{ "item": { "type": "GREEN_PAPER" }, "count": 3000 },
+				{ "item": { "type": "ACCELERATOR" }, "count": 2 }
+			]
+		}
+	],
+	"waveQuests": []
+}

@@ -1,0 +1,10 @@
+__pycache__/
+custom/
+dump/
+config.*
+mod.py
+admin.py
+temp.*
+api/
+*.spry
+_*.*

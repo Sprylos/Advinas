@@ -1,0 +1,1383 @@
+{
+    "levels": {
+        "0.1": {
+            "enemies": ["REGULAR"],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 48",
+                "Game Saves": "= Disabled",
+                "Manual Game Speed": "= Disabled",
+                "Towers Max Exp Level": "= 1",
+                "Towers Max Upgrade Level": "= 0",
+                "Basic": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 100
+        },
+        "0.2": {
+            "enemies": ["REGULAR"],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 144",
+                "Game Saves": "= Disabled",
+                "Manual Game Speed": "= Disabled",
+                "Towers Max Exp Level": "= 1",
+                "Towers Max Upgrade Level": "= 1",
+                "Basic": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 100
+        },
+        "0.3": {
+            "enemies": ["REGULAR"],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 100",
+                "Game Saves": "= Disabled",
+                "Towers Max Exp Level": "= 4",
+                "Towers Max Upgrade Level": "= 1",
+                "Basic": "= Disabled",
+                "Sniper": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 100
+        },
+        "0.4": {
+            "enemies": ["REGULAR", "STRONG", "FAST"],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 0",
+                "Game Saves": "= Disabled",
+                "Auto Wave Call": "= Disabled",
+                "Miner Count Scalar": "= 1",
+                "Miner Install Duration": "= 5s",
+                "Miner Scalar Install Duration": "= 5s",
+                "Towers Max Exp Level": "= 20",
+                "Towers Max Upgrade Level": "= 10",
+                "Towers Range": "= 75%",
+                "Towers Attack Speed": "= 200%"
+            },
+            "music": "",
+            "difficulty": 100
+        },
+        "1.1": {
+            "enemies": ["REGULAR", "STRONG"],
+            "quests": {
+                "Starting Money": "+ 20"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "1.2": {
+            "enemies": ["REGULAR", "STRONG"],
+            "quests": {
+                "Towers Experience Multiplier": "+ 10%",
+                "Starting Money": "+ 10"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "1.3": {
+            "enemies": ["REGULAR", "STRONG"],
+            "quests": {
+                "Towers Experience Multiplier": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "1.4": {
+            "enemies": ["REGULAR", "STRONG"],
+            "quests": {
+                "Towers Damage": "+ 5%",
+                "Towers Upgrade Price": "- 2%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "1.5": {
+            "enemies": ["REGULAR", "STRONG", "FAST"],
+            "quests": {
+                "Starting Money": "+ 10",
+                "Towers Upgrade Price": "- 2%",
+                "Starting Health": "+ 2"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "1.6": {
+            "enemies": ["REGULAR", "STRONG", "FAST"],
+            "quests": {
+                "Towers Damage": "+ 5%",
+                "Towers Upgrade Price": "- 2%",
+                "Starting Health": "+ 4"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "1.7": {
+            "enemies": ["REGULAR", "STRONG", "FAST"],
+            "quests": {
+                "Starting Health": "+ 2"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "1.8": {
+            "enemies": ["REGULAR", "STRONG", "FAST", "BOSS"],
+            "quests": {
+                "Starting Health": "+ 4",
+                "Towers Attack Speed": "+ 10%",
+                "Towers Range": "+ 5%",
+                "Towers Damage": "+ 5%",
+                "Starting Money": "+ 60"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "1.b1": {
+            "enemies": ["REGULAR", "STRONG", "FAST"],
+            "quests": {},
+            "base": {
+                "Towers Max Exp Level": "+ 5",
+                "Towers Max Upgrade Level": "+ 2",
+                "Splash": "= Enabled",
+                "Splash Damage": "+ 10%",
+                "Splash Attack Speed": "+ 10%"
+            },
+            "music": "",
+            "difficulty": 105
+        },
+        "2.1": {
+            "enemies": ["REGULAR", "STRONG", "FAST"],
+            "quests": {
+                "Starting Health": "+ 2",
+                "Towers Upgrade Price": "- 2%",
+                "Wave Interval": "+ 2s"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "2.2": {
+            "enemies": ["REGULAR", "FAST", "HELI"],
+            "quests": {
+                "Starting Money": "+ 10",
+                "Towers Upgrade Price": "- 2%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "2.3": {
+            "enemies": ["REGULAR", "FAST", "HELI"],
+            "quests": {
+                "Towers Experience Multiplier": "+ 20%",
+                "Starting Health": "+ 2",
+                "Towers Upgrade Price": "- 2%",
+                "Towers Damage": "+ 5%",
+                "Towers Attack Speed": "+ 5%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "2.4": {
+            "enemies": ["REGULAR", "STRONG", "HELI"],
+            "quests": {
+                "Starting Money": "+ 110",
+                "Towers Upgrade Price": "- 2%",
+                "Towers Damage": "+ 5%",
+                "Starting Health": "+ 2"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "2.5": {
+            "enemies": ["REGULAR", "STRONG", "FAST"],
+            "quests": {
+                "Wave Interval": "+ 1s",
+                "Forced Wave Bonus": "+ 3%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 125
+        },
+        "2.6": {
+            "enemies": ["REGULAR", "STRONG", "FAST"],
+            "quests": {
+                "Towers Experience Multiplier": "+ 10%",
+                "Starting Money": "+ 10",
+                "Towers Upgrade Price": "- 2%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 125
+        },
+        "2.7": {
+            "enemies": ["REGULAR", "STRONG", "FAST", "HELI"],
+            "quests": {
+                "Wave Interval": "+ 1s"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "2.8": {
+            "enemies": ["REGULAR", "STRONG", "FAST", "JET", "BOSS"],
+            "quests": {
+                "Starting Health": "+ 2",
+                "Towers Experience Multiplier": "+ 10%",
+                "Towers Upgrade Price": "- 2%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 100
+        },
+        "2.b1": {
+            "enemies": ["REGULAR", "STRONG", "FAST", "HELI"],
+            "quests": {},
+            "base": {
+                "Towers Max Upgrade Level": "+ 2",
+                "Multishot": "= Enabled",
+                "Multishot Damage": "+ 10%",
+                "Multishot Attack Speed": "+ 10%"
+            },
+            "music": "",
+            "difficulty": 120
+        },
+        "3.1": {
+            "enemies": ["REGULAR", "STRONG", "HELI", "JET"],
+            "quests": {
+                "Starting Money": "+ 10",
+                "Starting Health": "+ 2"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 125
+        },
+        "3.2": {
+            "enemies": ["REGULAR", "STRONG", "FAST", "ARMORED"],
+            "quests": {
+                "Starting Money": "+ 10",
+                "Towers Damage": "+ 4%",
+                "Towers Range": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 125
+        },
+        "3.3": {
+            "enemies": ["REGULAR", "STRONG", "JET", "ARMORED"],
+            "quests": {
+                "Starting Health": "+ 4",
+                "Wave Interval": "+ 1s"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 125
+        },
+        "3.4": {
+            "enemies": ["REGULAR", "FAST", "JET", "ARMORED"],
+            "quests": {
+                "Starting Money": "+ 30",
+                "Towers Upgrade Price": "- 2%",
+                "Towers Experience Multiplier": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 130
+        },
+        "3.5": {
+            "enemies": ["REGULAR", "STRONG", "FAST", "JET", "ARMORED"],
+            "quests": {
+                "Towers Experience Multiplier": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 135
+        },
+        "3.6": {
+            "enemies": ["REGULAR", "STRONG", "ARMORED", "HEALER"],
+            "quests": {
+                "Towers Damage": "+ 5%",
+                "Starting Health": "+ 2"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 130
+        },
+        "3.7": {
+            "enemies": ["REGULAR", "FAST", "JET", "HEALER"],
+            "quests": {
+                "Towers Upgrade Price": "- 2%",
+                "Starting Health": "+ 2",
+                "Towers Attack Speed": "+ 5%",
+                "Wave Interval": "+ 1s"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 135
+        },
+        "3.8": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "ARMORED",
+                "HEALER",
+                "BOSS"
+            ],
+            "quests": {},
+            "base": {},
+            "music": "",
+            "difficulty": 135
+        },
+        "3.b1": {
+            "enemies": ["REGULAR", "STRONG", "JET", "HEALER", "FIGHTER"],
+            "quests": {},
+            "base": {
+                "Tesla": "= Enabled",
+                "Tesla Max Exp Level": "+ 5",
+                "Tesla Max Upgrade Level": "+ 2",
+                "Tesla Damage": "+ 20%",
+                "Tesla Attack Speed": "+ 15%"
+            },
+            "music": "",
+            "difficulty": 145
+        },
+        "4.1": {
+            "enemies": ["REGULAR", "STRONG", "FAST", "HELI", "ARMORED"],
+            "quests": {
+                "Starting Health": "+ 2",
+                "Towers Attack Speed": "+ 5%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 140
+        },
+        "4.2": {
+            "enemies": ["REGULAR", "STRONG", "HELI", "JET", "ARMORED"],
+            "quests": {
+                "Towers Upgrade Price": "- 2%",
+                "Towers Attack Speed": "+ 5%",
+                "Green Papers Bonus": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 140
+        },
+        "4.3": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "ARMORED",
+                "HEALER",
+                "TOXIC"
+            ],
+            "quests": {
+                "Wave Interval": "+ 2s",
+                "Starting Health": "+ 4",
+                "Towers Power Per Level Till 10": "+ 1%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 122
+        },
+        "4.4": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER"
+            ],
+            "quests": {
+                "Towers Damage": "+ 5%",
+                "Wave Interval": "+ 1s"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 140
+        },
+        "4.5": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "ARMORED",
+                "HEALER",
+                "TOXIC"
+            ],
+            "quests": {},
+            "base": {},
+            "music": "",
+            "difficulty": 145
+        },
+        "4.6": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "ARMORED",
+                "HEALER",
+                "TOXIC"
+            ],
+            "quests": {
+                "Towers Attack Speed": "+ 5%",
+                "Starting Money": "+ 20",
+                "Towers Experience Multiplier": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 150
+        },
+        "4.7": {
+            "enemies": ["REGULAR", "FAST", "HELI", "JET", "TOXIC", "ICY"],
+            "quests": {
+                "Starting Money": "+ 10",
+                "Towers Damage": "+ 5%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 150
+        },
+        "4.8": {
+            "enemies": [
+                "REGULAR",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "ICY",
+                "BOSS"
+            ],
+            "quests": {
+                "Starting Money": "+ 10",
+                "Towers Upgrade Price": "- 4%",
+                "Towers Attack Speed": "+ 5%",
+                "Towers Damage": "+ 5%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 150
+        },
+        "4.b1": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "HEALER",
+                "ICY",
+                "LIGHT"
+            ],
+            "quests": {},
+            "base": {
+                "Flamethrower": "= Enabled",
+                "Flamethrower Max Exp Level": "+ 5",
+                "Flamethrower Max Upgrade Level": "+ 3",
+                "Flamethrower Damage": "+ 20%",
+                "Flamethrower Burning Time": "+ 10%"
+            },
+            "music": "",
+            "difficulty": 150
+        },
+        "5.1": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY"
+            ],
+            "quests": {
+                "Towers Attack Speed": "+ 5%",
+                "Towers Experience Multiplier": "+ 10%",
+                "Starting Money": "+ 10"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 150
+        },
+        "5.2": {
+            "enemies": ["FAST", "JET", "HEALER", "TOXIC", "ICY", "FIGHTER"],
+            "quests": {
+                "Towers Damage": "+ 5%",
+                "Wave Interval": "+ 1s"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 155
+        },
+        "5.3": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "ARMORED",
+                "HEALER",
+                "FIGHTER"
+            ],
+            "quests": {
+                "Towers Attack Speed": "+ 5%",
+                "Starting Money": "+ 10",
+                "Starting Health": "+ 2",
+                "Towers Experience Multiplier": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 140
+        },
+        "5.4": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "TOXIC",
+                "FIGHTER"
+            ],
+            "quests": {
+                "Towers Attack Speed": "+ 5%",
+                "Starting Money": "+ 10"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 160
+        },
+        "5.5": {
+            "enemies": [
+                "REGULAR",
+                "FAST",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER"
+            ],
+            "quests": {
+                "Towers Attack Speed": "+ 5%",
+                "Starting Health": "+ 2",
+                "Towers Experience Multiplier": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 159
+        },
+        "5.6": {
+            "enemies": [
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "ICY",
+                "LIGHT"
+            ],
+            "quests": {
+                "Towers Damage": "+ 5%",
+                "Towers Upgrade Price": "- 2%",
+                "Towers Attack Speed": "+ 5%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 165
+        },
+        "5.7": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "ARMORED",
+                "HEALER",
+                "ICY",
+                "FIGHTER",
+                "LIGHT"
+            ],
+            "quests": {
+                "Towers Upgrade Price": "- 2%",
+                "Starting Money": "+ 10"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 165
+        },
+        "5.8": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER",
+                "LIGHT",
+                "BOSS"
+            ],
+            "quests": {
+                "Starting Money": "+ 20"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 180
+        },
+        "5.b1": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "BOSS"
+            ],
+            "quests": {},
+            "base": {},
+            "music": "",
+            "difficulty": 190
+        },
+        "5.b2": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER",
+                "BOSS"
+            ],
+            "quests": {},
+            "base": {},
+            "music": "",
+            "difficulty": 190
+        },
+        "6.1": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER",
+                "LIGHT",
+                "BOSS"
+            ],
+            "quests": {
+                "Towers Damage": "+ 5%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 190
+        },
+        "6.2": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "LIGHT"
+            ],
+            "quests": {
+                "Tower Gauss A Nano Damage": "+ 20%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 200
+        },
+        "6.3": {
+            "enemies": ["BOSS"],
+            "quests": {
+                "Loot Frequency": "+ 5",
+                "Coins Generation": "+ 5"
+            },
+            "base": {
+                "Enemies Vunerability": "- 20%"
+            },
+            "music": "",
+            "difficulty": 280
+        },
+        "6.4": {
+            "enemies": ["REGULAR", "STRONG", "TOXIC", "ICY", "FIGHTER", "BOSS"],
+            "quests": {
+                "Tower Crusher Upgrade Price": "- 3%",
+                "Tower Crusher A Increased Capacity": "+ 1%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 200
+        },
+        "rumble": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "ICY",
+                "LIGHT",
+                "BOSS"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "- 100",
+                "Enemies Walk On Platforms": "= Enabled",
+                "Ball Lightning Max Per Game": "= 0",
+                "Mod Bounty Count": "= 0",
+                "Mod Power Count": "= 0",
+                "Towers Max Exp Level": "+ 100",
+                "Cannon": "= Disabled",
+                "Freezing": "= Disabled",
+                "Venom": "= Disabled",
+                "Splash": "= Disabled",
+                "Blast": "= Disabled",
+                "Multishot": "= Disabled",
+                "Minigun": "= Disabled",
+                "Antiair": "= Disabled",
+                "Tesla": "= Disabled",
+                "Missile": "= Disabled",
+                "Flamethrower": "= Disabled",
+                "Laser": "= Disabled",
+                "Gauss": "= Disabled",
+                "Crusher": "= Disabled"
+            },
+            "music": "",
+            "difficulty": 370
+        },
+        "dev": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER",
+                "LIGHT",
+                "BOSS"
+            ],
+            "quests": {},
+            "base": {},
+            "music": "",
+            "difficulty": 290
+        },
+        "zecred": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "FIGHTER",
+                "LIGHT",
+                "BOSS"
+            ],
+            "quests": {},
+            "base": {
+                "Enemies Max Path Searches": "= 100"
+            },
+            "music": "",
+            "difficulty": 20
+        },
+        "dq1": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "LIGHT"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 300",
+                "Starting Health": "= 5",
+                "Forced Wave Bonus": "= 25%",
+                "Wave Interval": "= 10",
+                "MDPS Counter": "= Enabled",
+                "Miner Count Scalar": "= 1",
+                "Miner Count Vector": "= 1",
+                "Miner Install Duration": "= 15",
+                "Fireball Max Per Game": "= 3",
+                "Mod Balance Count": "= 5",
+                "Mod Search Count": "= 5",
+                "Mod Attack Speed Count": "= 5",
+                "Mod Damage Count": "= 5",
+                "Mod Bounty Count": "= 5",
+                "Mod Experience Count": "= 5",
+                "Mod Experience Value": "= 70%",
+                "Mod Mining Speed Count": "= 5",
+                "Mod Mining Speed Value": "= 100%",
+                "Mod Power Count": "= 5",
+                "Towers Max Exp Level": "= 2",
+                "Towers Max Upgrade Level": "= 10",
+                "Towers Exp Multiplier": "= 10%",
+                "Power Per Level Till 10": "= 1%",
+                "Power Per Level After 10": "= 2%",
+                "Basic": "= Enabled",
+                "Sniper": "= Enabled",
+                "Cannon": "= Enabled",
+                "Freezing": "= Enabled",
+                "Venom": "= Enabled",
+                "Splash": "= Enabled",
+                "Blast": "= Enabled",
+                "Multishot": "= Enabled",
+                "Minigun": "= Enabled",
+                "Antiair": "= Enabled",
+                "Tesla": "= Enabled",
+                "Missile": "= Enabled",
+                "Flamethrower": "= Enabled",
+                "Laser": "= Enabled",
+                "Gauss": "= Enabled",
+                "Crusher": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 90
+        },
+        "dq2": {
+            "enemies": [],
+            "quests": {},
+            "base": {},
+            "music": ""
+        },
+        "dq3": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "BOSS"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 500",
+                "Forced Wave Bonus": "= 10%",
+                "MDPS Counter": "= 1",
+                "Miner Count Scalar": "= 3",
+                "Fireball Max Per Game": "= 5",
+                "Blizzard Max Per Game": "= 5",
+                "Windstorm Max Per Game": "= 5",
+                "Thunder Max Per Game": "= 5",
+                "Smoke Bomb Max Per Game": "= 5",
+                "Firestorm Bomb Max Per Game": "= 5",
+                "Mod Balance Count": "= 10",
+                "Mod Search Count": "= 10",
+                "Mod Attack Speed Count": "= 10",
+                "Mod Damage Count": "= 10",
+                "Mod Bounty Count": "= 10",
+                "Mod Experience Count": "= 10",
+                "Mod Mining Speed Count": "= 10",
+                "Mod Power Count": "= 10",
+                "Towers Max Exp Level": "= 20",
+                "Towers Max Upgrade Level": "= 10",
+                "Basic": "= Enabled",
+                "Sniper": "= Enabled",
+                "Cannon": "= Enabled",
+                "Freezing": "= Enabled",
+                "Venom": "= Enabled",
+                "Splash": "= Enabled",
+                "Blast": "= Enabled",
+                "Multishot": "= Enabled",
+                "Minigun": "= Enabled",
+                "Antiair": "= Enabled",
+                "Tesla": "= Enabled",
+                "Missile": "= Enabled",
+                "Flamethrower": "= Enabled",
+                "Laser": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 100
+        },
+        "dq4": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "ARMORED",
+                "HEALER",
+                "ICY"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 150",
+                "Starting Health": "= 1",
+                "Forced Wave Bonus": "= 0%",
+                "Wave Interval": "= 15",
+                "MDPS Counter": "= Enabled",
+                "Miner Count Scalar": "= 4",
+                "Fireball Max Per Game": "= 1",
+                "Blizzard Max Per Game": "= 1",
+                "Windstorm Max Per Game": "= 1",
+                "Thunder Max Per Game": "= 1",
+                "Smoke Bomb Max Per Game": "= 1",
+                "Firestorm Bomb Max Per Game": "= 1",
+                "Mod Balance Count": "= 10",
+                "Mod Search Count": "= 10",
+                "Mod Attack Speed Count": "= 10",
+                "Mod Damage Count": "= 10",
+                "Mod Bounty Count": "= 10",
+                "Mod Bounty Value": "= 200",
+                "Mod Experience Count": "= 10",
+                "Mod Mining Speed Count": "= 10",
+                "Mod Power Count": "= 10",
+                "Towers Max Exp Level": "= 20",
+                "Towers Max Upgrade Level": "= 10",
+                "Rotation Speed": "= 200%",
+                "Projectile Speed": "= 40%",
+                "Basic": "= Enabled",
+                "Sniper": "= Enabled",
+                "Cannon": "= Enabled",
+                "Freezing": "= Enabled",
+                "Venom": "= Enabled",
+                "Splash": "= Enabled",
+                "Blast": "= Enabled",
+                "Multishot": "= Enabled",
+                "Missile": "= Enabled",
+                "Laser": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 85
+        },
+        "dq5": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Health": "= 100",
+                "Forced Wave Bonus": "= 33%",
+                "Wave Interval": "= 25",
+                "MDPS Counter": "= Enabled",
+                "Miner Count Scalar": "= 3",
+                "Miner Count Vector": "= 3",
+                "Fireball Max Per Game": "= 10",
+                "Blizzard Max Per Game": "= 10",
+                "Windstorm Max Per Game": "= 10",
+                "Thunder Max Per Game": "= 10",
+                "Smoke Bomb Max Per Game": "= 10",
+                "Firestorm Bomb Max Per Game": "= 10",
+                "Towers Max Exp Level": "= 20",
+                "Towers Max Upgrade Level": "= 10",
+                "Power Per Level Till 10": "= 5%",
+                "Power Per Level After 10": "= 10%",
+                "Towers Range": "= 200%",
+                "Basic": "= Enabled",
+                "Sniper": "= Enabled",
+                "Cannon": "= Enabled",
+                "Freezing": "= Enabled",
+                "Venom": "= Enabled",
+                "Splash": "= Enabled",
+                "Blast": "= Enabled",
+                "Multishot": "= Enabled",
+                "Minigun": "= Enabled",
+                "Antiair": "= Enabled",
+                "Tesla": "= Enabled",
+                "Missile": "= Enabled",
+                "Flamethrower": "= Enabled",
+                "Laser": "= Enabled",
+                "Ability Energy Geration Interval": "= 25"
+            },
+            "music": "",
+            "difficulty": 150
+        },
+        "dq6": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER",
+                "LIGHT",
+                "BOSS"
+            ],
+            "quests": {},
+            "base": {
+                "Too Many Effects": "Lmao"
+            },
+            "music": "",
+            "difficulty": 300
+        },
+        "dq7": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 300",
+                "Forced Wave Bonus": "= 25%",
+                "Wave Interval": "= 10",
+                "MDPS Counter": "= Enabled",
+                "Miner Count Scalar": "= 3",
+                "Miner Install Duration": "= 15",
+                "LOIC Max Per Game": "= 3",
+                "Mod Balance Count": "= 12",
+                "Mod Search Count": "= 5",
+                "Mod Attack Speed Count": "= 5",
+                "Mod Damage Count": "= 5",
+                "Mod Bounty Count": "= 5",
+                "Mod Experience Count": "= 5",
+                "Mod Experience Value": "= 70%",
+                "Mod Mining Speed Count": "= 5",
+                "Mod Mining Speed Value": "= 100",
+                "Mod Power Count": "= 5",
+                "Towers Max Exp Level": "= 100",
+                "Towers Max Upgrade Level": "= 10",
+                "Towers Exp Multiplier": "= 10%",
+                "Power Per Level Till 10": "= 1%",
+                "Power Per Level After 10": "= 2%",
+                "Basic": "= Enabled",
+                "Sniper": "= Enabled",
+                "Cannon": "= Enabled",
+                "Freezing": "= Enabled",
+                "Venom": "= Enabled",
+                "Splash": "= Enabled",
+                "Blast": "= Enabled",
+                "Multishot": "= Enabled",
+                "Minigun": "= Enabled",
+                "Antiair": "= Enabled",
+                "Tesla": "= Enabled",
+                "Missile": "= Enabled",
+                "Flamethrower": "= Enabled",
+                "Laser": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 85
+        },
+        "dq8": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "ARMORED",
+                "HEALER",
+                "ICY",
+                "FIGHTER",
+                "LIGHT"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 350",
+                "Enemies Walk On Platforms": "= Enabled",
+                "Enemies Max Path Searches": "= 4",
+                "Miner Count Vector": "= 2",
+                "Mod Balance Count": "= 10",
+                "Mod Search Count": "= 10",
+                "Mod Experience Count": "= 4",
+                "Mod Power Count": "= 3",
+                "Towers Max Exp Level": "= 15",
+                "Towers Max Upgrade Level": "= 10",
+                "Towers Exp Multiplier": "= 25%",
+                "Basic": "= Enabled",
+                "Sniper": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 100
+        },
+        "dq9": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "JET",
+                "ARMORED",
+                "FIGHTER",
+                "LIGHT"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 250",
+                "Starting Health": "= 10",
+                "MDPS Counter": "= Enabled",
+                "Miner Count Scalar": "= 1",
+                "Miner Count Vector": "= 1",
+                "Ball Lightning Max Per Game": "= 5",
+                "Ball Lightning Damage": "= 1.2%",
+                "Ball Lightning Duration": "= 1800",
+                "Mod Search Count": "= 2",
+                "Mod Attack Speed Count": "= 2",
+                "Mod Damage Count": "= 2",
+                "Mod Experience Count": "= 2",
+                "Towers Max Exp Level": "= 100",
+                "Towers Max Upgrade Level": "= 10",
+                "Basic": "= Enabled",
+                "Basic Attack Speed": "= 120",
+                "Sniper": "= Enabled",
+                "Cannon": "= Enabled",
+                "Venom": "= Enabled",
+                "Splash": "= Enabled",
+                "Splash Attack Speed": "= 120%",
+                "Multishot": "= Enabled",
+                "Multishot Attack Speed": "= 120%",
+                "Antiair": "= Enabled",
+                "Tesla": "= Enabled",
+                "Missile": "= Enabled",
+                "Ball Lighting Energy Cost": "= 4"
+            },
+            "music": "",
+            "difficulty": 150
+        },
+        "dq10": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "ARMORED",
+                "TOXIC",
+                "ICY",
+                "LIGHT"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 400",
+                "Starting Health": "= 15",
+                "Miner Count Scalar": "= 2",
+                "Miner Count Vector": "= 1",
+                "Fireball Max Per Game": "= 5",
+                "Magnet Max Per Game": "= 5",
+                "Mod Search Count": "= 3",
+                "Mod Attack Speed Count": "= 3",
+                "Mod Damage Count": "= 3",
+                "Mod Mining Speed Count": "= 3",
+                "Mod Power Count": "= 3",
+                "Towers Max Exp Level": "= 100",
+                "Towers Max Upgrade Level": "= 10",
+                "Towers Range": "= 120%",
+                "Rotation Speed": "= 120%",
+                "Projectile Speed": "= 120%",
+                "Basic": "= Enabled",
+                "Basic Damage": "= 150%",
+                "Basic Attack Speed": "= 150%",
+                "Sniper": "= Enabled",
+                "Venom": "= Enabled",
+                "Splash": "= Enabled",
+                "Multishot": "= Enabled",
+                "Antiair": "= Enabled",
+                "Antiair Damage": "= 150%",
+                "Antiair Attack Speed": "= 150%",
+                "Missile": "= Enabled",
+                "Flamethrower": "= Enabled",
+                "Laser": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 120
+        },
+        "dq11": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "HELI",
+                "JET",
+                "HEALER",
+                "ICY",
+                "LIGHT"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 250",
+                "Starting Health": "= 10",
+                "Miner Count Scalar": "= 1",
+                "Miner Count Vector": "= 1",
+                "Miners Speed": "= 110%",
+                "Mod Attack Speed Count": "= 1",
+                "Mod Power Count": "= 1",
+                "Towers Max Exp Level": "= 100",
+                "Towers Max Upgrade Level": "= 10",
+                "Basic": "= Enabled",
+                "Sniper": "= Enabled",
+                "Cannon": "= Enabled",
+                "Venom": "= Enabled",
+                "Minigun": "= Enabled",
+                "Antiair": "= Enabled",
+                "Flamethrower": "= Enabled",
+                "Laser": "= Enabled",
+                "Mod Damage Value": "= 10%",
+                "Antiair Range": "= 25%",
+                "Flamethrower Damage": "= 110%"
+            },
+            "music": "",
+            "difficulty": 130
+        },
+        "dq12": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY"
+            ],
+            "quests": {},
+            "base": {
+                "Starting Money": "= 300",
+                "Miner Count Scalar": "= 1",
+                "Mod Balance Count": "= 30",
+                "Mod Search Count": "= 10",
+                "Mod Experience Count": "= 4",
+                "Mod Power Count": "= 10",
+                "Towers Max Exp Level": "= 10",
+                "Towers Max Upgrade Level": "= 10",
+                "Towers Exp Multiplier": "= 25",
+                "Basic": "= Enabled",
+                "Sniper": "= Enabled",
+                "Cannon": "= Enabled",
+                "Freezing": "= Enabled",
+                "Venom": "= Enabled",
+                "Splash": "= Enabled",
+                "Blast": "= Enabled",
+                "Multishot": "= Enabled",
+                "Minigun": "= Enabled",
+                "Tesla": "= Enabled",
+                "Flamethrower": "= Enabled",
+                "Laser": "= Enabled",
+                "Gauss": "= Enabled",
+                "Crusher": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 120
+        }
+    },
+    "bountyDifficulties": {
+        "1.1": 100,
+        "1.2": 100,
+        "1.3": 100,
+        "1.4": 100,
+        "1.5": 100,
+        "1.6": 100,
+        "1.7": 100,
+        "1.8": 100,
+        "1.b1": 105,
+        "2.1": 100,
+        "2.2": 100,
+        "2.3": 100,
+        "2.4": 100,
+        "2.5": 125,
+        "2.6": 125,
+        "2.7": 100,
+        "2.8": 100,
+        "2.b1": 120,
+        "3.1": 125,
+        "3.2": 125,
+        "3.3": 125,
+        "3.4": 130,
+        "3.5": 135,
+        "3.6": 130,
+        "3.7": 135,
+        "3.8": 135,
+        "3.b1": 145,
+        "4.1": 140,
+        "4.2": 140,
+        "4.3": 122.5,
+        "4.4": 140,
+        "4.5": 145,
+        "4.6": 150,
+        "4.7": 150,
+        "4.8": 150,
+        "4.b1": 150,
+        "5.1": 150,
+        "5.2": 155,
+        "5.3": 140,
+        "5.4": 160,
+        "5.5": 159,
+        "5.6": 165,
+        "5.7": 165,
+        "5.8": 180.4,
+        "5.b1": 190,
+        "5.b2": 190,
+        "6.1": 190,
+        "6.2": 200,
+        "6.3": 280,
+        "6.4": 300,
+        "rumble": 370,
+        "dev": 290,
+        "dq1": 90,
+        "dq3": 100,
+        "dq4": 85,
+        "dq7": 85,
+        "dq8": 100
+    },
+    "enemy_emojis": {
+        "enemy_regular": 897851514612244533,
+        "enemy_strong": 897851514880671785,
+        "enemy_fast": 897851514738073600,
+        "enemy_heli": 897851514784190525,
+        "enemy_jet": 897851514771615774,
+        "enemy_armored": 897851514347986987,
+        "enemy_healer": 897851514763218945,
+        "enemy_toxic": 897851514805182474,
+        "enemy_icy": 897851514536747049,
+        "enemy_fighter": 897851514708717599,
+        "enemy_light": 897851515098775582,
+        "enemy_boss": 897851514687733771
+    }
+}

@@ -1,0 +1,209 @@
+{
+    "name": "3.b1",
+    "stage": "3",
+    "stagePosition": 90,
+    "seed": 32911,
+    "hasLeaderboards": true,
+    "fixedQuests": true,
+    "isBonus": true,
+    "openRequirements": [
+        {
+            "type": "STAGE_STARS",
+            "stage": "3",
+            "amount": 15
+        }
+    ],
+    "showRequirements": [
+        {
+            "type": "STAGE_STARS",
+            "stage": "3",
+            "amount": 12
+        }
+    ],
+    "quests": [
+        {
+            "id": "Q:3.b1:1",
+            "statisticsType": "EK",
+            "value": 1000,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 4000
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 7
+                }
+            ]
+        },
+        {
+            "id": "Q:3.b1:2",
+            "statisticsType": "TEK_T",
+            "value": 400,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 4000
+                },
+                {
+                    "i": {
+                        "type": "RESOURCE",
+                        "resourceType": "MATRIX"
+                    },
+                    "c": 500
+                }
+            ]
+        },
+        {
+            "id": "Q:3.b1:3",
+            "statisticsType": "SG",
+            "value": 41400,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 5000
+                },
+                {
+                    "i": {
+                        "type": "BLUEPRINT",
+                        "blueprintType": "POWER"
+                    },
+                    "c": 15
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 7
+                }
+            ]
+        },
+        {
+            "id": "Q:3.b1:4",
+            "statisticsType": "TDD",
+            "value": 1600000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 6000
+                },
+                {
+                    "i": {
+                        "type": "RANDOM_TILE",
+                        "quality": 0.9
+                    },
+                    "c": 5
+                },
+                {
+                    "i": {
+                        "type": "RARITY_BOOST"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:3.b1:5",
+            "statisticsType": "WCST",
+            "value": 2100,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 8000
+                },
+                {
+                    "i": {
+                        "type": "CASE",
+                        "caseType": "CYAN",
+                        "encrypted": false,
+                        "containsPapers": true
+                    }
+                }
+            ]
+        }
+    ],
+    "waveQuests": [
+        {
+            "id": "W:3.b1:S1",
+            "waves": 29,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "3.b1"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 4000
+                }
+            ]
+        },
+        {
+            "id": "W:3.b1:S2",
+            "waves": 43,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "3.b1"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "CASE",
+                        "caseType": "BLUEPRINT",
+                        "encrypted": false,
+                        "containsPapers": true
+                    }
+                }
+            ]
+        },
+        {
+            "id": "W:3.b1:S3",
+            "waves": 57,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "3.b1"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 6000
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 10
+                }
+            ]
+        }
+    ],
+    "difficultyMilestones": [
+        20,
+        35,
+        45
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "name": "DQ9",
+    "stage": "1000",
+    "stagePosition": 90,
+    "seed": 30000,
+    "hasLeaderboards": true,
+    "dailyQuest": true,
+    "quests": [
+        {
+            "id": "Q:DQ9:1",
+            "statisticsType": "WD",
+            "value": 40,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 3000
+                },
+                {
+                    "i": {
+                        "type": "CASE",
+                        "caseType": "BLUE",
+                        "encrypted": false,
+                        "containsPapers": true
+                    }
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 10
+                }
+            ]
+        }
+    ],
+    "difficultyMilestones": [
+        20,
+        35,
+        50
+    ]
+}

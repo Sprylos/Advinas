@@ -1,0 +1,100 @@
+{
+    "name": "dev",
+    "stage": "A",
+    "stagePosition": 20,
+    "seed": 30000,
+    "hasLeaderboards": true,
+    "forcedDifficulty": "NORMAL",
+    "fixedQuests": true,
+    "openRequirements": [
+        {
+            "type": "STARS",
+            "level": "5.8",
+            "amount": 2
+        }
+    ],
+    "quests": [
+        {
+            "id": "Q:dev:1",
+            "statisticsType": "SG",
+            "value": 150000,
+            "oneGame": true,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "dev"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "ACCELERATOR"
+                    },
+                    "c": 10
+                },
+                {
+                    "i": {
+                        "type": "CASE",
+                        "caseType": "ORANGE",
+                        "encrypted": false,
+                        "containsPapers": true
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:dev:2",
+            "statisticsType": "TDD",
+            "value": 100000000,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "dev"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "GREEN_PAPER"
+                    },
+                    "c": 20000
+                },
+                {
+                    "i": {
+                        "type": "RANDOM_TILE",
+                        "quality": 1
+                    },
+                    "c": 10
+                }
+            ]
+        }
+    ],
+    "waveQuests": [
+        {
+            "id": "W:dev:1",
+            "waves": 100,
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "dev"
+                    }
+                },
+                {
+                    "i": {
+                        "type": "CASE",
+                        "caseType": "PURPLE",
+                        "encrypted": false,
+                        "containsPapers": true
+                    },
+                    "c": 5
+                }
+            ]
+        }
+    ],
+    "difficultyMilestones": [
+        15,
+        30,
+        45
+    ]
+}

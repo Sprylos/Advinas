@@ -1,0 +1,100 @@
+{
+    "name": "0.1",
+    "stage": "0",
+    "stagePosition": 10,
+    "seed": 9001,
+    "forcedDifficulty": "NORMAL",
+    "quests": [
+        {
+            "id": "Q:0.1:1",
+            "scripted": true,
+            "title": "tutquest_use_interface",
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "0.1"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:0.1:2",
+            "scripted": true,
+            "title": "tutquest_build_tower",
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "0.1"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "Q:0.1:3",
+            "scripted": true,
+            "title": "tutquest_call_enemies_and_defeat_them",
+            "prizes": [
+                {
+                    "i": {
+                        "type": "STAR",
+                        "levelName": "0.1"
+                    }
+                }
+            ]
+        }
+    ],
+    "difficultyMilestones": [
+        0,
+        0,
+        0
+    ],
+    "enemyWaves": [
+        {
+            "message": "",
+            "enemyGroups": [
+                {
+                    "enemyType": "REGULAR",
+                    "interval": 0.75,
+                    "count": 12,
+                    "health": 1,
+                    "speed": 1,
+                    "bounty": 4,
+                    "exp": 1,
+                    "score": 2
+                }
+            ]
+        },
+        {
+            "message": "",
+            "enemyGroups": [
+                {
+                    "enemyType": "REGULAR",
+                    "interval": 1,
+                    "count": 7,
+                    "health": 10,
+                    "speed": 1,
+                    "bounty": 8,
+                    "exp": 1,
+                    "score": 4
+                }
+            ]
+        },
+        {
+            "message": "Final wave!",
+            "enemyGroups": [
+                {
+                    "enemyType": "REGULAR",
+                    "interval": 1,
+                    "count": 8,
+                    "health": 20,
+                    "speed": 1,
+                    "bounty": 8,
+                    "exp": 1,
+                    "score": 4
+                }
+            ]
+        }
+    ]
+}
