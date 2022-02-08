@@ -1,0 +1,1522 @@
+{
+    "width": 17,
+    "height": 17,
+    "tiles": [
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 15,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 2,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 2,
+            "d": {
+                "bt": "DAMAGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 2,
+            "d": {
+                "bt": "ROTATION_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 2,
+            "d": {
+                "bt": "RANGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "SOURCE",
+            "x": 10,
+            "y": 2,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 2,
+            "d": {
+                "bt": "RANGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 14,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 15,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 3,
+            "d": {
+                "bt": "BONUS_COINS",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 3,
+            "d": {
+                "bt": "UPGRADE_DISCOUNT",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 3,
+            "d": {
+                "bt": "ATTACK_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 10,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 3,
+            "d": {
+                "bt": "PROJECTILE_SPEED",
+                "bl": 3
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 3,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 15,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 4,
+            "d": {
+                "bt": "ROTATION_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 4,
+            "d": {
+                "bt": "BONUS_EXPERIENCE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 1,
+            "y": 5,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 5,
+            "d": {
+                "bt": "UPGRADE_DISCOUNT",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 10,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 5,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 5,
+            "d": {
+                "bt": "BONUS_COINS",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 5,
+            "d": {
+                "bt": "ATTACK_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 1,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 6
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 6,
+            "d": {
+                "bt": "UPGRADE_DISCOUNT",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 6
+        },
+        {
+            "type": "SOURCE",
+            "x": 5,
+            "y": 6,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 6,
+            "d": {
+                "bt": "ROTATION_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 6
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 6,
+            "d": {
+                "bt": "DAMAGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 7
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 7,
+            "d": {
+                "bt": "BONUS_EXPERIENCE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 7
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 7,
+            "d": {
+                "bt": "DAMAGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 7,
+            "d": {
+                "bt": "UPGRADE_DISCOUNT",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 7,
+            "d": {
+                "bt": "BONUS_COINS",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 7
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 7,
+            "d": {
+                "bt": "ATTACK_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 10,
+            "y": 7,
+            "d": {
+                "bt": "RANGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 8,
+            "d": {
+                "bt": "BONUS_EXPERIENCE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 8,
+            "d": {
+                "bt": "ROTATION_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 9
+        },
+        {
+            "type": "PLATFORM",
+            "x": 2,
+            "y": 9,
+            "d": {
+                "bt": "DAMAGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 9,
+            "d": {
+                "bt": "PROJECTILE_SPEED",
+                "bl": 3
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 9
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 9
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 9,
+            "d": {
+                "bt": "RANGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 9,
+            "d": {
+                "bt": "ROTATION_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 9,
+            "d": {
+                "bt": "UPGRADE_DISCOUNT",
+                "bl": 5
+            }
+        },
+        {
+            "type": "SOURCE",
+            "x": 9,
+            "y": 9,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 9
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 10
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 10
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 10
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 10,
+            "d": {
+                "bt": "BONUS_EXPERIENCE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 10
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 10,
+            "d": {
+                "bt": "ATTACK_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 10,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 10
+        },
+        {
+            "type": "SPAWN",
+            "x": 3,
+            "y": 11,
+            "d": {
+                "d": 100,
+                "ae": [
+                    {
+                        "t": "BOSS",
+                        "f": 30,
+                        "l": 0
+                    },
+                    {
+                        "t": "ICY",
+                        "f": 40,
+                        "l": 0
+                    },
+                    {
+                        "t": "HEALER",
+                        "f": 30,
+                        "l": 75
+                    },
+                    {
+                        "t": "ARMORED",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "REGULAR",
+                        "f": 1,
+                        "l": 20
+                    },
+                    {
+                        "t": "FAST",
+                        "f": 5,
+                        "l": 45
+                    },
+                    {
+                        "t": "STRONG",
+                        "f": 15,
+                        "l": 0
+                    },
+                    {
+                        "t": "JET",
+                        "f": 30,
+                        "l": 70
+                    },
+                    {
+                        "t": "TOXIC",
+                        "f": 20,
+                        "l": 0
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 11,
+            "d": {
+                "bt": "BONUS_COINS",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 11
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 11
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 11
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 11,
+            "d": {
+                "bt": "BONUS_COINS",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 11
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 12
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 12,
+            "d": {
+                "bt": "RANGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 12
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 12,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 12
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 12,
+            "d": {
+                "bt": "ATTACK_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 12,
+            "d": {
+                "bt": "PROJECTILE_SPEED",
+                "bl": 3
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 10,
+            "y": 12
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 12,
+            "d": {
+                "bt": "BONUS_EXPERIENCE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 13
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 13,
+            "d": {
+                "bt": "DAMAGE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 14
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 14
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 14
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 14
+        },
+        {
+            "type": "TARGET",
+            "x": 12,
+            "y": 14,
+            "d": {
+                "da": false,
+                "usgv": true,
+                "gv": [
+                    {
+                        "t": "STARTING_MONEY",
+                        "v": 500,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "FORCED_WAVE_BONUS",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MDPS_COUNTER",
+                        "v": 1,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MINER_COUNT_SCALAR",
+                        "v": 3,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "ABILITY_FIREBALL_MAX_PER_GAME",
+                        "v": 5,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "ABILITY_BLIZZARD_MAX_PER_GAME",
+                        "v": 5,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "ABILITY_WINDSTORM_MAX_PER_GAME",
+                        "v": 5,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "ABILITY_THUNDER_MAX_PER_GAME",
+                        "v": 5,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "ABILITY_SMOKE_BOMB_MAX_PER_GAME",
+                        "v": 5,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "ABILITY_FIRESTORM_MAX_PER_GAME",
+                        "v": 5,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MODIFIER_BALANCE_COUNT",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MODIFIER_SEARCH_COUNT",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MODIFIER_ATTACK_SPEED_COUNT",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MODIFIER_DAMAGE_COUNT",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MODIFIER_BOUNTY_COUNT",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MODIFIER_EXPERIENCE_COUNT",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MODIFIER_MINING_SPEED_COUNT",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "MODIFIER_POWER_COUNT",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWERS_MAX_EXP_LEVEL",
+                        "v": 20,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWERS_MAX_UPGRADE_LEVEL",
+                        "v": 10,
+                        "o": false,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_BASIC",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_SNIPER",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_CANNON",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_FREEZING",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_VENOM",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_SPLASH",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_BLAST",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_MULTISHOT",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_MINIGUN",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_AIR",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_TESLA",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_MISSILE",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_FLAMETHROWER",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    },
+                    {
+                        "t": "TOWER_TYPE_LASER",
+                        "v": 1,
+                        "o": true,
+                        "b": true
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 15
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 15
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 15
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 15
+        }
+    ],
+    "gates": [
+        {
+            "type": "TELEPORT",
+            "x": 4,
+            "y": 1,
+            "side": "LEFT",
+            "index": 2
+        },
+        {
+            "type": "TELEPORT",
+            "x": 13,
+            "y": 1,
+            "side": "LEFT",
+            "index": 3
+        },
+        {
+            "type": "TELEPORT",
+            "x": 7,
+            "y": 3,
+            "side": "BOTTOM",
+            "index": 1
+        },
+        {
+            "type": "TELEPORT",
+            "x": 5,
+            "y": 4,
+            "side": "BOTTOM",
+            "index": 15
+        },
+        {
+            "type": "TELEPORT",
+            "x": 9,
+            "y": 4,
+            "side": "LEFT",
+            "index": 16
+        },
+        {
+            "type": "BARRIER_TYPE",
+            "x": 7,
+            "y": 5,
+            "side": "BOTTOM",
+            "blockedEnemies": [
+                "ICY",
+                "FAST",
+                "JET"
+            ]
+        },
+        {
+            "type": "TELEPORT",
+            "x": 7,
+            "y": 6,
+            "side": "BOTTOM",
+            "index": 2
+        },
+        {
+            "type": "TELEPORT",
+            "x": 9,
+            "y": 6,
+            "side": "LEFT",
+            "index": 15
+        },
+        {
+            "type": "TELEPORT",
+            "x": 14,
+            "y": 6,
+            "side": "BOTTOM",
+            "index": 0
+        },
+        {
+            "type": "TELEPORT",
+            "x": 15,
+            "y": 7,
+            "side": "LEFT",
+            "index": 4
+        },
+        {
+            "type": "TELEPORT",
+            "x": 6,
+            "y": 8,
+            "side": "LEFT",
+            "index": 1
+        },
+        {
+            "type": "TELEPORT",
+            "x": 7,
+            "y": 8,
+            "side": "BOTTOM",
+            "index": 9
+        },
+        {
+            "type": "TELEPORT",
+            "x": 4,
+            "y": 9,
+            "side": "BOTTOM",
+            "index": 4
+        },
+        {
+            "type": "TELEPORT",
+            "x": 12,
+            "y": 9,
+            "side": "LEFT",
+            "index": 7
+        },
+        {
+            "type": "TELEPORT",
+            "x": 5,
+            "y": 10,
+            "side": "LEFT",
+            "index": 7
+        },
+        {
+            "type": "TELEPORT",
+            "x": 1,
+            "y": 11,
+            "side": "BOTTOM",
+            "index": 9
+        },
+        {
+            "type": "TELEPORT",
+            "x": 9,
+            "y": 11,
+            "side": "LEFT",
+            "index": 12
+        },
+        {
+            "type": "TELEPORT",
+            "x": 5,
+            "y": 12,
+            "side": "BOTTOM",
+            "index": 16
+        },
+        {
+            "type": "TELEPORT",
+            "x": 11,
+            "y": 13,
+            "side": "LEFT",
+            "index": 12
+        },
+        {
+            "type": "TELEPORT",
+            "x": 5,
+            "y": 14,
+            "side": "LEFT",
+            "index": 3
+        },
+        {
+            "type": "BARRIER_TYPE",
+            "x": 5,
+            "y": 15,
+            "side": "BOTTOM",
+            "blockedEnemies": [
+                "REGULAR",
+                "TOXIC",
+                "STRONG",
+                "FIGHTER",
+                "FAST",
+                "LIGHT"
+            ]
+        },
+        {
+            "type": "TELEPORT",
+            "x": 6,
+            "y": 15,
+            "side": "LEFT",
+            "index": 0
+        }
+    ]
+}

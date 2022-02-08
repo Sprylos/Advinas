@@ -1,0 +1,385 @@
+{
+    "width": 9,
+    "height": 10,
+    "tiles": [
+        {
+            "type": "PLATFORM",
+            "x": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4
+        },
+        {
+            "type": "SOURCE",
+            "x": 5,
+            "d": {
+                "rd": 0.75,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 1
+        },
+        {
+            "type": "BOSS",
+            "x": 7,
+            "y": 1,
+            "d": {
+                "btt": "CUSTOM",
+                "ce": [],
+                "cbwc": {
+                    "cl": 40,
+                    "rc": 1,
+                    "sd": 0,
+                    "bwp": [
+                        {
+                            "w": 40,
+                            "bt": "BROOT"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "y": 2,
+            "d": {
+                "bt": "ATTACK_SPEED",
+                "bl": 2
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 2,
+            "y": 2,
+            "d": {
+                "bt": "DAMAGE",
+                "bl": 3
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 2
+        },
+        {
+            "type": "SOURCE",
+            "y": 3,
+            "d": {
+                "rd": 0.5,
+                "r": [
+                    {
+                        "t": "VECTOR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 2,
+            "y": 3
+        },
+        {
+            "type": "SPAWN",
+            "x": 3,
+            "y": 3,
+            "d": {
+                "d": 100,
+                "ae": [
+                    {
+                        "t": "REGULAR",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "STRONG",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "FAST",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "BOSS",
+                        "f": 1,
+                        "l": 0
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 3,
+            "d": {
+                "bt": "BONUS_EXPERIENCE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 4
+        },
+        {
+            "type": "SOURCE",
+            "x": 2,
+            "y": 4,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "INFIAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 1,
+            "y": 6
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 6,
+            "d": {
+                "bt": "BONUS_EXPERIENCE",
+                "bl": 5
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 6
+        },
+        {
+            "type": "SOURCE",
+            "x": 7,
+            "y": 6,
+            "d": {
+                "rd": 0.75,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 60
+                    },
+                    {
+                        "t": "VECTOR",
+                        "a": 20
+                    },
+                    {
+                        "t": "MATRIX",
+                        "a": 20
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "y": 7,
+            "d": {
+                "bt": "RANGE",
+                "bl": 3
+            }
+        },
+        {
+            "type": "XM_MUSIC_TRACK",
+            "x": 1,
+            "y": 7,
+            "d": {
+                "id": 108,
+                "track": "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"
+            }
+        },
+        {
+            "type": "SCRIPT",
+            "x": 2,
+            "y": 7,
+            "d": {
+                "id": 6898275380356740135,
+                "script": "--[[\n1.8\nI18nGenerator {\n    \"lvlsub_1_8_010_on_this_level\",\n    \"lvlsub_1_8_020_it_is_slow\",\n    \"lvlsub_1_8_030_destroy_it\",\n    \"lvlsub_1_8_040_i_was_analyzing\",\n    \"lvlsub_1_8_050_few_waves_till_boss\",\n    \"lvlsub_1_8_060_finaly_new_step\",\n    \"lvlsub_1_8_070_ensor_given_access\",\n    \"lvlsub_1_8_080_and_seems_like\"\n}\n--]]\n-- We need to save script's state to continue showing subtitles for boss wave but also need to make\n-- sure no graphics is used in headless environment\n\nlocal TAG = \"1.8.lua: \"\n\ndofile(\"scripts/utils/tutorial.lua\")\n\nlocal i18n = function() return managers.LocaleManager.i18n end\nlocal sm = function() return SP._graphics.storylineMessages end\nlocal st = function() return SP._graphics.subtitles end\n\nlog(TAG .. \"script was successfully loaded\")\n\nlocal BOSS_WAVE_NUMBER = 40\nlocal forceSubtitles = false\n\nlocal tut\n\naddEventHandler(\"SystemPostSetup\", function()\n    forceSubtitles = managers.BasicLevelManager:getLevel(\"1.8\").maxReachedWave >= BOSS_WAVE_NUMBER or SP.gameState.gameIsContinued\n    tut:start()\n\n    SP.gameState.listeners:add(luajava.createProxy(GNS .. \"systems.GameStateSystem$GameStateSystemListener\", {\n        realUpdate = function(deltaTime)\n            tut:update(deltaTime)\n        end,\n\n        affectsGameState = function() return true end, -- \u0417\u0430\u0441\u0442\u0430\u0432\u043b\u044f\u0435\u043c \u0441\u0435\u0440\u0438\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u0442\u044c \u0441\u043b\u0443\u0448\u0430\u0442\u0435\u043b\u044f\n        getConstantId = function() return 50 end\n    }))\nend)\n\ntut = tutorial:new({\n    {\n        check = function()\n            return SP.wave:getCompletedWavesCount() >= BOSS_WAVE_NUMBER\n        end,\n        start = function()\n            tut:delay(2, function()\n                if not SP.gameState.gameIsContinued and SP._graphics ~= nil then\n                    local messages = {\n                        tut.ADVINAS_TAG .. \" \" .. i18n():get(\"lvlsub_1_8_010_on_this_level\"),\n                        tut.ADVINAS_TAG .. \" \" .. i18n():get(\"lvlsub_1_8_020_it_is_slow\"),\n                        tut.ADVINAS_TAG .. \" \" .. i18n():get(\"lvlsub_1_8_030_destroy_it\"),\n                        tut.ADVINAS_TAG .. \" \" .. i18n():get(\"lvlsub_1_8_040_i_was_analyzing\")\n                    }\n\n                    if forceSubtitles then\n                        -- subtitles\n                        st():schedule(messages, 0, 5)\n                    else\n                        -- story line messages\n                        sm():queue(messages)\n                    end\n                end\n\n                tut:condition(function() return SP.wave.wave ~= nil and SP.wave.wave.waveNumber >= BOSS_WAVE_NUMBER - 3 end, function()\n                    if SP._graphics ~= nil then\n                        st():add(tut.ENSOR_TAG .. \" \" .. i18n():get(\"lvlsub_1_8_050_few_waves_till_boss\"))\n                    end\n                end)\n            end)\n        end,\n        done = function()\n            local messages = {\n                tut.ADVINAS_TAG .. \" \" .. i18n():get(\"lvlsub_1_8_060_finaly_new_step\"),\n                tut.ADVINAS_TAG .. \" \" .. i18n():get(\"lvlsub_1_8_070_ensor_given_access\"),\n                tut.ADVINAS_TAG .. \" \" .. i18n():get(\"lvlsub_1_8_080_and_seems_like\")\n            }\n            if SP._graphics ~= nil then\n                if forceSubtitles then\n                    st():schedule(messages, 1, 5)\n                else\n                    sm():queue(messages)\n                end\n            end\n        end\n    }\n})\ntut._noSyncCheck = true\n"
+            }
+        },
+        {
+            "type": "TARGET",
+            "x": 3,
+            "y": 7,
+            "d": {
+                "da": false,
+                "usgv": false,
+                "gv": []
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 7
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 7
+        },
+        {
+            "type": "PLATFORM",
+            "y": 8,
+            "d": {
+                "bt": "RANGE",
+                "bl": 3
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 9
+        }
+    ],
+    "gates": []
+}

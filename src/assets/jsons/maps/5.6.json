@@ -1,0 +1,1162 @@
+{
+    "width": 18,
+    "height": 15,
+    "tiles": [
+        {
+            "type": "PLATFORM",
+            "x": 1,
+            "d": {
+                "bt": "ROTATION_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 1
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 1,
+            "d": {
+                "bt": "PROJECTILE_SPEED",
+                "bl": 5
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 1
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 1,
+            "d": {
+                "bt": "DAMAGE",
+                "bl": 3
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 2
+        },
+        {
+            "type": "SOURCE",
+            "x": 2,
+            "y": 2,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "TENSOR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 2
+        },
+        {
+            "type": "SOURCE",
+            "x": 7,
+            "y": 2,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "MATRIX",
+                        "a": 50
+                    },
+                    {
+                        "t": "TENSOR",
+                        "a": 50
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 2,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 2
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 2,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 3,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 1
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 10,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "y": 5,
+            "d": {
+                "bt": "BONUS_EXPERIENCE",
+                "bl": 4
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 5,
+            "d": {
+                "bt": "RANGE",
+                "bl": 3
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 6
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 6
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 6
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 6
+        },
+        {
+            "type": "CORE",
+            "x": 8,
+            "y": 6,
+            "d": {
+                "n": "LZR",
+                "t": "REGULAR",
+                "eg": 2,
+                "flx": false,
+                "u": [
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWERS_DAMAGE",
+                        "l": 64,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 6.5,
+                                "p": 2
+                            }
+                        ]
+                    },
+                    {
+                        "s": true,
+                        "ia": false,
+                        "gv": "TOWERS_UPGRADE_PRICE",
+                        "l": 88,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": -0.5,
+                                "p": 1
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWERS_POWER_PER_LEVEL_TILL_10",
+                        "l": 64,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 0.55,
+                                "p": 2
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWERS_RANGE",
+                        "l": 0,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 6.9,
+                                "p": 3
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWER_TYPE_LASER",
+                        "l": 224,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 2,
+                                "p": 2
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWERS_EXPERIENCE_MULTIPLIER",
+                        "l": 0,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 18,
+                                "p": 3
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWER_LASER_MAX_UPGRADE_LEVEL",
+                        "l": 64,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 2,
+                                "p": 2
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWER_LASER_MAX_EXP_LEVEL",
+                        "l": 64,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 3,
+                                "p": 2
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWER_LASER_CHARGING_SPEED",
+                        "l": 64,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 12,
+                                "p": 2
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWER_LASER_DAMAGE",
+                        "l": 0,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 20,
+                                "p": 4
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWER_LASER_MAX_EXP_LEVEL",
+                        "l": 0,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 4,
+                                "p": 3
+                            }
+                        ]
+                    },
+                    {
+                        "s": false,
+                        "ia": false,
+                        "gv": "TOWER_LASER_BATTERIES_CAPACITY",
+                        "l": 0,
+                        "cc": false,
+                        "ul": [
+                            {
+                                "d": 18,
+                                "p": 3
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "SOURCE",
+            "x": 10,
+            "y": 6,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 50
+                    },
+                    {
+                        "t": "VECTOR",
+                        "a": 25
+                    },
+                    {
+                        "t": "MATRIX",
+                        "a": 25
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 6
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 6
+        },
+        {
+            "type": "XM_MUSIC_TRACK",
+            "x": 2,
+            "y": 7,
+            "d": {
+                "id": 6729462063935130520,
+                "track": "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"
+            }
+        },
+        {
+            "type": "SOURCE",
+            "x": 3,
+            "y": 7,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "INFIAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 7
+        },
+        {
+            "type": "SPAWN",
+            "x": 7,
+            "y": 7,
+            "d": {
+                "d": 165,
+                "ae": [
+                    {
+                        "t": "LIGHT",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "JET",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "HELI",
+                        "f": 20,
+                        "l": 80
+                    },
+                    {
+                        "t": "HEALER",
+                        "f": 30,
+                        "l": 0
+                    },
+                    {
+                        "t": "ARMORED",
+                        "f": 15,
+                        "l": 0
+                    },
+                    {
+                        "t": "ICY",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "STRONG",
+                        "f": 20,
+                        "l": 0
+                    },
+                    {
+                        "t": "FAST",
+                        "f": 1,
+                        "l": 0
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 7,
+            "d": {
+                "bt": "RANGE",
+                "bl": 3
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 14,
+            "y": 7
+        },
+        {
+            "type": "ROAD",
+            "x": 15,
+            "y": 7
+        },
+        {
+            "type": "TARGET",
+            "x": 16,
+            "y": 7,
+            "d": {
+                "da": false,
+                "usgv": false,
+                "gv": []
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 17,
+            "y": 7,
+            "building": {
+                "bType": "TOWER",
+                "type": "LASER",
+                "as": "FIRST",
+                "e": 0,
+                "ul": 0,
+                "ia": [
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 2,
+            "y": 8,
+            "d": {
+                "bt": "ATTACK_SPEED",
+                "bl": 2
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 8
+        },
+        {
+            "type": "SOURCE",
+            "x": 8,
+            "y": 8,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "MATRIX",
+                        "a": 25
+                    },
+                    {
+                        "t": "TENSOR",
+                        "a": 50
+                    },
+                    {
+                        "t": "INFIAR",
+                        "a": 25
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 8,
+            "d": {
+                "bt": "UPGRADE_DISCOUNT",
+                "bl": 1
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 8
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 9
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 9
+        },
+        {
+            "type": "SOURCE",
+            "x": 6,
+            "y": 9,
+            "d": {
+                "rd": 0.75,
+                "r": [
+                    {
+                        "t": "INFIAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 9
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 9
+        },
+        {
+            "type": "PLATFORM",
+            "x": 14,
+            "y": 9,
+            "d": {
+                "bt": "ATTACK_SPEED",
+                "bl": 2
+            }
+        },
+        {
+            "type": "SOURCE",
+            "x": 1,
+            "y": 10,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "VECTOR",
+                        "a": 50
+                    },
+                    {
+                        "t": "MATRIX",
+                        "a": 50
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 10
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 10
+        },
+        {
+            "type": "SOURCE",
+            "x": 12,
+            "y": 10,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "TENSOR",
+                        "a": 25
+                    },
+                    {
+                        "t": "INFIAR",
+                        "a": 75
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 14,
+            "y": 10
+        },
+        {
+            "type": "PLATFORM",
+            "x": 1,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 11
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 11
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 11
+        },
+        {
+            "type": "PLATFORM",
+            "x": 10,
+            "y": 11
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 11,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 1
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 11
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 11
+        },
+        {
+            "type": "SOURCE",
+            "x": 14,
+            "y": 11,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "MATRIX",
+                        "a": 25
+                    },
+                    {
+                        "t": "TENSOR",
+                        "a": 75
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 1,
+            "y": 12,
+            "d": {
+                "bt": "UPGRADE_DISCOUNT",
+                "bl": 1
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 12
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 12
+        },
+        {
+            "type": "PLATFORM",
+            "x": 11,
+            "y": 12
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 12
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 13
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 13,
+            "d": {
+                "bt": "DAMAGE",
+                "bl": 3
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 13,
+            "d": {
+                "bt": "PWR_MULTIPLIER",
+                "bl": 2
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 10,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 11,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 12,
+            "y": 13
+        },
+        {
+            "type": "ROAD",
+            "x": 13,
+            "y": 13
+        },
+        {
+            "type": "PLATFORM",
+            "x": 12,
+            "y": 14
+        },
+        {
+            "type": "PLATFORM",
+            "x": 13,
+            "y": 14,
+            "d": {
+                "bt": "BONUS_COINS",
+                "bl": 4
+            }
+        }
+    ],
+    "gates": [
+        {
+            "type": "TELEPORT",
+            "x": 9,
+            "y": 4,
+            "side": "BOTTOM",
+            "index": 1
+        },
+        {
+            "type": "TELEPORT",
+            "x": 4,
+            "y": 5,
+            "side": "LEFT",
+            "index": 15
+        },
+        {
+            "type": "TELEPORT",
+            "x": 7,
+            "y": 5,
+            "side": "LEFT",
+            "index": 15
+        },
+        {
+            "type": "BARRIER_TYPE",
+            "x": 5,
+            "y": 7,
+            "side": "BOTTOM",
+            "blockedEnemies": [
+                "FAST",
+                "STRONG",
+                "JET",
+                "HELI"
+            ]
+        },
+        {
+            "type": "TELEPORT",
+            "x": 9,
+            "y": 7,
+            "side": "BOTTOM",
+            "index": 1
+        },
+        {
+            "type": "TELEPORT",
+            "x": 9,
+            "y": 8,
+            "side": "BOTTOM",
+            "index": 6
+        },
+        {
+            "type": "TELEPORT",
+            "x": 4,
+            "y": 9,
+            "side": "LEFT",
+            "index": 9
+        },
+        {
+            "type": "TELEPORT",
+            "x": 7,
+            "y": 9,
+            "side": "LEFT",
+            "index": 9
+        },
+        {
+            "type": "TELEPORT",
+            "x": 9,
+            "y": 11,
+            "side": "BOTTOM",
+            "index": 6
+        }
+    ]
+}

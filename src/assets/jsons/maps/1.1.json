@@ -1,0 +1,242 @@
+{
+    "width": 11,
+    "height": 7,
+    "tiles": [
+        {
+            "type": "SCRIPT",
+            "x": 5,
+            "d": {
+                "id": 6898275380348440135,
+                "script": "--[[\n1.1\nI18nGenerator {\n    \"lvlsub_1_1_010_congratulations\",\n    \"lvlsub_1_1_020_from_now_on\",\n    \"lvlsub_1_1_030_your_task_is_simple\",\n    \"lvlsub_1_1_040_dont_forget_about_quests\"\n}\n--]]\nSP.script:disableScriptsSerialization()\n\nif SP._graphics ~= nil and not SP.state.gameIsContinued then\n    addEventHandler(\"SystemPostSetup\", function()\n        dofile(\"scripts/utils/tutorial.lua\")\n\n        local i18n = function() return managers.LocaleManager.i18n end\n\n        SP._graphics.subtitles:schedule({\n            tutorial.ENSOR_TAG .. \" \" .. i18n():get(\"lvlsub_1_1_010_congratulations\"),\n            tutorial.ENSOR_TAG .. \" \" .. i18n():get(\"lvlsub_1_1_020_from_now_on\"),\n            tutorial.ENSOR_TAG .. \" \" .. i18n():get(\"lvlsub_1_1_030_your_task_is_simple\"),\n            tutorial.ENSOR_TAG .. \" \" .. i18n():get(\"lvlsub_1_1_040_dont_forget_about_quests\")\n        }, 2, 5)\n    end)\nend"
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9
+        },
+        {
+            "type": "SOURCE",
+            "x": 3,
+            "y": 1,
+            "d": {
+                "rd": 0.75,
+                "r": [
+                    {
+                        "t": "MATRIX",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 1
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 1
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 1
+        },
+        {
+            "type": "XM_MUSIC_TRACK",
+            "x": 8,
+            "y": 1,
+            "d": {
+                "id": 101,
+                "track": "UEsDBBQAAAAIACetbU796ebmAwMAAJQMAAAsAAAAKyBBaVIgLSBlTGljZW5zZXIgRW11bGF0b3JpbnN0YWxsZXIgLSAxLjEueG3tVs9LG0EUfvsjq5YpSHOpFtvpoUVBtlGRig00MTEIumRJFi29hboHQROxEQq9rJ1L73sR8uf0n9JE3b7ZZHdmdTe1HgoFX5js5O33Zt775stjNr913fa+u0+tzv7pobtOm50Tlx53DtpdGtts/dhtW7ZDl8zlNbOwYhYKlOrKLAAY4dCBgILP74APRdWm0AsleKayVcLKxGNzxEszViRsi7CF+C2rEmYnsXIsroUrip814jcILr+QCfHrJO9XSJ4tETYjtlkjuFMMirZlb2LfWeus5ckmRSfcDeLXCGErRAr2fJskNuCvP+L6NIOGdYKlsEWR36iwBEgKvv2e1Qmr4PqLkusuDwhBpiQ+02ngGEEoJ0JeyPOyTtPf4kdRkIP9KvKAmxRFwKM0/k9pYIz1cGlU70qjgjy8T5PGZ0kazBm+Ri6HT0dkmCUQtifnPRerptcgGo2r7znhryFIiEWS2AgoPEnBRCmNk0yU7rmqjmTTs4n+I/T91EPsDBlOEEOH0fF+CQGJ7WIJYUHKMJYXM50hJbmiTDGhSqSIFDmx7TirvxOUOLFx3UYkmS6qRH6cRG1yNJe6Tq8euc+RY6n3iORHEiveu/vgd+jobXO5xBLbSkpMzDO7EE4zQLdkVbnNlyBNElZc0YO6kXQOkZikfWMZ8Qe3Xjn6r0Qeb6yYEqd8r94kETpWTIKKMf1JUB2JKQmdk0iWTepSIiClT71GDbk7B1/c9lf3ZPPo9LDV7ZyEFyUFQuOA8kGDdt3WEU2YBKCp9ghIACaULICqwDz8Cyvh7XYV8vAEqpCDX3+CA0XkPLyE57CM8yKOGo4syxmKrqtaDuv8QKgH/AJ919ZwvBiN0jvFu84gBUBVgiC46l9c9q9vcNmcYUxpxsSEpkMwGAz6F1f9y8vB1Q2oOd2YNHDkDF0JPjm2ZZq2hZd3Yappblgqv9CnfACaPGbDbujID4Bp8dk0n5mWo3CHZeth8rt7zR2cafOKWbabOjjc5zR3dShweK1pPR1VfREEr0pv9d9QSwECFAAUAAAACAAnrW1O/enm5gMDAACUDAAALAAAAAAAAAAAACAAAAAAAAAAKyBBaVIgLSBlTGljZW5zZXIgRW11bGF0b3JpbnN0YWxsZXIgLSAxLjEueG1QSwUGAAAAAAEAAQBaAAAATQMAAAAA"
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 2
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 2
+        },
+        {
+            "type": "SPAWN",
+            "y": 3,
+            "d": {
+                "d": 100,
+                "ae": [
+                    {
+                        "t": "REGULAR",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "STRONG",
+                        "f": 3,
+                        "l": 0
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 3
+        },
+        {
+            "type": "SOURCE",
+            "x": 5,
+            "y": 3,
+            "d": {
+                "rd": 0.25,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 9,
+            "y": 3
+        },
+        {
+            "type": "TARGET",
+            "x": 10,
+            "y": 3,
+            "d": {
+                "da": false,
+                "usgv": false,
+                "gv": []
+            }
+        },
+        {
+            "type": "SOURCE",
+            "x": 1,
+            "y": 4,
+            "d": {
+                "rd": 0.25,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 2,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 5
+        },
+        {
+            "type": "SOURCE",
+            "x": 9,
+            "y": 5,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "INFIAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 6
+        }
+    ],
+    "gates": []
+}

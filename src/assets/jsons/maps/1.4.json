@@ -1,0 +1,337 @@
+{
+    "width": 11,
+    "height": 10,
+    "tiles": [
+        {
+            "type": "PLATFORM",
+            "x": 4
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5
+        },
+        {
+            "type": "SPAWN",
+            "x": 2,
+            "y": 1,
+            "d": {
+                "d": 100,
+                "ae": [
+                    {
+                        "t": "REGULAR",
+                        "f": 1,
+                        "l": 0
+                    },
+                    {
+                        "t": "STRONG",
+                        "f": 1,
+                        "l": 0
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 4,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 1
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 1
+        },
+        {
+            "type": "SOURCE",
+            "x": 10,
+            "y": 1,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "VECTOR",
+                        "a": 340
+                    }
+                ]
+            }
+        },
+        {
+            "type": "XM_MUSIC_TRACK",
+            "x": 1,
+            "y": 2,
+            "d": {
+                "id": 104,
+                "track": "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"
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 4,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 5,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 2,
+            "d": {
+                "bt": "ROTATION_SPEED",
+                "bl": 2
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 2
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 2
+        },
+        {
+            "type": "SOURCE",
+            "x": 1,
+            "y": 3,
+            "d": {
+                "rd": 0.5,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 3
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 3
+        },
+        {
+            "type": "ROAD",
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 1,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 2,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 3,
+            "y": 4
+        },
+        {
+            "type": "TARGET",
+            "x": 5,
+            "y": 4,
+            "d": {
+                "da": false,
+                "usgv": false,
+                "gv": []
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 4
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 4
+        },
+        {
+            "type": "SOURCE",
+            "x": 9,
+            "y": 4,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "TENSOR",
+                        "a": 50
+                    },
+                    {
+                        "t": "INFIAR",
+                        "a": 50
+                    }
+                ]
+            }
+        },
+        {
+            "type": "SOURCE",
+            "y": 5,
+            "d": {
+                "rd": 0.25,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "SOURCE",
+            "x": 1,
+            "y": 5,
+            "d": {
+                "rd": 0.25,
+                "r": [
+                    {
+                        "t": "SCALAR",
+                        "a": 100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "PLATFORM",
+            "x": 3,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 5
+        },
+        {
+            "type": "PLATFORM",
+            "x": 7,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 5
+        },
+        {
+            "type": "ROAD",
+            "x": 5,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 6,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 6
+        },
+        {
+            "type": "ROAD",
+            "x": 8,
+            "y": 6
+        },
+        {
+            "type": "PLATFORM",
+            "x": 6,
+            "y": 7,
+            "d": {
+                "bt": "BONUS_COINS",
+                "bl": 1
+            }
+        },
+        {
+            "type": "ROAD",
+            "x": 7,
+            "y": 7
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 10,
+            "y": 8
+        },
+        {
+            "type": "PLATFORM",
+            "x": 8,
+            "y": 9
+        },
+        {
+            "type": "PLATFORM",
+            "x": 9,
+            "y": 9
+        },
+        {
+            "type": "SOURCE",
+            "x": 10,
+            "y": 9,
+            "d": {
+                "rd": 1,
+                "r": [
+                    {
+                        "t": "MATRIX",
+                        "a": 50
+                    },
+                    {
+                        "t": "TENSOR",
+                        "a": 50
+                    }
+                ]
+            }
+        }
+    ],
+    "gates": []
+}
