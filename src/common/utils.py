@@ -54,7 +54,7 @@ async def log(ctx, success: bool = True, reason: str = None):
             content = ''
         else:
             # put all inputs into our string
-            content = ' '.join([option['value'] for option in options])
+            content = ' '.join([str(option['value']) for option in options])
     value = f'`/{command.lower()}` `{content}`' if content else f'`/{command.lower()}`'
 
     color = Color.green() if success else Color.red()
@@ -101,7 +101,7 @@ async def trace(ctx, err: Exception):
             content = ''
         else:
             # put all inputs into our string
-            content = ' '.join([option['value'] for option in options])
+            content = ' '.join([str(option['value']) for option in options])
     try:
         command = ctx.command.name.lower()
     except AttributeError:
