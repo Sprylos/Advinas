@@ -1,9 +1,8 @@
-from PIL import Image, ImageDraw, ImageFont
-from io import BytesIO
 import copy
-from git import os
+import os
 from common.api import Player
-
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont
 # This whole file is a mess.
 # I will rewrite it once i feel like it.
 
@@ -87,7 +86,7 @@ class Images():
             ],
         ]
 
-    def profile_gen(self, player: Player, zecred_score, avatar_bytes: bytes = None, userid: int = None) -> BytesIO:
+    def profile_gen(self, player: Player, avatar_bytes: bytes = None, userid: int = None) -> BytesIO:
         '''Generates the profile image for the profile command'''
         try:
             bg = Image.open(f"assets/images/profile/custom/{userid}.png")

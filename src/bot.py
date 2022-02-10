@@ -22,19 +22,20 @@ from common.utils import (
 
 
 # exts to load
-exts = [
+exts = (
+    'admin',
+    'database',
     'inf',
     'misc',
-    'mod',
-    'admin'
-]
+    'mod'
+)
 
 config = load_json("data/config.json")
 
 
 class Advinas(Bot):
     def __init__(self, prefix: str = None) -> None:
-        super().__init__(command_prefix=when_mentioned_or(prefix or 'a!'), activity=Activity(type=ActivityType.watching, name="You | v2.0!"),
+        super().__init__(command_prefix=when_mentioned_or(prefix or 'a!'), activity=Activity(type=ActivityType.watching, name="You | /invite | v2.1"),
                          help_command=None, case_insensitive=True, intents=Intents.all())
 
         # load extensions

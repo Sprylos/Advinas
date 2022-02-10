@@ -1,11 +1,19 @@
+import re
+import slash_util
 import discord
 from discord.ext import commands
 from discord.ext.commands import Context
 from bot import Advinas
+from dateutil import parser
+from math import floor, ceil
+from typing import Union
+from exts.database import Database
+from common.images import Images
+from common.views import Paginator, ScorePaginator
+from common.source import LBSource, ScoreLBSource
 from common.utils import (
     BadChannel,
     answer,
-    db_find,
     round_to_nearest,
     find_safe,
     get_level,
@@ -15,15 +23,6 @@ from common.utils import (
     tablify,
     load_json
 )
-from common.views import Paginator, ScorePaginator
-from common.source import LBSource, ScoreLBSource
-import slash_util
-from dateutil import parser
-from math import floor, ceil
-from common.images import Images
-import re
-from functools import partial
-from typing import Union
 
 
 class Inf(slash_util.Cog):
@@ -106,8 +105,12 @@ class Inf(slash_util.Cog):
             try:
                 date = parser.parse(date, ignoretz=True).strftime('%Y-%m-%d')
             except:
-                date = None
+                date = discord.utils.utcnow().strftime('%Y-%m-%d')
         leaderboard = (await self.bot.API.getDailyQuestLeaderboards(date=date))['leaderboards']
+        if not leaderboard:
+            entry = Database.find(self.bot.DB.dailyquests, date)
+            if entry:
+                leaderboard = entry.get(date, [])
         await log(ctx)
         await Paginator(source=LBSource(leaderboard, f'Dailyquest Leaderboards ({date})', ctx=ctx)).start(ctx)
 
@@ -211,9 +214,9 @@ class Inf(slash_util.Cog):
         dc_col, nn_col = self.bot.DB.discordnames, self.bot.DB.nicknames
         pl, player = None, None
         if not playerid:
-            pl = db_find(dc_col, ctx.author.id
-                         ) or db_find(nn_col, ctx.author.display_name
-                                      ) or db_find(nn_col, ctx.author.name)
+            pl = Database.find(dc_col, ctx.author.id
+                               ) or Database.find(nn_col, ctx.author.display_name
+                                                  ) or Database.find(nn_col, ctx.author.name)
             if pl:
                 player = await self.bot.API.player(playerid=next(iter(pl)))
             else:
@@ -227,43 +230,32 @@ class Inf(slash_util.Cog):
             else:
                 pl = {player.id: "<3"}
         if not player:
-            pl = db_find(nn_col, playerid)
+            pl = Database.find(nn_col, playerid)
             if not pl:
                 match = self.mention_regex.search(playerid)
                 new_id = match[0] if match else playerid
-                pl = db_find(dc_col, new_id)
+                pl = Database.find(dc_col, new_id)
                 if not pl:
                     member = discord.utils.get(self.bot.users, name=playerid)
                     if member:
-                        pl = db_find(dc_col, member.id)
+                        pl = Database.find(dc_col, member.id)
                     if not pl:
                         await log(ctx, success=False, reason='The provided player is invalid.')
                         return await answer(ctx, content='Could not find player. Check for spelling mistakes or try using '
                                             'the U- playerid from your profile page (Top left in the main menu).')
         if not player:
             player = await self.bot.API.player(playerid=next(iter(pl)))
-        if isinstance(pl[player.id], str):
-            pl = db_find(nn_col, player.id)
-        if not pl:
-            self.bot.DB.nicknames.insert_one(
-                {player.id: {'name': player.name, 'key': player.name.lower()}})
-        elif pl and pl[player.id]['name'] != player.name:
-            name = pl[player.id]['name']
-            self.bot.DB.nicknames.replace_one({player.id: {'name': name, 'key': name.lower()}}, {
-                                              player.id: {'name': player.name, 'key': player.name.lower()}})
+        data = {player.id: {'name': player.name, 'key': player.name.lower()}}
+        Database.update(nn_col, data=data)
         try:
             r = await self.bot.SESSION.get(player.avatar_link)
             avatar_bytes = await r.read()
         except:
             avatar_bytes = None
-        zecred = await self.bot.API.getLeaderboardsRank('zecred', player.id, 'score')
 
-        fn = partial(self.images.profile_gen, player,
-                     zecred['player'], avatar_bytes, ctx.author.id)
+        final_buffer = await self.bot.loop.run_in_executor(None, self.images.profile_gen, player, avatar_bytes, ctx.author.id)
 
-        final_buffer = await self.bot.loop.run_in_executor(None, fn)
-
-        file = discord.File(filename="circle.png", fp=final_buffer)
+        file = discord.File(filename=f'{player.id}.png', fp=final_buffer)
 
         await answer(ctx, file=file)
         await log(ctx)

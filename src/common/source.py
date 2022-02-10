@@ -1,5 +1,5 @@
-from discord.ext import menus
 import discord
+from discord.ext import menus
 from common.utils import codeblock
 
 
@@ -37,3 +37,14 @@ class ScoreLBSource(LBSource):
             base = page_number * self.per_page
             ret = entries[base:base + self.per_page]
             return ret
+
+    async def format_page(self, menu, entries):
+        offset = menu.current_page * self.per_page
+        mode = 'Endless' if menu.endless else 'Normal'
+        lines = [f'{mode} mode:']
+        for r, p in enumerate(entries, start=offset):
+            lines.append('#{:<5} {:<22} {:>0,}'.format(r+1, p['nickname'] if len(
+                p['nickname']) < 21 else f"{p['nickname'][:19]}...", p['score']))
+        description = codeblock('\n'.join(lines))
+        return discord.Embed(title=self.title, description=description, colour=60415
+                             ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.avatar.url)
