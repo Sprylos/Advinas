@@ -18,7 +18,7 @@ class Database(commands.Cog):
 
     async def ready(self):
         await self.bot.wait_until_ready()
-        asyncio.sleep(1)
+        await asyncio.sleep(1)
         self._discords, self._nicks, self._dailyquests = self.bot.DB.discordnames, self.bot.DB.nicknames, self.bot.DB.dailyquests
         self.save_dailyquest_leaderboard.start()
         # self.eval_leaderboards.start() # don't
@@ -68,7 +68,6 @@ class Database(commands.Cog):
                 datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         leaderboards = (await self.bot.API.getDailyQuestLeaderboards(date=date))['leaderboards']
         data = {date: leaderboards}
-        print(type(data))
         self.update(self._dailyquests, data=data)
         print('updated')
 
