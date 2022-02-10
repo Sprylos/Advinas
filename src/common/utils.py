@@ -1,10 +1,9 @@
 import json
+import traceback
+from discord import Color, Embed
+from discord.ext.commands.errors import BadArgument, CheckFailure
 from math import floor, ceil
 from typing import Tuple
-from discord.ext.commands.errors import BadArgument
-from discord import Color, Embed
-from discord.ext.commands.errors import CheckFailure
-import traceback
 
 
 class BadLevel(BadArgument):
@@ -15,10 +14,6 @@ class BadLevel(BadArgument):
 class BadChannel(CheckFailure):
     """Exception raised when the message channel is not an allowed channel."""
     pass
-
-
-def db_find(col, query):
-    return col.find_one({"$text": {"$search": str(query)}}, {'_id': 0})
 
 
 async def answer(ctx, **kwargs):

@@ -22,12 +22,13 @@ from common.utils import (
 
 
 # exts to load
-exts = [
+exts = (
+    'admin',
+    'database',
     'inf',
     'misc',
-    'mod',
-    'admin'
-]
+    'mod'
+)
 
 config = load_json("data/config.json")
 
