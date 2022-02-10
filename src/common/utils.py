@@ -63,7 +63,7 @@ async def log(ctx, success: bool = True, reason: str = None):
         title=f"**{command.title()} Command** used in `{ctx.channel}`", colour=color
     ).set_footer(
         text=f"Command run by {ctx.author}",
-        icon_url=ctx.author.avatar.url
+        icon_url=ctx.author.display_avatar.url
     ).add_field(
         name='**Success**',
         value=f'`{success}`',
@@ -115,7 +115,7 @@ async def trace(ctx, err: Exception):
         title=f"**{command.title()} Command** used in `{ctx.channel}`", colour=Color.red()
     ).set_footer(
         text=f"Command run by {ctx.author}",
-        icon_url=ctx.author.avatar.url
+        icon_url=ctx.author.display_avatar.url
     ).add_field(
         name='**Content**',
         value=f'`/{command}` `{content}`' if content else f'`/{command}`',
