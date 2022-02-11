@@ -249,6 +249,7 @@ class Inf(slash_util.Cog):
         Database.update(nn_col, data=data)
         try:
             r = await self.bot.SESSION.get(player.avatar_link)
+            r.raise_for_status()
             avatar_bytes = await r.read()
         except:
             avatar_bytes = None
