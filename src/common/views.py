@@ -86,7 +86,7 @@ class ScorePaginator(_Paginator):
     async def before_page(self, button, interaction):
         await self.show_checked_page(self.current_page - 1)
 
-    @ui.button(label='Change mode', style=ButtonStyle.gray)
+    @ui.button(label='Change Mode', style=ButtonStyle.gray)
     async def normal_endless(self, button, interaction):
         self.endless = (not self.endless)
         await self.show_current_page()

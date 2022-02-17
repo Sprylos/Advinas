@@ -1,10 +1,11 @@
 __pycache__/
 custom/
+deprecated/
 dump/
 config.*
 mod.py
 admin.py
 temp.*
-api/
 *.spry
 _*.*
+!__init__.py

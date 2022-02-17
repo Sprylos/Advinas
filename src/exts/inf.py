@@ -4,10 +4,10 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Context
 from bot import Advinas
-from dateutil import parser
 from math import floor, ceil
 from typing import Union
 from exts.database import Database
+from infinitode.models import Leaderboard, Score
 from common.images import Images
 from common.views import Paginator, ScorePaginator
 from common.source import LBSource, ScoreLBSource
@@ -58,10 +58,10 @@ class Inf(slash_util.Cog):
     @commands.command(name='score', aliases=['s'])
     async def score(self, ctx: Union[Context, slash_util.Context], level: str):
         level = get_level(self.LEVELS, level)
-        normal = (await self.bot.API.getLeaderboards(mapname=level))['leaderboards']
-        endless = (await self.bot.API.getLeaderboards(mapname=level, difficulty='ENDLESS_I'))['leaderboards']
+        normal = await self.bot.API.leaderboards(level)
+        endless = await self.bot.API.leaderboards(level, difficulty='ENDLESS_I')
         await log(ctx)
-        await ScorePaginator(source=ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Score)', ctx)).start(ctx=ctx)
+        await ScorePaginator(ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Score)', ctx)).start(ctx)
 
     # Wave command
     @slash_util.slash_command(name='waves')
@@ -73,10 +73,10 @@ class Inf(slash_util.Cog):
     @commands.command(name='waves', aliases=['w'])
     async def waves(self, ctx: Union[Context, slash_util.Context], level: str):
         level = get_level(self.LEVELS, level)
-        normal = (await self.bot.API.getLeaderboards(mapname=level, mode='waves'))['leaderboards']
-        endless = (await self.bot.API.getLeaderboards(mapname=level, mode='waves', difficulty='ENDLESS_I'))['leaderboards']
+        normal = await self.bot.API.leaderboards(level, mode='waves')
+        endless = await self.bot.API.leaderboards(level, mode='waves', difficulty='ENDLESS_I')
         await log(ctx)
-        await ScorePaginator(source=ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Waves)', ctx)).start(ctx=ctx)
+        await ScorePaginator(ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Waves)', ctx)).start(ctx)
 
     # Season command
     @slash_util.slash_command(name='season')
@@ -87,10 +87,9 @@ class Inf(slash_util.Cog):
 
     @commands.command(name='season', aliases=['sl', 'seasonal'])
     async def season(self, ctx: Union[Context, slash_util.Context]):
-        data = await self.bot.API.seasonal_leaderboard()
-        season, players, leaderboard = data['season'], data['NORMAL']['player_count'], data['NORMAL']['leaderboards']
+        lb = await self.bot.API.seasonal_leaderboard()
         await log(ctx)
-        await Paginator(source=LBSource(leaderboard, f'Season {season} Leaderboards', ctx, headline=f'Player Count: {players}')).start(ctx=ctx)
+        await Paginator(LBSource(lb, f'Season {lb.season} Leaderboards', ctx, headline=f'Player Count: {lb.total}')).start(ctx)
 
     # Dailyquest command
     @slash_util.slash_command(name='dailyquest')
@@ -101,18 +100,21 @@ class Inf(slash_util.Cog):
 
     @commands.command(name='dailyquest', aliases=['dq'])
     async def dailyquest(self, ctx: Union[Context, slash_util.Context], date: str = None):
-        if date:
+        lb, date = await self.bot.API.daily_quest_leaderboards(date, warning=False, return_date=True)
+        if lb.is_empty:
+            print(date)
+            entry = Database.find_by_key(self.bot.DB.dailyquests, date)
             try:
-                date = parser.parse(date, ignoretz=True).strftime('%Y-%m-%d')
+                scores = entry.get(date, None)
+                lb = Leaderboard('', '', '', '', '', date=date)
+                for score in scores:
+                    lb._append(Score('', '', '', '', **score))
             except:
-                date = discord.utils.utcnow().strftime('%Y-%m-%d')
-        leaderboard = (await self.bot.API.getDailyQuestLeaderboards(date=date))['leaderboards']
-        if not leaderboard:
-            entry = Database.find(self.bot.DB.dailyquests, date)
-            if entry:
-                leaderboard = entry.get(date, [])
+                await log(ctx, success=False, reason='Invalid date provided.')
+                return await answer(ctx, content='Could not find anything for that date. Sorry.')
+
         await log(ctx)
-        await Paginator(source=LBSource(leaderboard, f'Dailyquest Leaderboards ({date})', ctx=ctx)).start(ctx)
+        await Paginator(LBSource(lb, f'Dailyquest Leaderboards ({date})', ctx)).start(ctx)
 
     # Level command
     @slash_util.slash_command(name='level')
@@ -139,9 +141,9 @@ class Inf(slash_util.Cog):
                                        ).add_field(name="Difficulty", value=f"{data['difficulty']}%", inline=True
                                                    ).add_field(name="Enemies", value=enemy_emojis, inline=True)
         try:
-            rt_lb = await self.bot.API.getRuntimeLeaderboards(level, "U-T68Z-T3JV-HK3DJY")
+            rt_lb = await self.bot.API.runtime_leaderboards(level, "U-T68Z-T3JV-HK3DJY")
             em.add_field(name="Top 1% Threshold", value="{:,}".format(
-                int(rt_lb['leaderboards'][200]['score'])))
+                int(rt_lb[200].score)))
         except:
             pass
         if base:
@@ -185,12 +187,12 @@ class Inf(slash_util.Cog):
 
         description = f'Coins: `{coins}`\nDifficulty: `{difficulty}`\nKeepForMax: `{keep}`'
         if level:
-            description += f'\nLevel: {level}'
+            description += f'\n`Level: {level}`'
 
         em = discord.Embed(
             title="Bounty Calculator", description=description, colour=60415
         ).set_footer(
-            text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url
+            text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url
         ).add_field(
             name="Bounty", value=codeblock('\n'.join(lBounties)), inline=True
         ).add_field(
@@ -214,7 +216,7 @@ class Inf(slash_util.Cog):
         dc_col, nn_col = self.bot.DB.discordnames, self.bot.DB.nicknames
         pl, player = None, None
         if not playerid:
-            pl = Database.find(dc_col, ctx.author.id
+            pl = Database.find(dc_col, str(ctx.author.id)
                                ) or Database.find(nn_col, ctx.author.display_name
                                                   ) or Database.find(nn_col, ctx.author.name)
             if pl:
@@ -238,14 +240,14 @@ class Inf(slash_util.Cog):
                 if not pl:
                     member = discord.utils.get(self.bot.users, name=playerid)
                     if member:
-                        pl = Database.find(dc_col, member.id)
+                        pl = Database.find(dc_col, str(member.id))
                     if not pl:
                         await log(ctx, success=False, reason='The provided player is invalid.')
                         return await answer(ctx, content='Could not find player. Check for spelling mistakes or try using '
                                             'the U- playerid from your profile page (Top left in the main menu).')
         if not player:
             player = await self.bot.API.player(playerid=next(iter(pl)))
-        data = {player.id: {'name': player.name, 'key': player.name.lower()}}
+        data = {player.playerid: {'name': player.nickname, 'key': player.nickname.lower()}}  # nopep8
         Database.update(nn_col, data=data)
         try:
             r = await self.bot.SESSION.get(player.avatar_link)
@@ -253,10 +255,12 @@ class Inf(slash_util.Cog):
             avatar_bytes = await r.read()
         except:
             avatar_bytes = None
+        await player._get_daily_quest(self.bot.API)
+        await player._get_skill_point(self.bot.API)
 
         final_buffer = await self.bot.loop.run_in_executor(None, self.images.profile_gen, player, avatar_bytes, ctx.author.id)
 
-        file = discord.File(filename=f'{player.id}.png', fp=final_buffer)
+        file = discord.File(filename=f'{player.playerid}.png', fp=final_buffer)
 
         await answer(ctx, file=file)
         await log(ctx)

@@ -29,6 +29,10 @@ async def answer(ctx, **kwargs):
         return await ctx.send(**kwargs)
 
 
+def codeblock(instring: str) -> str:
+    return '```\n' + instring + '```'
+
+
 async def log(ctx, success: bool = True, reason: str = None):
     '''Logs the usage of commands. Should be called at the end of any command.'''
 
@@ -108,9 +112,13 @@ async def trace(ctx, err: Exception):
         command = ctx.command.lower()
     tb = f'``' + ' '.join(['Error occured in command', command, '\n']) + ''.join(
         traceback.format_exception(type(err), err, err.__traceback__)) + '``'
-    if len(tb) > 1020:
+    if len(tb) > 1990:
+        await ctx.bot._trace.send(codeblock(tb[2:1990]))
+        await ctx.bot._trace.send(codeblock(tb[1990:]))
+        tb = 'long lol'
+    elif len(tb) > 1000:
         await ctx.bot._trace.send(tb)
-        tb = tb[:1015] + '...\n``'
+        tb = tb[:1000]
     em = Embed(
         title=f"**{command.title()} Command** used in `{ctx.channel}`", colour=Color.red()
     ).set_footer(
@@ -136,10 +144,6 @@ def load_json(filename):
 def write_json(filename, contents):
     with open(filename, 'w') as outfile:
         json.dump(contents, outfile, ensure_ascii=True, indent=4)
-
-
-def codeblock(instring: str) -> str:
-    return '```\n' + instring + '```'
 
 
 def tablify(indict: dict) -> str:

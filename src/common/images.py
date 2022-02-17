@@ -1,6 +1,6 @@
 import copy
 import os
-from common.api import Player
+from infinitode.models import Player
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 # This whole file is a mess.
@@ -105,8 +105,8 @@ class Images():
         bg.paste(pfp, (16, 16))
         write = ImageDraw.Draw(bg)
         font_progress = self.font_progress
-        write.text((568, 47), player.name, anchor="lt", font=font_progress)
-        write.text((568, 120), player.id, anchor="lt", font=font_progress)
+        write.text((568, 47), player.nickname, anchor="lt", font=font_progress)
+        write.text((568, 120), player.playerid, anchor="lt", font=font_progress)  # nopep8
         write.text((569, 192), "{:,}".format(
             player.total_score), anchor="lt", font=font_progress)
         write.text((1088, 192), "#{:,}".format(
@@ -121,22 +121,22 @@ class Images():
 
             level_score = player.score(level)
             write.text((scores_x, scores_y), "{:,}".format(
-                level_score["score"]), anchor="rs", font=self.font_scores)
+                level_score.score), anchor="rs", font=self.font_scores)
             write.text((scores_x2, scores_y), "#{:,}".format(
-                int(level_score["rank"])), anchor="rs", font=self.font_scores)
+                int(level_score.rank)), anchor="rs", font=self.font_scores)
             if level == "zecred":
                 scores_y += 128
-                level_score = player.dailyquest
+                level_score = player.daily_quest
                 write.text((scores_x, scores_y), "{:,}".format(
-                    level_score["score"]), anchor="rs", font=self.font_scores)
+                    level_score.score), anchor="rs", font=self.font_scores)
                 write.text((scores_x2, scores_y), "#{:,}".format(
-                    int(level_score["rank"])), anchor="rs", font=self.font_scores)
+                    int(level_score.rank)), anchor="rs", font=self.font_scores)
                 scores_y += 64
-                level_score = player.skillpoint
+                level_score = player.skill_point
                 write.text((scores_x, scores_y), "{:,}".format(
-                    level_score["score"]), anchor="rs", font=self.font_scores)
+                    level_score.score), anchor="rs", font=self.font_scores)
                 write.text((scores_x2, scores_y), "#{:,}".format(
-                    int(level_score["rank"])), anchor="rs", font=self.font_scores)
+                    int(level_score.rank)), anchor="rs", font=self.font_scores)
                 scores_y = (698 - (5 * 128))
                 scores_x += (128 * 3)
                 scores_x2 += (128 * 3)
@@ -206,7 +206,7 @@ class Images():
         write.text((350, 568), "Issues: {:,}".format(
             player.issues), anchor="lt", font=self.font_rpl)
         write.text(
-            (1135, 568), f"Created At: {player.created_at}", anchor="rt", font=self.font_rpl)
+            (1135, 568), f"Created At: {player.created_at.strftime('%d.%m.%Y')}", anchor="rt", font=self.font_rpl)
         write.text((854, 435), "{:} / {:}".format(player.xp,
                    player.xp_max), anchor="rt", font=self.font_lvl_small)
         write.rectangle(((656, 474), (900, 492)), fill="#3f3f3f")

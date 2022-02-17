@@ -1,28 +1,25 @@
 import discord
 from discord.ext import menus
 from common.utils import codeblock
+from infinitode.models import Leaderboard
 
 
 class LBSource(menus.ListPageSource):
-    def __init__(self, data, title: str, ctx, headline: str = None):
+    def __init__(self, data: Leaderboard, title: str, ctx, headline: str = None):
         self.title = title
         self.headline = headline
         self.ctx = ctx
         super().__init__(data, per_page=20)
 
-    async def format_page(self, menu, entries):
-        offset = menu.current_page * self.per_page
-        lines = [self.headline] if self.headline else []
-        for r, p in enumerate(entries, start=offset):
-            lines.append('#{:<5} {:<22} {:>0,}'.format(r+1, p['nickname'] if len(
-                p['nickname']) < 21 else f"{p['nickname'][:19]}...", p['score']))
-        description = codeblock('\n'.join(lines))
+    async def format_page(self, menu, entries: Leaderboard):
+        description = codeblock(
+            (f'{self.headline}\n' if self.headline else '') + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
                              ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.avatar.url)
 
 
 class ScoreLBSource(LBSource):
-    def __init__(self, data, endless_data, title: str, ctx):
+    def __init__(self, data: Leaderboard, endless_data: Leaderboard, title: str, ctx):
         super().__init__(data, title=title, ctx=ctx)
         self.endless_entries = endless_data
 
@@ -31,20 +28,11 @@ class ScoreLBSource(LBSource):
             entries = self.entries
         else:
             entries = self.endless_entries
-        if self.per_page == 1:
-            return entries[page_number]
-        else:
-            base = page_number * self.per_page
-            ret = entries[base:base + self.per_page]
-            return ret
+        base = page_number * self.per_page
+        return entries[base:base + self.per_page]
 
-    async def format_page(self, menu, entries):
-        offset = menu.current_page * self.per_page
+    async def format_page(self, menu, entries: Leaderboard):
         mode = 'Endless' if menu.endless else 'Normal'
-        lines = [f'{mode} mode:']
-        for r, p in enumerate(entries, start=offset):
-            lines.append('#{:<5} {:<22} {:>0,}'.format(r+1, p['nickname'] if len(
-                p['nickname']) < 21 else f"{p['nickname'][:19]}...", p['score']))
-        description = codeblock('\n'.join(lines))
+        description = codeblock(f'{mode} mode:\n' + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
                              ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.avatar.url)

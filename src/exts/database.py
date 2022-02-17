@@ -18,6 +18,7 @@ class Database(commands.Cog):
 
     async def ready(self):
         await self.bot.wait_until_ready()
+        # make sure the DB is ready
         await asyncio.sleep(1)
         self._discords, self._nicks, self._dailyquests = self.bot.DB.discordnames, self.bot.DB.nicknames, self.bot.DB.dailyquests
         self.save_dailyquest_leaderboard.start()
@@ -26,6 +27,10 @@ class Database(commands.Cog):
     @staticmethod
     def find(col: Collection, data):
         return col.find_one({"$text": {"$search": str(data)}}, {'_id': 0})
+
+    @staticmethod
+    def find_by_key(col: Collection, data):
+        return col.find_one({str(data): {'$exists': True}})
 
     @staticmethod
     def update(col: Collection, data):
@@ -37,21 +42,20 @@ class Database(commands.Cog):
             col.update_one(filter=data,
                            update={"$set": data}, upsert=True)
 
-    # this call is ok. Rainys server allow it just fine
+    # this call is ok. Rainys server allows it just fine
     async def get_all_leaderboards(self) -> dict[str: list[dict]]:
         ret = dict()
         for level in self._levels:
-            ret[level] = (await self.bot.API.getLeaderboards(level))['leaderboards']
+            ret[level] = await self.bot.API.leaderboards(level)
         return ret
 
     # this however is a dumb thing to do. It will make 12600 database calls and stop the bots for several minutes.
-    # I will fix it soon.
+    # I will fix it soon-ish.
     def _get_all_players(self, all_leaderboards: dict) -> set[dict[str: str]]:
         players = list()
         for _, leaderboard in all_leaderboards.items():
-            for player in leaderboard:
-                players.append({player['playerid']: {
-                               'name': player['nickname'], 'key': player['nickname'].lower()}})
+            for score in leaderboard:
+                players.append({score.playerid: {'name': score.nickname, 'key': score.nickname.lower()}})  # nopep8
         self._add_new_players(players)
         return players
 
@@ -66,8 +70,8 @@ class Database(commands.Cog):
         # if we saved the current day we could miss some late players
         date = (discord.utils.utcnow() -
                 datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        leaderboards = (await self.bot.API.getDailyQuestLeaderboards(date=date))['leaderboards']
-        data = {date: leaderboards}
+        leaderboards = await self.bot.API.daily_quest_leaderboards(date, raw=True)
+        data = {date: leaderboards['leaderboards']}
         self.update(self._dailyquests, data=data)
         print('updated')
 

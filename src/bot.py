@@ -10,7 +10,7 @@ from discord.ext.commands import (
     MissingRequiredArgument,
     when_mentioned_or
 )
-from common.api import APIData, APIError
+import infinitode as inf
 from common.utils import (
     BadChannel,
     BadLevel,
@@ -49,7 +49,7 @@ class Advinas(Bot):
 
     async def on_ready(self) -> None:
         self.BOT_CHANNELS: list[int] = config["bot_channels"]
-        self.API = APIData(session=self.SESSION)
+        self.API = inf.Session(session=self.SESSION)
         # Switching to new DB soon ??
         self.DB = MongoClient(config['mongo']).inf2
         self.online_since = utcnow()
@@ -78,7 +78,7 @@ class Advinas(Bot):
         elif isinstance(err, BadLevel):
             await log(ctx, success=False, reason='Invalid Level provided.')
             content = 'The provided level is invalid.'
-        elif isinstance(err, APIError):
+        elif isinstance(err, inf.APIError):
             await log(ctx, success=False, reason=err)
             content = err
         elif isinstance(err, MissingRequiredArgument):
