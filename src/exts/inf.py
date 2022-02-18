@@ -230,7 +230,7 @@ class Inf(slash_util.Cog):
             except:
                 pass
             else:
-                pl = {player.id: "<3"}
+                pl = {player.playerid: "<3"}
         if not player:
             pl = Database.find(nn_col, playerid)
             if not pl:
