@@ -31,7 +31,7 @@ class Inf(slash_util.Cog):
         self.bot: Advinas
         self.mention_regex = re.compile(r'<@!?([0-9]+)>')
         self.playerid_regex = re.compile(
-            r'U-([A-Za-z0-9]{4}-){2}[A-Za-z0-9]{6}')
+            r'U-([A-Z0-9]{4}-){2}[A-Z0-9]{6}')
         inf = load_json("data/inf.json")
         self.LEVELS: list[str] = list(inf['levels'].keys())
         self.LEVEL_INFO: dict[str: dict] = inf['levels']

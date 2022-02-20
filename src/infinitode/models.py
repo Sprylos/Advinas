@@ -81,7 +81,7 @@ class Leaderboard:
     @property
     def is_empty(self):
         '''Wether there are scores saved in this leaderboard or not.'''
-        return not len(self._scores)
+        return not self._scores
 
     def print_scores(self):
         '''Prints out the result of format_scores().'''
