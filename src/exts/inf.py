@@ -1,4 +1,5 @@
 import re
+import time
 import slash_util
 import discord
 from discord.ext import commands
@@ -102,7 +103,6 @@ class Inf(slash_util.Cog):
     async def dailyquest(self, ctx: Union[Context, slash_util.Context], date: str = None):
         lb, date = await self.bot.API.daily_quest_leaderboards(date, warning=False, return_date=True)
         if lb.is_empty:
-            print(date)
             entry = Database.find_by_key(self.bot.DB.dailyquests, date)
             try:
                 scores = entry.get(date, None)
@@ -127,9 +127,8 @@ class Inf(slash_util.Cog):
     @commands.command(name='level', aliases=['l'])
     async def level(self, ctx: Union[Context, slash_util.Context], level: str):
         level = get_level(self.LEVELS, level)
-        if level.startswith('dq'):
-            level = level.lower()  # bad quick fix
-        data = self.LEVEL_INFO[level]
+        data = self.LEVEL_INFO[level.lower(
+        ) if level.startswith('DQ') else level]
         enemy_emojis = "".join(
             [f'<:enemy_{i.lower()}:{self.EMOJIS[f"enemy_{i.lower()}"]}>' for i in data["enemies"]])
         enemy_emojis = enemy_emojis or "None"
@@ -138,14 +137,15 @@ class Inf(slash_util.Cog):
         base = tablify(data["base"])
         quests = tablify(data["quests"])
 
-        em = discord.Embed(title=f"Level {level} Info", colour=60415
-                           ).set_image(url=f"attachment://{filename}"
-                                       ).add_field(name="Difficulty", value=f"{data['difficulty']}%", inline=True
-                                                   ).add_field(name="Enemies", value=enemy_emojis, inline=True)
+        em = discord.Embed(title=f"Level {level} Info", colour=60415)
+        em.set_image(url=f"attachment://{filename}")
+        em.add_field(name="Difficulty", value=f"{data['difficulty']}%", inline=True)  # nopep8
+        em.add_field(name="Enemies", value=enemy_emojis, inline=True)
+        em.set_footer(
+            text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url)
         try:
             rt_lb = await self.bot.API.runtime_leaderboards(level, "U-T68Z-T3JV-HK3DJY")
-            em.add_field(name="Top 1% Threshold", value="{:,}".format(
-                int(rt_lb[200].score)))
+            em.add_field(name="Top 1% Threshold", value="{:,}".format(int(rt_lb[200].score)))  # nopep8
         except:
             pass
         if base:
@@ -189,7 +189,7 @@ class Inf(slash_util.Cog):
 
         description = f'Coins: `{coins}`\nDifficulty: `{difficulty}`\nKeepForMax: `{keep}`'
         if level:
-            description += f'\n`Level: {level}`'
+            description += f'\nLevel: `{level}`'
 
         em = discord.Embed(
             title="Bounty Calculator", description=description, colour=60415
@@ -208,7 +208,7 @@ class Inf(slash_util.Cog):
     # Profile command
     @slash_util.slash_command(name='profile')
     async def _profile(self, ctx: slash_util.Context, playerid: str = None):
-        '''Shows your in game profile in an image.'''
+        '''Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).'''
         await self.cog_check(ctx)
         await ctx.defer()
         await self.profile(ctx, playerid=playerid)
@@ -217,6 +217,7 @@ class Inf(slash_util.Cog):
     async def profile(self, ctx: Union[Context, slash_util.Context], playerid: str = None):
         dc_col, nn_col = self.bot.DB.discordnames, self.bot.DB.nicknames
         pl, player = None, None
+        start_time = time.time()
         if not playerid:
             pl = Database.find(dc_col, str(ctx.author.id)
                                ) or Database.find(nn_col, ctx.author.display_name
@@ -263,8 +264,7 @@ class Inf(slash_util.Cog):
         final_buffer = await self.bot.loop.run_in_executor(None, self.images.profile_gen, player, avatar_bytes, ctx.author.id)
 
         file = discord.File(filename=f'{player.playerid}.png', fp=final_buffer)
-
-        await answer(ctx, file=file)
+        await answer(ctx, content=f'Finished in {time.time() - start_time:0.3f}s', file=file)
         await log(ctx)
 
 

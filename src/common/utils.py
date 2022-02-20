@@ -173,6 +173,10 @@ def get_level_bounty(level_diffs: list, level: str, difficulty: float, bounties:
         difficulty = 100
     elif difficulty > 4500:
         difficulty = 4500
+    if bounties > 12:
+        bounties = 12
+    elif bounties < 1:
+        bounties = 1
     if not level:
         return 'No level provided', difficulty, bounties, coins
     try:
