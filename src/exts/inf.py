@@ -127,6 +127,8 @@ class Inf(slash_util.Cog):
     @commands.command(name='level', aliases=['l'])
     async def level(self, ctx: Union[Context, slash_util.Context], level: str):
         level = get_level(self.LEVELS, level)
+        if level.startswith('dq'):
+            level = level.lower()  # bad quick fix
         data = self.LEVEL_INFO[level]
         enemy_emojis = "".join(
             [f'<:enemy_{i.lower()}:{self.EMOJIS[f"enemy_{i.lower()}"]}>' for i in data["enemies"]])
@@ -230,7 +232,7 @@ class Inf(slash_util.Cog):
             except:
                 pass
             else:
-                pl = {player.id: "<3"}
+                pl = {player.playerid: "<3"}
         if not player:
             pl = Database.find(nn_col, playerid)
             if not pl:

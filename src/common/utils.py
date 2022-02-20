@@ -43,7 +43,7 @@ async def log(ctx, success: bool = True, reason: str = None):
         command = ctx.command.lower()
     try:
         # this works for normal Context objects
-        args = ctx.args[2:]
+        args = [str(arg) for arg in ctx.args[2:]]
         if args and args[0] != None:
             content = ' '.join(args)
         else:
@@ -90,7 +90,7 @@ async def trace(ctx, err: Exception):
     '''Called when an unhandled Exception occurs to inform me about the issue.'''
     try:
         # this works for normal Context objects
-        args = ctx.args[2:]
+        args = [str(arg) for arg in ctx.args[2:]]
         if args and args[0] != None:
             content = ' '.join(args)
         else:

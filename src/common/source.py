@@ -15,7 +15,7 @@ class LBSource(menus.ListPageSource):
         description = codeblock(
             (f'{self.headline}\n' if self.headline else '') + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
-                             ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.avatar.url)
+                             ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.display_avatar.url)
 
 
 class ScoreLBSource(LBSource):
@@ -35,4 +35,4 @@ class ScoreLBSource(LBSource):
         mode = 'Endless' if menu.endless else 'Normal'
         description = codeblock(f'{mode} mode:\n' + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
-                             ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.avatar.url)
+                             ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.display_avatar.url)
