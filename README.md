@@ -9,9 +9,9 @@ Add the bot to your own server using [this link](https://discord.com/api/oauth2/
 ## Future Plans
 
 -   Customizable Profile Command (Background, Grid, etc.)
--   Music Player within Discord Voice Channels
+-   ~~Music Player within Discord Voice Channels~~ ✅ (Mar 08th 2022)
 -   Fully functional Tag System
--   ~~Seperate Infinitode API package~~ ✅
+-   ~~Seperate Infinitode API package~~ ✅ (Feb 17th 2022)
 -   Automatic Run tracking and stats commands
 -   Database optimizations and performance
 

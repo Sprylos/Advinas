@@ -1,3 +1,4 @@
+import time
 from aiohttp import ClientSession
 from slash_util import Bot
 from discord import Activity, ActivityType, Intents
@@ -10,12 +11,12 @@ from discord.ext.commands import (
     MissingRequiredArgument,
     when_mentioned_or
 )
+import config
 import infinitode as inf
 from common.utils import (
     BadChannel,
     BadLevel,
     answer,
-    load_json,
     log,
     trace
 )
@@ -27,15 +28,14 @@ exts = (
     'database',
     'inf',
     'misc',
-    'mod'
+    'mod',
+    'music',
 )
-
-config = load_json("data/config.json")
 
 
 class Advinas(Bot):
     def __init__(self, prefix: str = None) -> None:
-        super().__init__(command_prefix=when_mentioned_or(prefix or 'a!'), activity=Activity(type=ActivityType.watching, name="You | /invite | v2.2"),
+        super().__init__(command_prefix=when_mentioned_or(prefix or 'a!'), activity=Activity(type=ActivityType.watching, name="You | /invite | v2.3"),
                          help_command=None, case_insensitive=True, intents=Intents.all())
 
         # load extensions
@@ -48,17 +48,17 @@ class Advinas(Bot):
             await super().start(*args, **kwargs)
 
     async def on_ready(self) -> None:
-        self.BOT_CHANNELS: list[int] = config["bot_channels"]
+        self.BOT_CHANNELS: list[int] = config.bot_channels
         self.API = inf.Session(session=self.SESSION)
         # Switching to new DB soon ??
-        self.DB = MongoClient(config['mongo']).inf2
+        self.DB = MongoClient(config.mongo).inf2
         self.online_since = utcnow()
         self.loop.create_task(self.ready())
 
     async def ready(self):
         await self.wait_until_ready()
-        self._log = await self.fetch_channel(config["log_channel"])
-        self._trace = await self.fetch_channel(config["trace_channel"])
+        self._log = await self.fetch_channel(config.log_channel)
+        self._trace = await self.fetch_channel(config.trace_channel)
         print("online")
 
     async def on_command_error(self, ctx, err: Exception) -> None:
@@ -82,8 +82,8 @@ class Advinas(Bot):
             await log(ctx, success=False, reason=err)
             content = err
         elif isinstance(err, MissingRequiredArgument):
-            await log(ctx, success=False, reason='A required argument is missing.')
-            content = 'A required argument is missing.'
+            await log(ctx, success=False, reason=err)
+            content = err
         else:
             await trace(ctx, err=err)
             content = 'Something went really wrong and the issue has been reported. Please try again later.'
@@ -92,4 +92,8 @@ class Advinas(Bot):
 
 if __name__ == '__main__':
     bot = Advinas()
-    bot.run(config["token"])
+
+    from subprocess import Popen
+    process = Popen(['java', '-jar', 'Lavalink.jar'])
+    time.sleep(15)
+    bot.run(config.token)

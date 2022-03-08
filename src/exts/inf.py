@@ -28,8 +28,8 @@ from common.utils import (
 
 class Inf(slash_util.Cog):
     def __init__(self, bot: Advinas):
-        super().__init__(bot)
-        self.bot: Advinas
+        super().__init__()
+        self.bot: Advinas = bot
         self.mention_regex = re.compile(r'<@!?([0-9]+)>')
         self.playerid_regex = re.compile(
             r'U-([A-Z0-9]{4}-){2}[A-Z0-9]{6}')
@@ -56,7 +56,7 @@ class Inf(slash_util.Cog):
         await self.cog_check(ctx)
         await self.score(ctx, level=level)
 
-    @commands.command(name='score', aliases=['s'])
+    @commands.command(name='score', aliases=['sc'])
     async def score(self, ctx: Union[Context, slash_util.Context], level: str):
         level = get_level(self.LEVELS, level)
         normal = await self.bot.API.leaderboards(level)
@@ -84,6 +84,7 @@ class Inf(slash_util.Cog):
     async def _season(self, ctx: slash_util.Context):
         '''Shows the top 100 players of the season.'''
         await self.cog_check(ctx)
+        await ctx.defer()
         await self.season(ctx)
 
     @commands.command(name='season', aliases=['sl', 'seasonal'])
@@ -213,7 +214,7 @@ class Inf(slash_util.Cog):
         await ctx.defer()
         await self.profile(ctx, playerid=playerid)
 
-    @commands.command(name='profile', aliases=['p'])
+    @commands.command(name='profile', aliases=['prof'])
     async def profile(self, ctx: Union[Context, slash_util.Context], playerid: str = None):
         dc_col, nn_col = self.bot.DB.discordnames, self.bot.DB.nicknames
         pl, player = None, None

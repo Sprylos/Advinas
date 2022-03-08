@@ -737,7 +737,7 @@
             "enemies": ["REGULAR", "STRONG", "TOXIC", "ICY", "FIGHTER", "BOSS"],
             "quests": {
                 "Tower Crusher Upgrade Price": "- 3%",
-                "Tower Crusher A Increased Capacity": "+ 1%"
+                "Tower Crusher A Increased Capacity": "+ 1"
             },
             "base": {},
             "music": "",
