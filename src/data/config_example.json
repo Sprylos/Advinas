@@ -1,7 +1,0 @@
-{
-    "token": "token",
-    "log_channel": "12345678987654321",
-    "trace_channel": "12345678987654321",
-    "mongo": "mongodb+srv://...",
-    "bot_channels": ["987654321987654321", "98765432123456789"]
-}

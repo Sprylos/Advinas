@@ -10,8 +10,8 @@ from typing import Union
 
 class Misc(slash_util.Cog):
     def __init__(self, bot: Advinas):
-        self.bot: Advinas
-        super().__init__(bot)
+        self.bot: Advinas = bot
+        super().__init__()
 
     async def cog_check(self, ctx) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:

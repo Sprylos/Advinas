@@ -2,10 +2,13 @@ __pycache__/
 custom/
 deprecated/
 dump/
+logs/
 config.*
 mod.py
 admin.py
 temp.*
 *.spry
+*.jar
+*.yml
 _*.*
 !__init__.py
