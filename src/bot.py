@@ -1,11 +1,11 @@
 import time
 from aiohttp import ClientSession
-from slash_util import Bot
 from discord import Activity, ActivityType, Intents
 from discord.ext.commands.errors import NotOwner
 from discord.utils import utcnow
-from pymongo import MongoClient
+from motor import motor_asyncio
 from discord.ext.commands import (
+    Bot,
     CommandNotFound,
     CommandInvokeError,
     MissingRequiredArgument,
@@ -38,21 +38,20 @@ class Advinas(Bot):
         super().__init__(command_prefix=when_mentioned_or(prefix or 'a!'), activity=Activity(type=ActivityType.watching, name="You | /invite | v2.3"),
                          help_command=None, case_insensitive=True, intents=Intents.all())
 
-        # load extensions
-        for ext in exts:
-            self.load_extension(f'exts.{ext}')
-
     async def start(self, *args, **kwargs):
         # this is simply to make sure the session gets closed after the bot shuts down
         async with ClientSession(loop=self.loop) as self.SESSION:
             await super().start(*args, **kwargs)
 
-    async def on_ready(self) -> None:
+    async def setup_hook(self):
+        for ext in exts:
+            await self.load_extension(f'exts.{ext}')
         self.BOT_CHANNELS: list[int] = config.bot_channels
         self.API = inf.Session(session=self.SESSION)
-        # Switching to new DB soon ??
-        self.DB = MongoClient(config.mongo).inf2
+        self.DB: motor_asyncio.AsyncIOMotorDatabase = motor_asyncio.AsyncIOMotorClient(config.mongo).inf2  # nopep8
         self.online_since = utcnow()
+
+    async def on_ready(self) -> None:
         self.loop.create_task(self.ready())
 
     async def ready(self):

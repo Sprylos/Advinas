@@ -6,6 +6,7 @@ import random
 from discord.ext import commands
 from contextlib import suppress
 
+from bot import Advinas
 from common.utils import BadChannel, answer
 from config import host, port, password
 
@@ -38,7 +39,7 @@ class Player(pomice.Player):
         else:
             description = f"[{track.title}]({track.uri}) [{track.requester.mention}]"
         embed = discord.Embed(title=f"Now playing", description=description)
-        embed.set_thumbnail(track.thumbnail)
+        embed.set_thumbnail(url=track.thumbnail)
         self.controller = await self.context.send(embed=embed)
 
     async def teardown(self):
@@ -148,7 +149,7 @@ class Music(commands.Cog):
         else:
             description = f"[{track.title}]({track.uri}) [{track.requester.mention}]"
         embed = discord.Embed(title=f"Now playing", description=description)
-        embed.set_thumbnail(track.thumbnail)
+        embed.set_thumbnail(url=track.thumbnail)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['q'])
@@ -158,7 +159,7 @@ class Music(commands.Cog):
 
         if not player.is_connected:
             return
-        if player.queue.qsize() < 3:
+        if player.queue.qsize() < 1:
             return await answer(ctx, content='The queue is empty. Add some songs to view the queue.')
         songs = str()
         for c, track in enumerate(player.queue._queue):
@@ -266,5 +267,5 @@ class Music(commands.Cog):
         await answer(ctx, content=f'Set the volume to **{vol}**%')
 
 
-def setup(bot):
-    bot.add_cog(Music(bot))
+async def setup(bot: Advinas):
+    await bot.add_cog(Music(bot))

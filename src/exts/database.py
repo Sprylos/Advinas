@@ -1,11 +1,13 @@
 import asyncio
 import datetime
 import discord
+
+from typing import Mapping
+from motor.motor_asyncio import AsyncIOMotorCollection as Collection
 from discord.ext import commands, tasks
+
 from bot import Advinas
 from common.utils import load_json
-from typing import Mapping
-from pymongo.collection import Collection
 
 
 class Database(commands.Cog):
@@ -25,22 +27,22 @@ class Database(commands.Cog):
         # self.eval_leaderboards.start() # don't
 
     @staticmethod
-    def find(col: Collection, data):
-        return col.find_one({"$text": {"$search": str(data)}}, {'_id': 0})
+    async def find(col: Collection, data):
+        return await col.find_one({"$text": {"$search": str(data)}}, {'_id': 0})
 
     @staticmethod
-    def find_by_key(col: Collection, data):
-        return col.find_one({str(data): {'$exists': True}})
+    async def find_by_key(col: Collection, data):
+        return await col.find_one({str(data): {'$exists': True}})
 
     @staticmethod
-    def update(col: Collection, data):
+    async def update(col: Collection, data):
         if not isinstance(data, Mapping):
             for document in data:
-                col.update_one(filter=document,
-                               update={"$set": document}, upsert=True)
+                await col.update_one(filter=document,
+                                     update={"$set": document}, upsert=True)
         else:
-            col.update_one(filter=data,
-                           update={"$set": data}, upsert=True)
+            await col.update_one(filter=data,
+                                 update={"$set": data}, upsert=True)
 
     # this call is ok. Rainys server allows it just fine
     async def get_all_leaderboards(self) -> dict[str: list[dict]]:
@@ -51,17 +53,17 @@ class Database(commands.Cog):
 
     # this however is a dumb thing to do. It will make 12600 database calls and stop the bots for several minutes.
     # I will fix it soon-ish.
-    def _get_all_players(self, all_leaderboards: dict) -> set[dict[str: str]]:
+    async def _get_all_players(self, all_leaderboards: dict) -> set[dict[str: str]]:
         players = list()
         for _, leaderboard in all_leaderboards.items():
             for score in leaderboard:
                 players.append({score.playerid: {'name': score.nickname, 'key': score.nickname.lower()}})  # nopep8
-        self._add_new_players(players)
+        await self._add_new_players(players)
         return players
 
     # adds unknown players to the db so you don't always need to use the playerid on the first time
-    def _add_new_players(self, players=None):
-        return self.update(self._nicks, data=players)
+    async def _add_new_players(self, players=None):
+        return await self.update(self._nicks, data=players)
 
     # 12 hours just in case something goes wrong, we have a smaller chance of missing a day
     @tasks.loop(hours=12)
@@ -72,7 +74,7 @@ class Database(commands.Cog):
                 datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         leaderboards = await self.bot.API.daily_quest_leaderboards(date, raw=True)
         data = {date: leaderboards['leaderboards']}
-        self.update(self._dailyquests, data=data)
+        await self.update(self._dailyquests, data=data)
         print('updated')
 
     # this is very expensive.
@@ -81,9 +83,9 @@ class Database(commands.Cog):
         print('started')
         all_leaderboards = await self.get_all_leaderboards()
         print('got all')
-        self._get_all_players(all_leaderboards)
+        await self._get_all_players(all_leaderboards)
         print('synced')
 
 
-def setup(bot):
-    bot.add_cog(Database(bot))
+async def setup(bot: Advinas):
+    await bot.add_cog(Database(bot))

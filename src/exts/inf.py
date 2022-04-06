@@ -1,12 +1,14 @@
 import re
 import time
-import slash_util
 import discord
+
+from discord import Interaction, app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-from bot import Advinas
 from math import floor, ceil
 from typing import Union
+
+from bot import Advinas
 from exts.database import Database
 from infinitode.models import Leaderboard, Score
 from common.images import Images
@@ -26,7 +28,7 @@ from common.utils import (
 )
 
 
-class Inf(slash_util.Cog):
+class Inf(commands.Cog):
     def __init__(self, bot: Advinas):
         super().__init__()
         self.bot: Advinas = bot
@@ -40,7 +42,7 @@ class Inf(slash_util.Cog):
         self.EMOJIS: dict[str: int] = inf['enemy_emojis']
         self.images = Images()
 
-    async def cog_check(self, ctx) -> bool:
+    async def cog_check(self, ctx: Union[Context, Interaction]) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in self.bot.BOT_CHANNELS:
                 raise BadChannel('Command not used in an allowed channel.')
@@ -50,14 +52,15 @@ class Inf(slash_util.Cog):
         await self.bot.on_command_error(ctx, err=error)
 
     # Score command
-    @slash_util.slash_command(name='score')
-    async def _score(self, ctx: slash_util.Context, level: str):
+    @app_commands.command(name='score')
+    @app_commands.describe(level='The level which you want to see the scores of.')
+    async def _score(self, inter: Interaction, level: str):
         '''Shows the top 200 scores of the given level.'''
-        await self.cog_check(ctx)
-        await self.score(ctx, level=level)
+        await self.cog_check(inter)
+        await self.score(inter, level=level)
 
     @commands.command(name='score', aliases=['sc'])
-    async def score(self, ctx: Union[Context, slash_util.Context], level: str):
+    async def score(self, ctx: Union[Context, Interaction], level: str):
         level = get_level(self.LEVELS, level)
         normal = await self.bot.API.leaderboards(level)
         endless = await self.bot.API.leaderboards(level, difficulty='ENDLESS_I')
@@ -65,14 +68,15 @@ class Inf(slash_util.Cog):
         await ScorePaginator(ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Score)', ctx)).start(ctx)
 
     # Wave command
-    @slash_util.slash_command(name='waves')
-    async def _waves(self, ctx: slash_util.Context, level: str):
+    @app_commands.command(name='waves')
+    @app_commands.describe(level='The level which you want to see the waves of.')
+    async def _waves(self, inter: Interaction, level: str):
         '''Shows the top 200 waves of the given level.'''
-        await self.cog_check(ctx)
-        await self.waves(ctx, level=level)
+        await self.cog_check(inter)
+        await self.waves(inter, level=level)
 
     @commands.command(name='waves', aliases=['w'])
-    async def waves(self, ctx: Union[Context, slash_util.Context], level: str):
+    async def waves(self, ctx: Union[Context, Interaction], level: str):
         level = get_level(self.LEVELS, level)
         normal = await self.bot.API.leaderboards(level, mode='waves')
         endless = await self.bot.API.leaderboards(level, mode='waves', difficulty='ENDLESS_I')
@@ -80,28 +84,29 @@ class Inf(slash_util.Cog):
         await ScorePaginator(ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Waves)', ctx)).start(ctx)
 
     # Season command
-    @slash_util.slash_command(name='season')
-    async def _season(self, ctx: slash_util.Context):
+    @app_commands.command(name='season')
+    async def _season(self, inter: Interaction):
         '''Shows the top 100 players of the season.'''
-        await self.cog_check(ctx)
-        await ctx.defer()
-        await self.season(ctx)
+        await self.cog_check(inter)
+        await inter.response.defer()
+        await self.season(inter)
 
     @commands.command(name='season', aliases=['sl', 'seasonal'])
-    async def season(self, ctx: Union[Context, slash_util.Context]):
+    async def season(self, ctx: Union[Context, Interaction]):
         lb = await self.bot.API.seasonal_leaderboard()
         await log(ctx)
         await Paginator(LBSource(lb, f'Season {lb.season} Leaderboards', ctx, headline=f'Player Count: {lb.total}')).start(ctx)
 
     # Dailyquest command
-    @slash_util.slash_command(name='dailyquest')
-    async def _dailyquest(self, ctx: slash_util.Context, date: str = None):
+    @app_commands.command(name='dailyquest')
+    @app_commands.describe(level='The date which which you want to see the leaderboard of.')
+    async def _dailyquest(self, inter: Interaction, date: str = None):
         '''Shows the top dailyquest scores of today or the given the day.'''
-        await self.cog_check(ctx)
-        await self.dailyquest(ctx, date=date)
+        await self.cog_check(inter)
+        await self.dailyquest(inter, date=date)
 
     @commands.command(name='dailyquest', aliases=['dq'])
-    async def dailyquest(self, ctx: Union[Context, slash_util.Context], date: str = None):
+    async def dailyquest(self, ctx: Union[Context, Interaction], date: str = None):
         lb, date = await self.bot.API.daily_quest_leaderboards(date, warning=False, return_date=True)
         if lb.is_empty:
             entry = Database.find_by_key(self.bot.DB.dailyquests, date)
@@ -118,15 +123,16 @@ class Inf(slash_util.Cog):
         await Paginator(LBSource(lb, f'Dailyquest Leaderboards ({date})', ctx)).start(ctx)
 
     # Level command
-    @slash_util.slash_command(name='level')
-    async def _level(self, ctx: slash_util.Context, level: str):
+    @app_commands.command(name='level')
+    @app_commands.describe(level='The level which you want to see info about.')
+    async def _level(self, inter: Interaction, level: str):
         '''Shows useful information about the given level.'''
-        await self.cog_check(ctx)
-        await ctx.defer()
-        await self.level(ctx, level=level)
+        await self.cog_check(inter)
+        await inter.response.defer()
+        await self.level(inter, level=level)
 
     @commands.command(name='level', aliases=['l'])
-    async def level(self, ctx: Union[Context, slash_util.Context], level: str):
+    async def level(self, ctx: Union[Context, Interaction], level: str):
         level = get_level(self.LEVELS, level)
         data = self.LEVEL_INFO[level.lower(
         ) if level.startswith('DQ') else level]
@@ -158,14 +164,20 @@ class Inf(slash_util.Cog):
         await log(ctx)
 
     # Bounty command
-    @slash_util.slash_command(name='bounty')
-    async def _bounty(self, ctx: slash_util.Context, coins: int = 65, difficulty: float = 100, bounties: int = 7, level: str = None):
+    @app_commands.command(name='bounty')
+    @app_commands.describe(
+        coins='The maximum amount of coins a bounties can give you per wave. DEFAULT: 65',
+        difficulty='The difficulty of the map. DEFAULT: 100',
+        bounties='The amount of bounties which you want to calculate safe values for. DEFAULT: 7',
+        level='The level to take the difficulty of. Overwrites the difficulty parameter, if specified and valid.'
+    )
+    async def _bounty(self, inter: Interaction, coins: int = 65, difficulty: float = 100, bounties: int = 7, level: str = None):
         '''Calculates the optimal timings to place your bounties.'''
-        await self.cog_check(ctx)
-        await self.bounty(ctx, coins=coins, difficulty=difficulty, bounties=bounties, level=level)
+        await self.cog_check(inter)
+        await self.bounty(inter, coins=coins, difficulty=difficulty, bounties=bounties, level=level)
 
     @commands.command(name='bounty', aliases=['b'])
-    async def bounty(self, ctx: Union[Context, slash_util.Context], coins: int = 65, difficulty: float = 100, bounties: int = 7, level: str = None):
+    async def bounty(self, ctx: Union[Context, Interaction], coins: int = 65, difficulty: float = 100, bounties: int = 7, level: str = None):
         level, difficulty, bounties, coins = get_level_bounty(
             self.BOUNTY_DIFFS, level=level, difficulty=difficulty, bounties=bounties, coins=coins)
         keep = coins * 50
@@ -207,15 +219,16 @@ class Inf(slash_util.Cog):
         await log(ctx)
 
     # Profile command
-    @slash_util.slash_command(name='profile')
-    async def _profile(self, ctx: slash_util.Context, playerid: str = None):
+    @app_commands.command(name='profile')
+    @app_commands.describe(playerid='The player to show the profile of.')
+    async def _profile(self, inter: Interaction, playerid: str = None):
         '''Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).'''
-        await self.cog_check(ctx)
-        await ctx.defer()
-        await self.profile(ctx, playerid=playerid)
+        await self.cog_check(inter)
+        await inter.response.defer()
+        await self.profile(inter, playerid=playerid)
 
     @commands.command(name='profile', aliases=['prof'])
-    async def profile(self, ctx: Union[Context, slash_util.Context], playerid: str = None):
+    async def profile(self, ctx: Union[Context, Interaction], playerid: str = None):
         dc_col, nn_col = self.bot.DB.discordnames, self.bot.DB.nicknames
         pl, player = None, None
         start_time = time.time()
@@ -269,5 +282,5 @@ class Inf(slash_util.Cog):
         await log(ctx)
 
 
-def setup(bot):
-    bot.add_cog(Inf(bot))
+async def setup(bot: Advinas):
+    await bot.add_cog(Inf(bot))

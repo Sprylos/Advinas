@@ -46,7 +46,7 @@ class Score:
 
     async def fetch_player(self, session):
         '''Fetch the player using a given session (This is an API call).'''
-        return session.player(self.playerid)
+        return await session.player(self.playerid)
 
     def format_score(self):
         try:

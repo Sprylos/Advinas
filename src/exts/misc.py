@@ -1,14 +1,16 @@
-import slash_util
 import discord
+
+from discord import Interaction, app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
+from typing import Union
+
 from bot import Advinas
 from common.utils import BadChannel, answer
 from common.views import Invite
-from typing import Union
 
 
-class Misc(slash_util.Cog):
+class Misc(commands.Cog):
     def __init__(self, bot: Advinas):
         self.bot: Advinas = bot
         super().__init__()
@@ -23,24 +25,24 @@ class Misc(slash_util.Cog):
         await self.bot.on_command_error(ctx, err=error)
 
     # ping command
-    @slash_util.slash_command(name='ping')
-    async def _ping(self, ctx: slash_util.Context):
+    @app_commands.command(name='ping')
+    async def _ping(self, inter: Interaction):
         '''Shows the bot's latency.'''
-        await ctx.send(f'Latency: {round(self.bot.latency * 1000)}ms.', ephemeral=True)
+        await inter.send(f'Latency: {round(self.bot.latency * 1000)}ms.', ephemeral=True)
 
     @commands.command(name='ping')
     async def ping(self, ctx: Context):
         await ctx.reply(f'Latency: {round(self.bot.latency * 1000)}ms.', mention_author=False)
 
     # invite command
-    @slash_util.slash_command(name='invite')
-    async def _invite(self, ctx: slash_util.Context):
+    @app_commands.command(name='invite')
+    async def _invite(self, inter: Interaction):
         '''Sends a link to invite the bot to your own server.'''
-        await self.cog_check(ctx)
-        await self.invite(ctx)
+        await self.cog_check(inter)
+        await self.invite(inter)
 
     @commands.command(name='invite')
-    async def invite(self, ctx: Union[Context, slash_util.Context]):
+    async def invite(self, ctx: Union[Context, Interaction]):
         em = discord.Embed(
             description=r'[Invite The Bot](https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands)'
         ).set_footer(
@@ -48,14 +50,14 @@ class Misc(slash_util.Cog):
         await answer(ctx, embed=em, view=Invite())
 
     # uptime command
-    @slash_util.slash_command(name='uptime')
-    async def _uptime(self, ctx: slash_util.Context):
+    @app_commands.command(name='uptime')
+    async def _uptime(self, inter: Interaction):
         '''Shows the bot's uptime.'''
-        await self.cog_check(ctx)
-        await self.uptime(ctx)
+        await self.cog_check(inter)
+        await self.uptime(inter)
 
     @commands.command(name='uptime')
-    async def uptime(self, ctx: Union[Context, slash_util.Context]):
+    async def uptime(self, ctx: Union[Context, Interaction]):
         delta_uptime = discord.utils.utcnow() - self.bot.online_since
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
@@ -63,5 +65,5 @@ class Misc(slash_util.Cog):
         await answer(ctx, content=f"Online for: **{days}d, {hours}h, {minutes}m, {seconds}s.**")
 
 
-def setup(bot):
-    bot.add_cog(Misc(bot))
+async def setup(bot: Advinas):
+    await bot.add_cog(Misc(bot))
