@@ -28,7 +28,7 @@ class Misc(commands.Cog):
     @app_commands.command(name='ping')
     async def _ping(self, inter: Interaction):
         '''Shows the bot's latency.'''
-        await inter.send(f'Latency: {round(self.bot.latency * 1000)}ms.', ephemeral=True)
+        await inter.response.send_message(f'Latency: {round(self.bot.latency * 1000)}ms.', ephemeral=True)
 
     @commands.command(name='ping')
     async def ping(self, ctx: Context):
@@ -39,14 +39,18 @@ class Misc(commands.Cog):
     async def _invite(self, inter: Interaction):
         '''Sends a link to invite the bot to your own server.'''
         await self.cog_check(inter)
-        await self.invite(inter)
-
-    @commands.command(name='invite')
-    async def invite(self, ctx: Union[Context, Interaction]):
         em = discord.Embed(
             description=r'[Invite The Bot](https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands)'
         ).set_footer(
-            text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar.url)
+            text=f'Requested by {inter.user}', icon_url=inter.user.display_avatar.url)
+        await answer(inter, embed=em, view=Invite())
+
+    @commands.command(name='invite')
+    async def invite(self, ctx: Context):
+        em = discord.Embed(
+            description=r'[Invite The Bot](https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands)'
+        ).set_footer(
+            text=f'Requested by {ctx.author}', icon_url=ctx.author.display_avatar.url)
         await answer(ctx, embed=em, view=Invite())
 
     # uptime command
@@ -66,4 +70,4 @@ class Misc(commands.Cog):
 
 
 async def setup(bot: Advinas):
-    await bot.add_cog(Misc(bot))
+    await bot.add_cog(Misc(bot), guild=discord.Object(796313079708123147))

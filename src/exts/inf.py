@@ -99,7 +99,7 @@ class Inf(commands.Cog):
 
     # Dailyquest command
     @app_commands.command(name='dailyquest')
-    @app_commands.describe(level='The date which which you want to see the leaderboard of.')
+    @app_commands.describe(date='The date which which you want to see the leaderboard of.')
     async def _dailyquest(self, inter: Interaction, date: str = None):
         '''Shows the top dailyquest scores of today or the given the day.'''
         await self.cog_check(inter)
@@ -171,7 +171,7 @@ class Inf(commands.Cog):
         bounties='The amount of bounties which you want to calculate safe values for. DEFAULT: 7',
         level='The level to take the difficulty of. Overwrites the difficulty parameter, if specified and valid.'
     )
-    async def _bounty(self, inter: Interaction, coins: int = 65, difficulty: float = 100, bounties: int = 7, level: str = None):
+    async def _bounty(self, inter: Interaction, coins: int = 65, difficulty: float = 100.0, bounties: int = 7, level: str = None):
         '''Calculates the optimal timings to place your bounties.'''
         await self.cog_check(inter)
         await self.bounty(inter, coins=coins, difficulty=difficulty, bounties=bounties, level=level)
@@ -283,4 +283,4 @@ class Inf(commands.Cog):
 
 
 async def setup(bot: Advinas):
-    await bot.add_cog(Inf(bot))
+    await bot.add_cog(Inf(bot), guild=discord.Object(796313079708123147))

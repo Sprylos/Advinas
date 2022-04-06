@@ -1,5 +1,6 @@
 from discord import ButtonStyle, Interaction, ui
 from discord.ext import menus
+from discord.ext.commands import Context
 from common.source import LBSource, ScoreLBSource
 from common.utils import answer
 from typing import Union
@@ -12,12 +13,25 @@ class _Paginator(ui.View, menus.MenuPages):
         self.current_page = 0
         self.delete_message_after = delete_message_after
 
-    async def start(self, ctx, *, channel=None, wait=False):
+    async def start(self, ctx: Union[Context, Interaction], *, channel=None, wait=False):
         await self._source._prepare_once()
         self.ctx = ctx
         page = await self._source.get_page(0)
         kwargs = await self._get_kwargs_from_page(page)
-        self.message = await ctx.send(**kwargs)
+        try:
+            self.message = await ctx.send(**kwargs)
+        except AttributeError:
+            self.response = ctx.response
+            await self.response.send_message(**kwargs)
+
+    async def show_page(self, page_number):
+        page = await self._source.get_page(page_number)
+        self.current_page = page_number
+        kwargs = await self._get_kwargs_from_page(page)
+        try:
+            await self.message.edit(**kwargs)
+        except AttributeError:
+            await self.response.edit_message(**kwargs)
 
     async def _get_kwargs_from_page(self, page):
         value = await super()._get_kwargs_from_page(page)
@@ -70,13 +84,20 @@ class ScorePaginator(_Paginator):
         self.ctx = ctx
         page = await self._source.get_page(self, 0)
         kwargs = await self._get_kwargs_from_page(page)
-        self.message = await answer(ctx, **kwargs)
+        try:
+            self.message = await ctx.send(**kwargs)
+        except AttributeError:
+            self.response = ctx.response
+            await self.response.send_message(**kwargs)
 
     async def show_page(self, page_number):
         page = await self._source.get_page(self, page_number)
         self.current_page = page_number
         kwargs = await self._get_kwargs_from_page(page)
-        await self.message.edit(**kwargs)
+        try:
+            await self.message.edit(**kwargs)
+        except AttributeError:
+            await self.response.edit_message(**kwargs)
 
     @ui.button(emoji='<:leftmost:935926623230910535>', style=ButtonStyle.gray)
     async def first_page(self, button, interaction):

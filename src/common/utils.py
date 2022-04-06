@@ -20,13 +20,14 @@ async def answer(ctx, **kwargs):
     '''Replies to users message or just sends it if not possible (in a slash command).'''
     try:
         return await ctx.reply(**kwargs, mention_author=False)
-    except:
+    except AttributeError:
+        resp = ctx.response
         # There is a bug that the first response to an interaction can't cointain a file,
         # so we need to avoid that
         if 'file' in kwargs.keys():
-            if not ctx.interaction.response.is_done():
-                ctx.defer()
-        return await ctx.send(**kwargs)
+            if not resp.is_done():
+                resp.defer()
+        return await resp.send(**kwargs)
 
 
 def codeblock(instring: str) -> str:
@@ -48,9 +49,11 @@ async def log(ctx, success: bool = True, reason: str = None):
             content = ' '.join(args)
         else:
             content = ''
+        user = ctx.author
     except AttributeError:
         # in case of a slash command
-        data = ctx.interaction.data
+        data = ctx.data
+        user = ctx.user
         try:
             options = data['options']
         except KeyError:
@@ -66,8 +69,8 @@ async def log(ctx, success: bool = True, reason: str = None):
     em = Embed(
         title=f"**{command.title()} Command** used in `{ctx.channel}`", colour=color
     ).set_footer(
-        text=f"Command run by {ctx.author}",
-        icon_url=ctx.author.display_avatar.url
+        text=f"Command run by {user}",
+        icon_url=user.display_avatar.url
     ).add_field(
         name='**Success**',
         value=f'`{success}`',
@@ -83,7 +86,11 @@ async def log(ctx, success: bool = True, reason: str = None):
             value=f'`{reason}`',
             inline=False
         )
-    await ctx.bot._log.send(embed=em)
+    if hasattr(ctx, 'bot'):
+        bot = ctx.bot
+    else:
+        bot = ctx.client
+    await bot._log.send(embed=em)
 
 
 async def trace(ctx, err: Exception):
@@ -94,10 +101,11 @@ async def trace(ctx, err: Exception):
         if args and args[0] != None:
             content = ' '.join(args)
         else:
-            content = ''
+            user = ctx.author
     except AttributeError:
         # in case of a slash command
-        data = ctx.interaction.data
+        data = ctx.data
+        user = ctx.user
         try:
             options = data['options']
         except KeyError:
@@ -110,20 +118,24 @@ async def trace(ctx, err: Exception):
         command = ctx.command.name.lower()
     except AttributeError:
         command = ctx.command.lower()
+    if hasattr(ctx, 'bot'):
+        bot = ctx.bot
+    else:
+        bot = ctx.client
     tb = f'``' + ' '.join(['Error occured in command', command, '\n']) + ''.join(
         traceback.format_exception(type(err), err, err.__traceback__)) + '``'
     if len(tb) > 1990:
-        await ctx.bot._trace.send(codeblock(tb[2:1990]))
-        await ctx.bot._trace.send(codeblock(tb[1990:]))
+        await bot._trace.send(codeblock(tb[2:1990]))
+        await bot._trace.send(codeblock(tb[1990:-2]))
         tb = 'long lol'
     elif len(tb) > 1000:
-        await ctx.bot._trace.send(tb)
-        tb = tb[:1000]
+        await bot._trace.send(tb)
+        tb = tb[:1000] + '``'
     em = Embed(
         title=f"**{command.title()} Command** used in `{ctx.channel}`", colour=Color.red()
     ).set_footer(
-        text=f"Command run by {ctx.author}",
-        icon_url=ctx.author.display_avatar.url
+        text=f"Command run by {user}",
+        icon_url=user.display_avatar.url
     ).add_field(
         name='**Content**',
         value=f'`/{command}` `{content}`' if content else f'`/{command}`',
@@ -133,7 +145,7 @@ async def trace(ctx, err: Exception):
         value=tb,
         inline=False
     )
-    await ctx.bot._trace.send(embed=em)
+    await bot._trace.send(embed=em)
 
 
 def load_json(filename):

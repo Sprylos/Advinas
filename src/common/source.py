@@ -8,14 +8,17 @@ class LBSource(menus.ListPageSource):
     def __init__(self, data: Leaderboard, title: str, ctx, headline: str = None):
         self.title = title
         self.headline = headline
-        self.ctx = ctx
+        if hasattr(ctx, 'author'):
+            self.user = ctx.author
+        else:
+            self.user = ctx.user
         super().__init__(data, per_page=20)
 
     async def format_page(self, menu, entries: Leaderboard):
         description = codeblock(
             (f'{self.headline}\n' if self.headline else '') + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
-                             ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.display_avatar.url)
+                             ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
 
 
 class ScoreLBSource(LBSource):
@@ -35,4 +38,4 @@ class ScoreLBSource(LBSource):
         mode = 'Endless' if menu.endless else 'Normal'
         description = codeblock(f'{mode} mode:\n' + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
-                             ).set_footer(text=f"Requested by {self.ctx.author}", icon_url=self.ctx.author.display_avatar.url)
+                             ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)

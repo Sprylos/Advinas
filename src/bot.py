@@ -24,18 +24,19 @@ from common.utils import (
 
 # exts to load
 exts = (
-    'admin',
+    # 'admin',
     'database',
     'inf',
     'misc',
-    'mod',
-    'music',
+    # 'mod',
+    # 'music',
+    'tags',
 )
 
 
 class Advinas(Bot):
     def __init__(self, prefix: str = None) -> None:
-        super().__init__(command_prefix=when_mentioned_or(prefix or 'a!'), activity=Activity(type=ActivityType.watching, name="You | /invite | v2.3"),
+        super().__init__(command_prefix=when_mentioned_or(prefix or 'a!'), activity=Activity(type=ActivityType.watching, name="You | /invite | v2.4"),
                          help_command=None, case_insensitive=True, intents=Intents.all())
 
     async def start(self, *args, **kwargs):
@@ -92,7 +93,7 @@ class Advinas(Bot):
 if __name__ == '__main__':
     bot = Advinas()
 
-    from subprocess import Popen
-    process = Popen(['java', '-jar', 'Lavalink.jar'])
-    time.sleep(15)
+    # from subprocess import Popen
+    # process = Popen(['java', '-jar', 'Lavalink.jar'])
+    # time.sleep(15)
     bot.run(config.token)
