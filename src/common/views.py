@@ -1,37 +1,36 @@
-from discord import ButtonStyle, Interaction, ui
-from discord.ext import menus
-from discord.ext.commands import Context
-from common.source import LBSource, ScoreLBSource
-from common.utils import answer
+# std
 from typing import Union
 
+# packages
+import discord
+from discord.ext import menus
 
-class _Paginator(ui.View, menus.MenuPages):
+# local
+from common.source import LBSource, ScoreLBSource
+from common.custom import Context
+
+gray_style = discord.ButtonStyle.gray
+
+
+class _Paginator(discord.ui.View, menus.MenuPages):
     def __init__(self, source: Union[LBSource, ScoreLBSource], *, delete_message_after=False):
         super().__init__(timeout=60)
         self._source = source
         self.current_page = 0
         self.delete_message_after = delete_message_after
 
-    async def start(self, ctx: Union[Context, Interaction], *, channel=None, wait=False):
+    async def start(self, ctx: Context, *, channel=None, wait=False):
         await self._source._prepare_once()
         self.ctx = ctx
         page = await self._source.get_page(0)
         kwargs = await self._get_kwargs_from_page(page)
-        try:
-            self.message = await ctx.send(**kwargs)
-        except AttributeError:
-            self.response = ctx.response
-            await self.response.send_message(**kwargs)
+        self.message: discord.Message = await ctx.send(**kwargs)
 
     async def show_page(self, page_number):
         page = await self._source.get_page(page_number)
         self.current_page = page_number
         kwargs = await self._get_kwargs_from_page(page)
-        try:
-            await self.message.edit(**kwargs)
-        except AttributeError:
-            await self.response.edit_message(**kwargs)
+        await self.message.edit(**kwargs)
 
     async def _get_kwargs_from_page(self, page):
         value = await super()._get_kwargs_from_page(page)
@@ -39,7 +38,7 @@ class _Paginator(ui.View, menus.MenuPages):
             value.update({'view': self})
         return value
 
-    async def interaction_check(self, interaction: Interaction):
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
         """Only allow the author that invoked the command to be able to use the interaction."""
         if interaction.user == self.ctx.author:
             return True
@@ -57,19 +56,19 @@ class Paginator(_Paginator):
     def __init__(self, source: Union[LBSource, ScoreLBSource], *, delete_message_after=False):
         super().__init__(source, delete_message_after=delete_message_after)
 
-    @ui.button(emoji='<:leftmost:935926623230910535>', style=ButtonStyle.gray)
+    @discord.ui.button(emoji='<:leftmost:935926623230910535>', style=gray_style)
     async def first_page(self, button, interaction):
         await self.show_page(0)
 
-    @ui.button(emoji='<:left:893612797743759431>', style=ButtonStyle.gray)
+    @discord.ui.button(emoji='<:left:893612797743759431>', style=gray_style)
     async def before_page(self, button, interaction):
         await self.show_checked_page(self.current_page - 1)
 
-    @ui.button(emoji='<:right:893612798242856962>', style=ButtonStyle.gray)
+    @discord.ui.button(emoji='<:right:893612798242856962>', style=gray_style)
     async def next_page(self, button, interaction):
         await self.show_checked_page(self.current_page + 1)
 
-    @ui.button(emoji='<:rightmost:935926623591612506>', style=ButtonStyle.gray)
+    @discord.ui.button(emoji='<:rightmost:935926623591612506>', style=gray_style)
     async def last_page(self, button, interaction):
         await self.show_page(self._source.get_max_pages() - 1)
 
@@ -84,50 +83,43 @@ class ScorePaginator(_Paginator):
         self.ctx = ctx
         page = await self._source.get_page(self, 0)
         kwargs = await self._get_kwargs_from_page(page)
-        try:
-            self.message = await ctx.send(**kwargs)
-        except AttributeError:
-            self.response = ctx.response
-            await self.response.send_message(**kwargs)
+        self.message: discord.Message = await ctx.send(**kwargs)
 
     async def show_page(self, page_number):
         page = await self._source.get_page(self, page_number)
         self.current_page = page_number
         kwargs = await self._get_kwargs_from_page(page)
-        try:
-            await self.message.edit(**kwargs)
-        except AttributeError:
-            await self.response.edit_message(**kwargs)
+        await self.message.edit(**kwargs)
 
-    @ui.button(emoji='<:leftmost:935926623230910535>', style=ButtonStyle.gray)
+    @discord.ui.button(emoji='<:leftmost:935926623230910535>', style=gray_style)
     async def first_page(self, button, interaction):
         await self.show_page(0)
 
-    @ui.button(emoji='<:left:893612797743759431>', style=ButtonStyle.gray)
+    @discord.ui.button(emoji='<:left:893612797743759431>', style=gray_style)
     async def before_page(self, button, interaction):
         await self.show_checked_page(self.current_page - 1)
 
-    @ui.button(label='Change Mode', style=ButtonStyle.gray)
+    @discord.ui.button(label='Change Mode', style=gray_style)
     async def normal_endless(self, button, interaction):
         self.endless = (not self.endless)
         await self.show_current_page()
 
-    @ui.button(emoji='<:right:893612798242856962>', style=ButtonStyle.gray)
+    @discord.ui.button(emoji='<:right:893612798242856962>', style=gray_style)
     async def next_page(self, button, interaction):
         await self.show_checked_page(self.current_page + 1)
 
-    @ui.button(emoji='<:rightmost:935926623591612506>', style=ButtonStyle.gray)
+    @discord.ui.button(emoji='<:rightmost:935926623591612506>', style=gray_style)
     async def last_page(self, button, interaction):
         await self.show_page(self._source.get_max_pages() - 1)
 
 
-class Invite(ui.View):
+class Invite(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.add_item(
-            ui.Button(
+            discord.ui.Button(
                 label=f"Invite me!",
                 url=r"https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands",
-                style=ButtonStyle.gray
+                style=gray_style
             )
         )

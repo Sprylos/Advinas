@@ -1,11 +1,18 @@
+# std
 import copy
 import os
-from infinitode.models import Player
 from io import BytesIO
+
+# packages
 from PIL import Image, ImageDraw, ImageFont
+
+# local
+from infinitode.models import Player
+
+
 # This whole file is a mess.
 # I will rewrite it once i feel like it.
-
+# (And that seems to take a while)
 
 class Images():
     def __init__(self) -> None:

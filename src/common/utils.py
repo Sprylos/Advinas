@@ -1,151 +1,11 @@
+# std
 import json
-import traceback
-from discord import Color, Embed
-from discord.ext.commands.errors import BadArgument, CheckFailure
 from math import floor, ceil
 from typing import Tuple
 
 
-class BadLevel(BadArgument):
-    """Exception raised when the provided level is not valid."""
-    pass
-
-
-class BadChannel(CheckFailure):
-    """Exception raised when the message channel is not an allowed channel."""
-    pass
-
-
-async def answer(ctx, **kwargs):
-    '''Replies to users message or just sends it if not possible (in a slash command).'''
-    try:
-        return await ctx.reply(**kwargs, mention_author=False)
-    except AttributeError:
-        resp = ctx.response
-        # There is a bug that the first response to an interaction can't cointain a file,
-        # so we need to avoid that
-        if 'file' in kwargs.keys():
-            if not resp.is_done():
-                resp.defer()
-        return await resp.send(**kwargs)
-
-
 def codeblock(instring: str) -> str:
     return '```\n' + instring + '```'
-
-
-async def log(ctx, success: bool = True, reason: str = None):
-    '''Logs the usage of commands. Should be called at the end of any command.'''
-
-    # avoid problems with inconsistencies
-    try:
-        command = ctx.command.name.lower()
-    except AttributeError:
-        command = ctx.command.lower()
-    try:
-        # this works for normal Context objects
-        args = [str(arg) for arg in ctx.args[2:]]
-        if args and args[0] != None:
-            content = ' '.join(args)
-        else:
-            content = ''
-        user = ctx.author
-    except AttributeError:
-        # in case of a slash command
-        data = ctx.data
-        user = ctx.user
-        try:
-            options = data['options']
-        except KeyError:
-            # there were no options (e.g. /profile)
-            content = ''
-        else:
-            # put all inputs into our string
-            content = ' '.join([str(option['value']) for option in options])
-    value = f'`/{command.lower()}` `{content}`' if content else f'`/{command.lower()}`'
-
-    color = Color.green() if success else Color.red()
-
-    em = Embed(
-        title=f"**{command.title()} Command** used in `{ctx.channel}`", colour=color
-    ).set_footer(
-        text=f"Command run by {user}",
-        icon_url=user.display_avatar.url
-    ).add_field(
-        name='**Success**',
-        value=f'`{success}`',
-        inline=False
-    ).add_field(
-        name='**Arguments**',
-        value=value,
-        inline=False
-    )
-    if reason:
-        em.add_field(
-            name='**Reason**',
-            value=f'`{reason}`',
-            inline=False
-        )
-    if hasattr(ctx, 'bot'):
-        bot = ctx.bot
-    else:
-        bot = ctx.client
-    await bot._log.send(embed=em)
-
-
-async def trace(ctx, err: Exception):
-    '''Called when an unhandled Exception occurs to inform me about the issue.'''
-    try:
-        # this works for normal Context objects
-        args = [str(arg) for arg in ctx.args[2:]]
-        if args and args[0] != None:
-            content = ' '.join(args)
-        else:
-            user = ctx.author
-    except AttributeError:
-        # in case of a slash command
-        data = ctx.data
-        user = ctx.user
-        try:
-            options = data['options']
-        except KeyError:
-            # there were no options (e.g. /profile)
-            content = ''
-        else:
-            # put all inputs into our string
-            content = ' '.join([str(option['value']) for option in options])
-    try:
-        command = ctx.command.name.lower()
-    except AttributeError:
-        command = ctx.command.lower()
-    if hasattr(ctx, 'bot'):
-        bot = ctx.bot
-    else:
-        bot = ctx.client
-    tb = f'``' + ' '.join(['Error occured in command', command, '\n']) + ''.join(
-        traceback.format_exception(type(err), err, err.__traceback__)) + '``'
-    if len(tb) > 1990:
-        await bot._trace.send(codeblock(tb[2:1990]))
-        await bot._trace.send(codeblock(tb[1990:-2]))
-        tb = 'long lol'
-    elif len(tb) > 1000:
-        await bot._trace.send(tb)
-        tb = tb[:1000] + '``'
-    em = Embed(
-        title=f"**{command.title()} Command** used in `{ctx.channel}`", colour=Color.red()
-    ).set_footer(
-        text=f"Command run by {user}",
-        icon_url=user.display_avatar.url
-    ).add_field(
-        name='**Content**',
-        value=f'`/{command}` `{content}`' if content else f'`/{command}`',
-        inline=False
-    ).add_field(
-        name='**Traceback**',
-        value=tb,
-        inline=False
-    )
-    await bot._trace.send(embed=em)
 
 
 def load_json(filename):
@@ -161,18 +21,6 @@ def write_json(filename, contents):
 def tablify(indict: dict) -> str:
     keys, vals = list(indict.keys()), list(indict.values())
     return '\n'.join([f'{key} {vals[keys.index(key)]}' for key in keys])
-
-
-def get_level(levels: list, level: str) -> str:
-    try:
-        level = level.replace('_', '.').replace(
-            ',', '.').replace('-', '.').replace(' ', '.').lower()
-        assert level in levels
-        if level.startswith('dq'):
-            level = level.upper()
-        return level
-    except AssertionError:
-        raise BadLevel("Invalid level provided.")
 
 
 def get_level_bounty(level_diffs: list, level: str, difficulty: float, bounties: int, coins: int) -> Tuple[str, float, int, int]:

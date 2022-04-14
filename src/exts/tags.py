@@ -1,67 +1,14 @@
-import discord
-
-from discord.ext import commands
-from discord.ext.commands import Context
-from dataclasses import dataclass
-from datetime import datetime
+# std
 from typing import Optional
-from typing_extensions import Self
+
+# packages
+import discord
+from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorCollection
 
+# local
 from bot import Advinas
-from common.utils import answer
-
-
-class TagName(commands.clean_content):
-    def __init__(self, *, lower: bool = True):
-        self.lower = lower
-        super().__init__()
-
-    async def convert(self, ctx: Context, argument: str) -> str:
-        converted = await super().convert(ctx, argument)
-        lower = converted.lower().strip()
-
-        if not lower:
-            raise commands.BadArgument('Missing tag name.')
-
-        if len(lower) > 100:
-            raise commands.BadArgument(
-                'Tag name is a maximum of 100 characters.')
-
-        first_word, _, _ = lower.partition(' ')
-
-        # get tag command.
-        root = ctx.bot.get_command('tag')
-        if first_word in root.all_commands:
-            raise commands.BadArgument(
-                'This tag name starts with a reserved word.')
-
-        return converted if not self.lower else lower
-
-
-@dataclass
-class Tag:
-    name: str
-    content: str
-    guild_id: str
-    uses: int
-    owner_id: int
-    created_at: datetime
-
-    @classmethod
-    def from_db(cls, payload: dict[str: str | list[dict[str: str]]]) -> Self:
-        '''
-        Example paylod:
-        {
-            'guild': 796313079708123147, 
-            'tags': [
-                {'name': 'hi', 'content': 'Hello!', 'uses': 0, 
-                'owner_id': 592488492085411840, 'created_at': 'Wed Apr  6 12:27:24 2022'}
-            ]
-        }
-        '''
-        t = payload['tags'][0]
-        return cls(t['name'], t['content'], int(payload['guild']), t['uses'], t['owner_id'], datetime.strptime(t['created_at'], '%c'))
+from common.custom import Context, Tag, TagName, TagError
 
 
 class Tags(commands.Cog):
@@ -104,6 +51,13 @@ class Tags(commands.Cog):
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
 
+    async def cog_command_error(self, ctx: Context, err: Exception) -> None:
+        if isinstance(err, commands.CommandInvokeError):
+            err = err.original
+        if isinstance(err, TagError):
+            await ctx.reply(err)
+            await ctx.log(err)
+
     async def _get_tag(self, guild_id: int, name: str) -> Optional[dict]:
         if (ret := await self.col.find_one(
             {"guild": guild_id, "tags.name": name.lower()},
@@ -137,43 +91,42 @@ class Tags(commands.Cog):
 
     async def get_tag(self, guild_id: int, name: str) -> Tag:
         if (res := await self._get_tag(guild_id, name)) is None:
-            raise RuntimeError('Tag not found.')
+            raise TagError('Tag not found.')
         if (alias := res['tags'][0].get('alias', None)) is not None:
             if (res := await self._get_tag(guild_id, alias)) is None:
                 await self.delete_tag(guild_id, name)
-                raise RuntimeError('Tag not found.')
+                raise TagError('Tag not found.')
         return Tag.from_db(res)
 
     async def create_tag(self, ctx: Context, name: str, content: str) -> None:
         if await self._get_tag(ctx.guild.id, name):
-            raise RuntimeError('A tag with this name already exists.')
+            raise TagError('A tag with this name already exists.')
         await self._create_tag(ctx, name, content)
-        await answer(ctx, content='Tag successfully created.')
+        await ctx.log('Tag successfully created.')
 
     async def create_alias(self, ctx: Context, new_name: str, old_name: str) -> None:
         if await self._get_tag(ctx.guild.id, new_name):
-            raise RuntimeError('A tag with this name already exists.')
+            raise TagError('A tag with this name already exists.')
         if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:
-            raise RuntimeError(f'A tag with the name of "{old_name}" does not exist.')  # nopep8
+            raise TagError(f'A tag with the name of "{old_name}" does not exist.')  # nopep8
         else:
             if hasattr(tag, 'alias'):
-                raise RuntimeError('Cannot link an alias to another alias.')
+                raise TagError('Cannot link an alias to another alias.')
         await self._create_alias(ctx, new_name, old_name)
-        await answer(ctx, content=f'Tag alias "{new_name}" that points to "{old_name}" successfully created.')
+        await ctx.reply(f'Tag alias "{new_name}" that points to "{old_name}" successfully created.')
 
     @staticmethod
     async def can_delete(ctx: Context, tag: Tag) -> None:
         if ctx.author.id != tag.owner_id:
             if not (ctx.author.guild_permissions.manage_guild or ctx.author.guild_permissions.administrator):
-                raise RuntimeError('This is not your tag and you do not have the manager server permission.')  # nopep8
+                raise TagError('This is not your tag and you do not have the manager server permission.')  # nopep8
 
-    @commands.group(name='tag', invoke_without_command=True)
+    @commands.hybrid_group(name='tag', invoke_without_command=True)
     async def tag(self, ctx: Context, *, name: TagName):
-        try:
-            tag = await self.get_tag(ctx.guild.id, name)
-        except RuntimeError as e:
-            return await answer(ctx, content=e)
-        await answer(ctx, content=tag.content)
+        tag = await self.get_tag(ctx.guild.id, name)
+
+        await ctx.reply(tag.content)
+        await ctx.log()
 
         # update the usage
         await self.used_tag(tag)
@@ -185,27 +138,26 @@ class Tags(commands.Cog):
 
         await self.create_tag(ctx, name, content)
 
+        await ctx.log()
+
     @tag.command(name='alias')
     async def _alias(self, ctx: Context, new_name: TagName, *, old_name: TagName):
         await self.create_alias(ctx, new_name, old_name)
 
+        await ctx.log()
+
     @tag.command(name='remove', aliases=['delete'])
     async def _remove(self, ctx: Context, name: TagName):
-        try:
-            tag = await self.get_tag(ctx.guild.id, name)
-            await self.can_delete(ctx, tag)
-        except RuntimeError as e:
-            return await answer(ctx, content=e)
+        tag = await self.get_tag(ctx.guild.id, name)
+        await self.can_delete(ctx, tag)
 
         await self.delete_tag(tag=tag)
-        await answer(ctx, content=f'Tag "{name}" successfully deleted.')
+        await ctx.reply(f'Tag "{name}" successfully deleted.')
+        await ctx.log()
 
     @tag.command(name='info')
     async def _info(self, ctx: Context, *, name: TagName):
-        try:
-            tag = await self.get_tag(ctx.guild.id, name)
-        except RuntimeError as e:
-            return await answer(ctx, content=e)
+        tag = await self.get_tag(ctx.guild.id, name)
 
         em = discord.Embed(title=tag.name, timestamp=tag.created_at)
         user = self.bot.get_user(tag.owner_id) or (await self.bot.fetch_user(tag.owner_id))
@@ -214,7 +166,8 @@ class Tags(commands.Cog):
         em.add_field(name='Uses', value=tag.uses)
         em.set_footer(text='Tag created at')
 
-        await answer(ctx, embed=em)
+        await ctx.reply(embed=em)
+        await ctx.log()
 
     # @tag.command(name='search')
     # async def _search(self, ctx, *, query: commands.clean_content):
@@ -222,4 +175,4 @@ class Tags(commands.Cog):
 
 
 async def setup(bot: Advinas):
-    await bot.add_cog(Tags(bot))
+    await bot.add_cog(Tags(bot), guild=discord.Object(796313079708123147))

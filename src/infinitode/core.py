@@ -1,11 +1,15 @@
-import datetime
+# std
 import re
 import time
+import datetime
+
+# packages
+import aiohttp
 import bs4
 from dateutil import parser
+from typing import Union, Tuple
 
-import aiohttp
-
+# local
 from .models import APIError
 from .models import Leaderboard
 from .models import Player
@@ -36,6 +40,7 @@ class Session:
         self._Leaderboards = {}
 
     async def close(self):
+        '''Closes the internal ClientSession.'''
         await self._session.close()
 
     @staticmethod
@@ -53,12 +58,13 @@ class Session:
         if difficulty and not difficulty in ('EASY', 'NORMAL', 'ENDLESS_I'):
             raise APIError("Invalid difficulty (must be one of 'EASY', 'NORMAL', 'ENDLESS_I': " + difficulty)  # nopep8
 
-    async def _post(self, arg, data: dict = None):
+    async def _post(self, arg: str, data: dict = None) -> dict:
+        '''Internal post method to communicate with Rainy's API'''
         url = f'https://infinitode.prineside.com/?m=api&a={arg}&apiv=1&g=com.prineside.tdi2&v=282'
         async with self._session.post(url, data=data) as r:
             try:
                 r.raise_for_status()
-            except:
+            except aiohttp.ClientResponseError:
                 raise APIError("Something went wrong. Try again later")
 
             data = await r.json()
@@ -173,7 +179,7 @@ class Session:
             lb._add_player(Score(**args, playerid=playerid, **d))
         return lb
 
-    async def daily_quest_leaderboards(self, date: datetime.datetime = None, playerid=None, warning=True, return_date=False, raw=False) -> Leaderboard:
+    async def daily_quest_leaderboards(self, date: datetime.datetime = None, playerid=None, warning=True, return_date=False, raw=False) -> Union[Leaderboard, Tuple[Leaderboard, str]]:
         """|coro|
 
         Retrieves a Leaderboard.

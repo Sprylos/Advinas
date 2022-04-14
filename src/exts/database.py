@@ -1,11 +1,14 @@
+# std
 import asyncio
 import datetime
-import discord
-
 from typing import Mapping
+
+# packages
+import discord
 from motor.motor_asyncio import AsyncIOMotorCollection as Collection
 from discord.ext import commands, tasks
 
+# local
 from bot import Advinas
 from common.utils import load_json
 

@@ -1,6 +1,6 @@
-import time
+# packages
 from aiohttp import ClientSession
-from discord import Activity, ActivityType, Intents
+from discord import Activity, ActivityType, AllowedMentions, Intents
 from discord.ext.commands.errors import NotOwner
 from discord.utils import utcnow
 from motor import motor_asyncio
@@ -11,20 +11,21 @@ from discord.ext.commands import (
     MissingRequiredArgument,
     when_mentioned_or
 )
+
+# local
 import config
 import infinitode as inf
-from common.utils import (
+from common.custom import (
     BadChannel,
     BadLevel,
-    answer,
-    log,
-    trace
+    Context,
+    TagError
 )
 
 
 # exts to load
 exts = (
-    # 'admin',
+    'admin',
     'database',
     'inf',
     'misc',
@@ -36,8 +37,14 @@ exts = (
 
 class Advinas(Bot):
     def __init__(self, prefix: str = None) -> None:
-        super().__init__(command_prefix=when_mentioned_or(prefix or 'a!'), activity=Activity(type=ActivityType.watching, name="You | /invite | v2.4"),
-                         help_command=None, case_insensitive=True, intents=Intents.all())
+        super().__init__(
+            command_prefix=when_mentioned_or(prefix or 'a!'),
+            activity=Activity(type=ActivityType.watching, name="You | /invite | v2.4"),  # nopep8
+            allowed_mentions=AllowedMentions(everyone=False, users=True, roles=False, replied_user=False),  # nopep8
+            help_command=None,
+            case_insensitive=True,
+            intents=Intents.all()
+        )
 
     async def start(self, *args, **kwargs):
         # this is simply to make sure the session gets closed after the bot shuts down
@@ -52,6 +59,9 @@ class Advinas(Bot):
         self.DB: motor_asyncio.AsyncIOMotorDatabase = motor_asyncio.AsyncIOMotorClient(config.mongo).inf2  # nopep8
         self.online_since = utcnow()
 
+    async def get_context(self, origin, *, cls=None):
+        return await super().get_context(origin, cls=Context)
+
     async def on_ready(self) -> None:
         self.loop.create_task(self.ready())
 
@@ -61,33 +71,27 @@ class Advinas(Bot):
         self._trace = await self.fetch_channel(config.trace_channel)
         print("online")
 
-    async def on_command_error(self, ctx, err: Exception) -> None:
+    async def on_command_error(self, ctx: Context, err: Exception) -> None:
         '''Error handler'''
 
         if isinstance(err, CommandInvokeError):
             err = err.original
 
-        if isinstance(err, CommandNotFound) or isinstance(err, NotOwner):
+        if isinstance(err, (CommandNotFound, NotOwner, TagError)):
             return  # Ignore
         elif isinstance(err, BadChannel):
-            await log(ctx, success=False, reason='Used in wrong channel.')
-            try:
-                return await ctx.send('Use commands in <#616583511826104355>.', ephemeral=True)
-            except:
-                return await ctx.reply('Use commands in <#616583511826104355>.', delete_after=3)
+            await ctx.log('Used in wrong channel.')
+            return await ctx.send('Use commands in <#616583511826104355>.', delete_after=3, ephemeral=True)
         elif isinstance(err, BadLevel):
-            await log(ctx, success=False, reason='Invalid Level provided.')
+            await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
-        elif isinstance(err, inf.APIError):
-            await log(ctx, success=False, reason=err)
-            content = err
-        elif isinstance(err, MissingRequiredArgument):
-            await log(ctx, success=False, reason=err)
+        elif isinstance(err, (inf.APIError, MissingRequiredArgument)):
+            await ctx.log(err)
             content = err
         else:
-            await trace(ctx, err=err)
+            await ctx.trace(err)
             content = 'Something went really wrong and the issue has been reported. Please try again later.'
-        return await answer(ctx, content=content)
+        return await ctx.reply(content)
 
 
 if __name__ == '__main__':

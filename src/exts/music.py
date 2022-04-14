@@ -1,13 +1,17 @@
-import discord
-import pomice
+# std
 import asyncio
 import random
 
+# packages
+import discord
+import pomice
 from discord.ext import commands
 from contextlib import suppress
 
+# local
 from bot import Advinas
-from common.utils import BadChannel, answer
+from common.custom import Context
+from common.utils import BadChannel
 from config import host, port, password
 
 
@@ -99,20 +103,20 @@ class Music(commands.Cog):
         if not channel:
             channel = getattr(ctx.author.voice, "channel", None)
             if not channel:
-                return await answer(ctx, content="You must be in a voice channel in order to use this command!")
+                return await ctx.reply("You must be in a voice channel in order to use this command!")
 
         await ctx.author.voice.channel.connect(cls=Player)
         player: Player = ctx.voice_client
         player.set_context(ctx=ctx)
-        await answer(ctx, content=f"Joined the voice channel `{channel.name}`")
+        await ctx.reply(f"Joined the voice channel `{channel.name}`")
 
     @commands.command(aliases=['disconnect', 'dc', 'disc', 'lv'])
     async def leave(self, ctx: commands.Context):
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
 
         await player.destroy()
-        await answer(ctx, content="Player has left the channel.")
+        await ctx.reply("Player has left the channel.")
 
     @commands.command(aliases=['pla', 'p'])
     async def play(self, ctx: commands.Context, *, search: str) -> None:
@@ -123,7 +127,7 @@ class Music(commands.Cog):
         results = await player.get_tracks(search, ctx=ctx)
 
         if not results:
-            return await answer(ctx, content="No results were found for that search term.")
+            return await ctx.reply("No results were found for that search term.")
 
         if isinstance(results, pomice.Playlist):
             for track in results.tracks:
@@ -135,12 +139,12 @@ class Music(commands.Cog):
         if not player.is_playing:
             await player.do_next()
         else:
-            await answer(ctx, content=f'Queued **{track.title}**.')
+            await ctx.reply(f'Queued **{track.title}**.')
 
     @commands.command(aliases=['np', 'now', 'playing'])
     async def nowplaying(self, ctx: commands.Context):
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
         if not player.is_connected:
             return
         track = player.current
@@ -155,12 +159,12 @@ class Music(commands.Cog):
     @commands.command(aliases=['q'])
     async def queue(self, ctx: commands.Context):
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
 
         if not player.is_connected:
             return
         if player.queue.qsize() < 1:
-            return await answer(ctx, content='The queue is empty. Add some songs to view the queue.')
+            return await ctx.reply('The queue is empty. Add some songs to view the queue.')
         songs = str()
         for c, track in enumerate(player.queue._queue):
             songs += f'{c+1}. [{track.title}]({track.uri}) [{track.requester.mention}]\n'
@@ -168,103 +172,103 @@ class Music(commands.Cog):
                 songs += '...\n'
                 break
         embed = discord.Embed(title='Queue', description=songs[:-1])
-        await answer(ctx, embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=['pau', 'pa'])
     async def pause(self, ctx: commands.Context):
         """Pause the currently playing song."""
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
 
         if player.is_paused or not player.is_connected:
             return
 
         if self.is_privileged(ctx):
-            await answer(ctx, content='The player was paused.')
+            await ctx.reply('The player was paused.')
             return await player.set_pause(True)
         else:
-            await answer(ctx, content='Only the original requester may pause the player.', delete_after=15)
+            await ctx.reply('Only the original requester may pause the player.', delete_after=15)
 
     @commands.command(aliases=['res', 'r'])
     async def resume(self, ctx: commands.Context):
         """Resume a currently paused player."""
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
 
         if not player.is_paused or not player.is_connected:
             return
 
         if self.is_privileged(ctx):
-            await answer(ctx, content='The player was resumed.')
+            await ctx.reply('The player was resumed.')
             return await player.set_pause(False)
         else:
-            await answer(ctx, content=f'Only the original requester may resume the player.', delete_after=15)
+            await ctx.reply(f'Only the original requester may resume the player.', delete_after=15)
 
     @commands.command(aliases=['s', 'n', 'nex', 'next', 'sk'])
     async def skip(self, ctx: commands.Context):
         """Skip the currently playing song."""
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
 
         if not player.is_connected:
             return
 
         if ctx.author == player.current.requester or self.is_privileged(ctx):
-            await answer(ctx, content='The song was skipped.')
+            await ctx.reply('The song was skipped.')
             return await player.stop()
         else:
-            await answer(ctx, content=f'Only the song requester or the original requester may skip a song.', delete_after=15)
+            await ctx.reply(f'Only the song requester or the original requester may skip a song.', delete_after=15)
 
     @commands.command()
     async def stop(self, ctx: commands.Context):
         """Stop the player and clear all internal states."""
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
 
         if not player.is_connected:
             return
 
         if self.is_privileged(ctx):
-            await answer(ctx, content='The player was stopped.')
+            await ctx.reply('The player was stopped.')
             return await player.teardown()
         else:
-            await answer(ctx, content=f'Only the original requester may stop the player.', delete_after=15)
+            await ctx.reply(f'Only the original requester may stop the player.', delete_after=15)
 
     @commands.command(aliases=['mix', 'shuf'])
     async def shuffle(self, ctx: commands.Context):
         """Shuffle the players queue."""
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
 
         if not player.is_connected:
             return
 
         if self.is_privileged(ctx):
             if player.queue.qsize() < 3:
-                return await answer(ctx, content='The queue is empty. Add some songs to shuffle the queue.')
-            await answer(ctx, content='The queue was shuffled.')
+                return await ctx.reply('The queue is empty. Add some songs to shuffle the queue.')
+            await ctx.reply('The queue was shuffled.')
             player: Player
             return random.shuffle(player.queue._queue)
         else:
-            await answer(ctx, content=f'Only the original requester may shuffle the queue.', delete_after=15)
+            await ctx.reply(f'Only the original requester may shuffle the queue.', delete_after=15)
 
     @commands.command(aliases=['v', 'vol'])
     async def volume(self, ctx: commands.Context, *, vol: int):
         """Change the players volume, between 1 and 100."""
         if not (player := ctx.voice_client):
-            return await answer(ctx, content="The bot is not in a voice channel.")
+            return await ctx.reply("The bot is not in a voice channel.")
 
         if not player.is_connected:
             return
 
         if not self.is_privileged(ctx):
-            return await answer(ctx, content='Only the original requester may change the volume.')
+            return await ctx.reply('Only the original requester may change the volume.')
 
         if not 0 < vol < 101:
-            return await answer(ctx, content='Please enter a value between 1 and 100.')
+            return await ctx.reply('Please enter a value between 1 and 100.')
 
         await player.set_volume(vol)
-        await answer(ctx, content=f'Set the volume to **{vol}**%')
+        await ctx.reply(f'Set the volume to **{vol}**%')
 
 
 async def setup(bot: Advinas):

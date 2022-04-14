@@ -1,17 +1,18 @@
+# packages
 import discord
 from discord.ext import menus
+
+# locals
+from common.custom import Context
 from common.utils import codeblock
 from infinitode.models import Leaderboard
 
 
 class LBSource(menus.ListPageSource):
-    def __init__(self, data: Leaderboard, title: str, ctx, headline: str = None):
+    def __init__(self, data: Leaderboard, title: str, ctx: Context, headline: str = None):
         self.title = title
         self.headline = headline
-        if hasattr(ctx, 'author'):
-            self.user = ctx.author
-        else:
-            self.user = ctx.user
+        self.user = ctx.author
         super().__init__(data, per_page=20)
 
     async def format_page(self, menu, entries: Leaderboard):

@@ -1,28 +1,25 @@
+# std
 import re
 import time
-import discord
-
-from discord import Interaction, app_commands
-from discord.ext import commands
-from discord.ext.commands import Context
 from math import floor, ceil
-from typing import Union
 
+# packages
+import discord
+from discord.ext import commands
+
+# local
 from bot import Advinas
 from exts.database import Database
 from infinitode.models import Leaderboard, Score
 from common.images import Images
+from common.custom import BadChannel, Context, LevelConverter
 from common.views import Paginator, ScorePaginator
 from common.source import LBSource, ScoreLBSource
 from common.utils import (
-    BadChannel,
-    answer,
     round_to_nearest,
     find_safe,
-    get_level,
     get_level_bounty,
     codeblock,
-    log,
     tablify,
     load_json
 )
@@ -37,76 +34,44 @@ class Inf(commands.Cog):
             r'U-([A-Z0-9]{4}-){2}[A-Z0-9]{6}')
         inf = load_json("data/inf.json")
         self.LEVELS: list[str] = list(inf['levels'].keys())
+        self.bot.LEVELS = self.LEVELS
         self.LEVEL_INFO: dict[str: dict] = inf['levels']
         self.BOUNTY_DIFFS: dict[str: int] = inf['bountyDifficulties']
         self.EMOJIS: dict[str: int] = inf['enemy_emojis']
         self.images = Images()
 
-    async def cog_check(self, ctx: Union[Context, Interaction]) -> bool:
+    async def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in self.bot.BOT_CHANNELS:
                 raise BadChannel('Command not used in an allowed channel.')
         return True
 
-    async def slash_command_error(self, ctx, error: Exception) -> None:
-        await self.bot.on_command_error(ctx, err=error)
-
     # Score command
-    @app_commands.command(name='score')
-    @app_commands.describe(level='The level which you want to see the scores of.')
-    async def _score(self, inter: Interaction, level: str):
-        '''Shows the top 200 scores of the given level.'''
-        await self.cog_check(inter)
-        await self.score(inter, level=level)
-
-    @commands.command(name='score', aliases=['sc'])
-    async def score(self, ctx: Union[Context, Interaction], level: str):
-        level = get_level(self.LEVELS, level)
+    @commands.hybrid_command(name='score', aliases=['sc'], description='Shows the top 200 scores of the given level.')
+    async def score(self, ctx: Context, level: LevelConverter):
         normal = await self.bot.API.leaderboards(level)
         endless = await self.bot.API.leaderboards(level, difficulty='ENDLESS_I')
-        await log(ctx)
+        await ctx.log()
         await ScorePaginator(ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Score)', ctx)).start(ctx)
 
     # Wave command
-    @app_commands.command(name='waves')
-    @app_commands.describe(level='The level which you want to see the waves of.')
-    async def _waves(self, inter: Interaction, level: str):
-        '''Shows the top 200 waves of the given level.'''
-        await self.cog_check(inter)
-        await self.waves(inter, level=level)
-
-    @commands.command(name='waves', aliases=['w'])
-    async def waves(self, ctx: Union[Context, Interaction], level: str):
-        level = get_level(self.LEVELS, level)
+    @commands.command(name='waves', aliases=['w'], description='Shows the top 200 waves of the given level.')
+    async def waves(self, ctx: Context, level: LevelConverter):
         normal = await self.bot.API.leaderboards(level, mode='waves')
         endless = await self.bot.API.leaderboards(level, mode='waves', difficulty='ENDLESS_I')
-        await log(ctx)
+        await ctx.log()
         await ScorePaginator(ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Waves)', ctx)).start(ctx)
 
     # Season command
-    @app_commands.command(name='season')
-    async def _season(self, inter: Interaction):
-        '''Shows the top 100 players of the season.'''
-        await self.cog_check(inter)
-        await inter.response.defer()
-        await self.season(inter)
-
-    @commands.command(name='season', aliases=['sl', 'seasonal'])
-    async def season(self, ctx: Union[Context, Interaction]):
+    @commands.hybrid_command(name='season', aliases=['sl', 'seasonal'], description='Shows the top 100 players of the season.')
+    async def season(self, ctx: Context):
         lb = await self.bot.API.seasonal_leaderboard()
-        await log(ctx)
+        await ctx.log()
         await Paginator(LBSource(lb, f'Season {lb.season} Leaderboards', ctx, headline=f'Player Count: {lb.total}')).start(ctx)
 
     # Dailyquest command
-    @app_commands.command(name='dailyquest')
-    @app_commands.describe(date='The date which which you want to see the leaderboard of.')
-    async def _dailyquest(self, inter: Interaction, date: str = None):
-        '''Shows the top dailyquest scores of today or the given the day.'''
-        await self.cog_check(inter)
-        await self.dailyquest(inter, date=date)
-
-    @commands.command(name='dailyquest', aliases=['dq'])
-    async def dailyquest(self, ctx: Union[Context, Interaction], date: str = None):
+    @commands.hybrid_command(name='dailyquest', aliases=['dq'], description='Shows the top dailyquest scores of today or the given the day.')
+    async def dailyquest(self, ctx: Context, date: str = None):
         lb, date = await self.bot.API.daily_quest_leaderboards(date, warning=False, return_date=True)
         if lb.is_empty:
             entry = Database.find_by_key(self.bot.DB.dailyquests, date)
@@ -115,25 +80,16 @@ class Inf(commands.Cog):
                 lb = Leaderboard('', '', '', '', '', date=date)
                 for score in scores:
                     lb._append(Score('', '', '', '', **score))
-            except:
-                await log(ctx, success=False, reason='Invalid date provided.')
-                return await answer(ctx, content='Could not find anything for that date. Sorry.')
+            except AttributeError:
+                await ctx.log('Invalid date provided.')
+                return await ctx.reply('Could not find anything for that date. Sorry.')
 
-        await log(ctx)
+        await ctx.log()
         await Paginator(LBSource(lb, f'Dailyquest Leaderboards ({date})', ctx)).start(ctx)
 
     # Level command
-    @app_commands.command(name='level')
-    @app_commands.describe(level='The level which you want to see info about.')
-    async def _level(self, inter: Interaction, level: str):
-        '''Shows useful information about the given level.'''
-        await self.cog_check(inter)
-        await inter.response.defer()
-        await self.level(inter, level=level)
-
-    @commands.command(name='level', aliases=['l'])
-    async def level(self, ctx: Union[Context, Interaction], level: str):
-        level = get_level(self.LEVELS, level)
+    @commands.hybrid_command(name='level', aliases=['l'], description='Shows useful information about the given level.')
+    async def level(self, ctx: Context, level: LevelConverter):
         data = self.LEVEL_INFO[level.lower(
         ) if level.startswith('DQ') else level]
         enemy_emojis = "".join(
@@ -160,24 +116,12 @@ class Inf(commands.Cog):
         if quests:
             em.add_field(name="Quest Effects", value=quests, inline=False)
 
-        await answer(ctx, embed=em, file=file)
-        await log(ctx)
+        await ctx.reply(embed=em, file=file)
+        await ctx.log()
 
     # Bounty command
-    @app_commands.command(name='bounty')
-    @app_commands.describe(
-        coins='The maximum amount of coins a bounties can give you per wave. DEFAULT: 65',
-        difficulty='The difficulty of the map. DEFAULT: 100',
-        bounties='The amount of bounties which you want to calculate safe values for. DEFAULT: 7',
-        level='The level to take the difficulty of. Overwrites the difficulty parameter, if specified and valid.'
-    )
-    async def _bounty(self, inter: Interaction, coins: int = 65, difficulty: float = 100.0, bounties: int = 7, level: str = None):
-        '''Calculates the optimal timings to place your bounties.'''
-        await self.cog_check(inter)
-        await self.bounty(inter, coins=coins, difficulty=difficulty, bounties=bounties, level=level)
-
-    @commands.command(name='bounty', aliases=['b'])
-    async def bounty(self, ctx: Union[Context, Interaction], coins: int = 65, difficulty: float = 100, bounties: int = 7, level: str = None):
+    @commands.hybrid_command(name='bounty', aliases=['b'], description='Calculates the optimal timings to place your bounties.')
+    async def bounty(self, ctx: Context, coins: int = 65, difficulty: float = 100.0, bounties: int = 7, level: str = None):
         level, difficulty, bounties, coins = get_level_bounty(
             self.BOUNTY_DIFFS, level=level, difficulty=difficulty, bounties=bounties, coins=coins)
         keep = coins * 50
@@ -215,20 +159,12 @@ class Inf(commands.Cog):
         ).add_field(
             name="Safe Buy", value=codeblock('\n'.join(lBuy)), inline=True)
 
-        await answer(ctx, embed=em)
-        await log(ctx)
+        await ctx.reply(embed=em)
+        await ctx.log()
 
     # Profile command
-    @app_commands.command(name='profile')
-    @app_commands.describe(playerid='The player to show the profile of.')
-    async def _profile(self, inter: Interaction, playerid: str = None):
-        '''Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).'''
-        await self.cog_check(inter)
-        await inter.response.defer()
-        await self.profile(inter, playerid=playerid)
-
-    @commands.command(name='profile', aliases=['prof'])
-    async def profile(self, ctx: Union[Context, Interaction], playerid: str = None):
+    @commands.hybrid_command(name='profile', aliases=['prof'], description='Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).')
+    async def profile(self, ctx: Context, playerid: str = None):
         dc_col, nn_col = self.bot.DB.discordnames, self.bot.DB.nicknames
         pl, player = None, None
         start_time = time.time()
@@ -239,8 +175,8 @@ class Inf(commands.Cog):
             if pl:
                 player = await self.bot.API.player(playerid=next(iter(pl)))
             else:
-                await log(ctx, success=False, reason='No player provided.')
-                return await answer(ctx, content='Provide a player to search for.')
+                await ctx.log(reason='No player provided.')
+                return await ctx.reply('Provide a player to search for.')
         elif self.playerid_regex.match(playerid):
             try:
                 player = await self.bot.API.player(playerid=playerid)
@@ -259,9 +195,9 @@ class Inf(commands.Cog):
                     if member:
                         pl = Database.find(dc_col, str(member.id))
                     if not pl:
-                        await log(ctx, success=False, reason='The provided player is invalid.')
-                        return await answer(ctx, content='Could not find player. Check for spelling mistakes or try using '
-                                            'the U- playerid from your profile page (Top left in the main menu).')
+                        await ctx.log('The provided player is invalid.')
+                        return await ctx.reply('Could not find player. Check for spelling mistakes or try using '
+                                               'the U- playerid from your profile page (Top left in the main menu).')
         if not player:
             player = await self.bot.API.player(playerid=next(iter(pl)))
         data = {player.playerid: {'name': player.nickname, 'key': player.nickname.lower()}}  # nopep8
@@ -278,8 +214,8 @@ class Inf(commands.Cog):
         final_buffer = await self.bot.loop.run_in_executor(None, self.images.profile_gen, player, avatar_bytes, ctx.author.id)
 
         file = discord.File(filename=f'{player.playerid}.png', fp=final_buffer)
-        await answer(ctx, content=f'Finished in {time.time() - start_time:0.3f}s', file=file)
-        await log(ctx)
+        await ctx.reply(f'Finished in {time.time() - start_time:0.3f}s', file=file)
+        await ctx.log()
 
 
 async def setup(bot: Advinas):
