@@ -7,7 +7,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 
 # local
-from infinitode.models import Player
+from infinitode import Player
 
 
 # This whole file is a mess.

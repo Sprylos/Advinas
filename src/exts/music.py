@@ -10,8 +10,7 @@ from contextlib import suppress
 
 # local
 from bot import Advinas
-from common.custom import Context
-from common.utils import BadChannel
+from common.custom import BadChannel
 from config import host, port, password
 
 

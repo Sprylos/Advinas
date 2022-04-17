@@ -1,6 +1,10 @@
 
-from .core import Session
-from .models import APIError
+from .badge import *
+from .core import *
+from .leaderboard import *
+from .player import *
+from .score import *
+from . import errors as errors
 
 
 __author__ = "Sprylos"
@@ -26,11 +30,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
-
-__all__ = [
-    "__author__",
-    "__title__",
-    "__license__",
-    "Session",
-    "APIError",
-]

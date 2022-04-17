@@ -1,3 +1,6 @@
+# std
+from typing import Optional
+
 # packages
 import discord
 from discord.ext import menus
@@ -5,11 +8,11 @@ from discord.ext import menus
 # locals
 from common.custom import Context
 from common.utils import codeblock
-from infinitode.models import Leaderboard
+from infinitode import Leaderboard
 
 
 class LBSource(menus.ListPageSource):
-    def __init__(self, data: Leaderboard, title: str, ctx: Context, headline: str = None):
+    def __init__(self, data: Leaderboard, title: str, ctx: Context, headline: Optional[str] = None):
         self.title = title
         self.headline = headline
         self.user = ctx.author

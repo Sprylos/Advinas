@@ -23,7 +23,7 @@ def tablify(indict: dict) -> str:
     return '\n'.join([f'{key} {vals[keys.index(key)]}' for key in keys])
 
 
-def get_level_bounty(level_diffs: list, level: str, difficulty: float, bounties: int, coins: int) -> Tuple[str, float, int, int]:
+def get_level_bounty(level_diffs, level: str, difficulty: float, bounties: int, coins: int) -> Tuple[str, float, int, int]:
 
     if coins < 50:
         coins = 50
@@ -82,3 +82,4 @@ def find_safe(i: int, buy: int, cost: int, coins: int) -> int:
                     return d[g]
                 else:
                     d[g+1] = d[g] + 50
+    return d[4]

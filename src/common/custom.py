@@ -2,7 +2,12 @@
 import traceback
 from dataclasses import dataclass
 from datetime import datetime
-from typing_extensions import Self
+from typing import (
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
 # packages
 from discord import Color, Embed
@@ -30,12 +35,12 @@ class TagError(RuntimeError):
 class Context(commands.Context):
     """Custom Context class for easier logging."""
 
-    async def log(self, reason: str = None):
+    async def log(self, reason: Optional[str] = None):
         '''Logs the usage of commands. Should be called at the end of any command.'''
 
         success = True if reason is None else False
 
-        command = self.command.name.lower()
+        command = self.command.name.lower()  # type: ignore
         args = [str(arg) for arg in self.args[2:]]
         content = ' '.join(args) if args and args[0] is not None else ''
 
@@ -68,7 +73,7 @@ class Context(commands.Context):
     async def trace(self, err: Exception):
         '''Called when an unhandled Exception occurs to inform me about the issue.'''
 
-        command = self.command.name.lower()
+        command = self.command.name.lower()  # type: ignore
         args = [str(arg) for arg in self.args[2:]]
         content = ' '.join(args) if args and args[0] is not None else ''
 
@@ -140,13 +145,13 @@ class TagName(commands.clean_content):
 class Tag:
     name: str
     content: str
-    guild_id: str
+    guild_id: int
     uses: int
     owner_id: int
     created_at: datetime
 
     @classmethod
-    def from_db(cls, payload: dict[str: str | list[dict[str: str]]]) -> Self:
+    def from_db(cls, payload: Dict[str, Union[str, List[Dict[str, str]]]]):
         '''
         Example paylod:
         {
@@ -158,4 +163,4 @@ class Tag:
         }
         '''
         t = payload['tags'][0]
-        return cls(t['name'], t['content'], int(payload['guild']), t['uses'], t['owner_id'], datetime.strptime(t['created_at'], '%c'))
+        return cls(t['name'], t['content'], int(payload['guild']), t['uses'], t['owner_id'], datetime.strptime(t['created_at'], '%c'))  # type: ignore # nopep8

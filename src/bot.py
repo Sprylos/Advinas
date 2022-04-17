@@ -1,3 +1,8 @@
+# std
+from typing import (
+    Optional
+)
+
 # packages
 from aiohttp import ClientSession
 from discord import Activity, ActivityType, AllowedMentions, Intents
@@ -36,7 +41,7 @@ exts = (
 
 
 class Advinas(Bot):
-    def __init__(self, prefix: str = None) -> None:
+    def __init__(self, prefix: Optional[str] = None) -> None:
         super().__init__(
             command_prefix=when_mentioned_or(prefix or 'a!'),
             activity=Activity(type=ActivityType.watching, name="You | /invite | v2.4"),  # nopep8
@@ -81,17 +86,18 @@ class Advinas(Bot):
             return  # Ignore
         elif isinstance(err, BadChannel):
             await ctx.log('Used in wrong channel.')
-            return await ctx.send('Use commands in <#616583511826104355>.', delete_after=3, ephemeral=True)
+            await ctx.send('Use commands in <#616583511826104355>.', delete_after=3, ephemeral=True)
+            return
         elif isinstance(err, BadLevel):
             await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
         elif isinstance(err, (inf.APIError, MissingRequiredArgument)):
-            await ctx.log(err)
-            content = err
+            await ctx.log(str(err))
+            content = str(err)
         else:
             await ctx.trace(err)
             content = 'Something went really wrong and the issue has been reported. Please try again later.'
-        return await ctx.reply(content)
+        await ctx.reply(content)
 
 
 if __name__ == '__main__':

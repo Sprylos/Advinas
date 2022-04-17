@@ -10,14 +10,14 @@ async def main():
     b = await API.skill_point_leaderboard(playerid='U-E9BP-FSN9-H6ENMQ')
     c = await API.daily_quest_leaderboards(date=None, playerid='U-E9BP-FSN9-H6ENMQ')
     d = await API.leaderboards(5.1)
-    e = await API.seasonal_leaderboard()
-    f = await API.leaderboards_rank('5.1', 'U-E9BP-FSN9-H6ENMQ', mode='waves')
-    g = await API.player('U-E9BP-FSN9-H6ENMQ')
-
-    for i in (a, b, c, d, e):
+    # e = await API.seasonal_leaderboard()
+    e = await API.leaderboards_rank('5.1', 'U-E9BP-FSN9-H6ENMQ', mode='waves')
+    # g = await API.player('U-E9BP-FSN9-H6ENMQ')
+    for i in (a, b, c, d):
         i.print_scores()
-    print(f.playerid, f.rank)
-    print(g.nickname, g.playerid, g.level, g.created_at)
+    e.print_score()
+    #print(f.playerid, f.rank)
+    #print(g.nickname, g.playerid, g.level, g.created_at)
 
     await API.close()
 

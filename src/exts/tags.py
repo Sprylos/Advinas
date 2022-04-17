@@ -55,8 +55,8 @@ class Tags(commands.Cog):
         if isinstance(err, commands.CommandInvokeError):
             err = err.original
         if isinstance(err, TagError):
-            await ctx.reply(err)
-            await ctx.log(err)
+            await ctx.reply(err)  # type: ignore
+            await ctx.log(err)  # type: ignore
 
     async def _get_tag(self, guild_id: int, name: str) -> Optional[dict]:
         if (ret := await self.col.find_one(
@@ -69,7 +69,7 @@ class Tags(commands.Cog):
 
     async def _create_tag(self, ctx: Context, name: str, content: str) -> None:
         await self.col.update_one(
-            {'guild': ctx.guild.id},
+            {'guild': ctx.guild.id},  # type: ignore
             {'$push': {'tags': {
                 'name': name.lower(), 'content': content, 'uses': 0, 'owner_id': ctx.author.id, 'created_at': ctx.message.created_at.strftime('%c')
             }}}
@@ -77,7 +77,7 @@ class Tags(commands.Cog):
 
     async def _create_alias(self, ctx: Context, new_name: str, old_name: str) -> None:
         await self.col.update_one(
-            {'guild': ctx.guild.id},
+            {'guild': ctx.guild.id},  # type: ignore
             {'$push': {'tags': {
                 'name': new_name.lower(), 'alias': old_name.lower(), 'owner_id': ctx.author.id, 'created_at': ctx.message.created_at.strftime('%c')
             }}}
@@ -93,21 +93,22 @@ class Tags(commands.Cog):
         if (res := await self._get_tag(guild_id, name)) is None:
             raise TagError('Tag not found.')
         if (alias := res['tags'][0].get('alias', None)) is not None:
-            if (res := await self._get_tag(guild_id, alias)) is None:
-                await self.delete_tag(guild_id, name)
+            if (result := await self._get_tag(guild_id, alias)) is None:
+                await self.delete_tag(Tag.from_db(res))
                 raise TagError('Tag not found.')
+            res = result
         return Tag.from_db(res)
 
     async def create_tag(self, ctx: Context, name: str, content: str) -> None:
-        if await self._get_tag(ctx.guild.id, name):
+        if await self._get_tag(ctx.guild.id, name):  # type: ignore
             raise TagError('A tag with this name already exists.')
         await self._create_tag(ctx, name, content)
         await ctx.log('Tag successfully created.')
 
     async def create_alias(self, ctx: Context, new_name: str, old_name: str) -> None:
-        if await self._get_tag(ctx.guild.id, new_name):
+        if await self._get_tag(ctx.guild.id, new_name):  # type: ignore
             raise TagError('A tag with this name already exists.')
-        if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:
+        if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:  # type: ignore
             raise TagError(f'A tag with the name of "{old_name}" does not exist.')  # nopep8
         else:
             if hasattr(tag, 'alias'):
@@ -117,13 +118,14 @@ class Tags(commands.Cog):
 
     @staticmethod
     async def can_delete(ctx: Context, tag: Tag) -> None:
-        if ctx.author.id != tag.owner_id:
-            if not (ctx.author.guild_permissions.manage_guild or ctx.author.guild_permissions.administrator):
+        author: discord.Member = ctx.author  # type: ignore
+        if author.id != tag.owner_id:
+            if not (author.guild_permissions.manage_guild or author.guild_permissions.administrator):
                 raise TagError('This is not your tag and you do not have the manager server permission.')  # nopep8
 
     @commands.hybrid_group(name='tag', invoke_without_command=True)
     async def tag(self, ctx: Context, *, name: TagName):
-        tag = await self.get_tag(ctx.guild.id, name)
+        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
 
         await ctx.reply(tag.content)
         await ctx.log()
@@ -131,24 +133,24 @@ class Tags(commands.Cog):
         # update the usage
         await self.used_tag(tag)
 
-    @tag.command(name='create', aliases=['make'])
+    @tag.command(name='create', aliases=['make'])  # type: ignore
     async def _create(self, ctx: Context, name: TagName, *, content: commands.clean_content):
-        if len(content) > 2000:
+        if len(content) > 2000:  # type: ignore
             return await ctx.send('Tag content is a maximum of 2000 characters.')
 
-        await self.create_tag(ctx, name, content)
+        await self.create_tag(ctx, name, content)  # type: ignore
 
         await ctx.log()
 
     @tag.command(name='alias')
     async def _alias(self, ctx: Context, new_name: TagName, *, old_name: TagName):
-        await self.create_alias(ctx, new_name, old_name)
+        await self.create_alias(ctx, new_name, old_name)  # type: ignore
 
         await ctx.log()
 
     @tag.command(name='remove', aliases=['delete'])
     async def _remove(self, ctx: Context, name: TagName):
-        tag = await self.get_tag(ctx.guild.id, name)
+        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
         await self.can_delete(ctx, tag)
 
         await self.delete_tag(tag=tag)
@@ -157,7 +159,7 @@ class Tags(commands.Cog):
 
     @tag.command(name='info')
     async def _info(self, ctx: Context, *, name: TagName):
-        tag = await self.get_tag(ctx.guild.id, name)
+        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
 
         em = discord.Embed(title=tag.name, timestamp=tag.created_at)
         user = self.bot.get_user(tag.owner_id) or (await self.bot.fetch_user(tag.owner_id))
