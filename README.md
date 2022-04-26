@@ -7,8 +7,11 @@ Advinas is a Discord Bot which collects data from the Infinitode 2 API and shows
 Add the bot to your own server using [this link](https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands).
 
 **IF YOU ARE LOOKING FOR THE INFINITODE API COMMUNICATION**
+
 I moved the API wrapper to its own repository: https://github.com/Sprylos/infinitode.py
+
 It is completely typed and documented.
+
 
 ## Future Plans
 
