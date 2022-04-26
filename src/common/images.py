@@ -2,12 +2,12 @@
 import copy
 import os
 from io import BytesIO
+from datetime import datetime
+from typing import Dict, List, Optional  # basic typing for now
 
 # packages
 from PIL import Image, ImageDraw, ImageFont
-
-# local
-from infinitode import Player
+from infinitode import Player, Score  # no longer local!!
 
 
 # This whole file is a mess.
@@ -56,7 +56,7 @@ class Images():
                     colour = colour[1:]
                 self.tp_h[colour] = Image.open(path+filename)
 
-        self.default_tps = [
+        self.default_tps: List[List[Dict[int, str]]] = [
             [
                 {1: "yellow", 2: "yellow", 3: "yellow", 4: "yellow", 5: "cyan", 6: "cyan", 7: "cyan", 8: "cyan",
                     9: "cyan", 10: "white", 11: "white", 12: "white", 13: "indigo", 14: "indigo", 15: "indigo"},
@@ -93,7 +93,7 @@ class Images():
             ],
         ]
 
-    def profile_gen(self, player: Player, avatar_bytes: bytes = None, userid: int = None) -> BytesIO:
+    def profile_gen(self, player: Player, avatar_bytes: Optional[bytes] = None, userid: Optional[int] = None) -> BytesIO:
         '''Generates the profile image for the profile command'''
         try:
             bg = Image.open(f"assets/images/profile/custom/{userid}.png")
@@ -133,13 +133,13 @@ class Images():
                 int(level_score.rank)), anchor="rs", font=self.font_scores)
             if level == "zecred":
                 scores_y += 128
-                level_score = player.daily_quest
+                level_score: Score = player.__daily_quest  # type: ignore
                 write.text((scores_x, scores_y), "{:,}".format(
                     level_score.score), anchor="rs", font=self.font_scores)
                 write.text((scores_x2, scores_y), "#{:,}".format(
                     int(level_score.rank)), anchor="rs", font=self.font_scores)
                 scores_y += 64
-                level_score = player.skill_point
+                level_score: Score = player.__skill_point  # type: ignore
                 write.text((scores_x, scores_y), "{:,}".format(
                     level_score.score), anchor="rs", font=self.font_scores)
                 write.text((scores_x2, scores_y), "#{:,}".format(
@@ -212,8 +212,9 @@ class Images():
             player.replays), anchor="lt", font=self.font_rpl)
         write.text((350, 568), "Issues: {:,}".format(
             player.issues), anchor="lt", font=self.font_rpl)
+        creation_date = datetime.strptime(player.created_at, '%Y-%m-%d')
         write.text(
-            (1135, 568), f"Created At: {player.created_at.strftime('%d.%m.%Y')}", anchor="rt", font=self.font_rpl)
+            (1135, 568), f"Created At: {creation_date.strftime('%d.%m.%Y')}", anchor="rt", font=self.font_rpl)
         write.text((854, 435), "{:} / {:}".format(player.xp,
                    player.xp_max), anchor="rt", font=self.font_lvl_small)
         write.rectangle(((656, 474), (900, 492)), fill="#3f3f3f")

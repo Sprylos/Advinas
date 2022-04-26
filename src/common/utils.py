@@ -1,29 +1,29 @@
 # std
 import json
 from math import floor, ceil
-from typing import Tuple
+from typing import Any, Dict, Optional, Tuple
 
 
 def codeblock(instring: str) -> str:
     return '```\n' + instring + '```'
 
 
-def load_json(filename):
+def load_json(filename: Any):
     with open(filename, encoding='utf-8') as infile:
         return json.load(infile)
 
 
-def write_json(filename, contents):
+def write_json(filename: Any, contents: Any):
     with open(filename, 'w') as outfile:
         json.dump(contents, outfile, ensure_ascii=True, indent=4)
 
 
-def tablify(indict: dict) -> str:
+def tablify(indict: Dict[Any, Any]) -> str:
     keys, vals = list(indict.keys()), list(indict.values())
     return '\n'.join([f'{key} {vals[keys.index(key)]}' for key in keys])
 
 
-def get_level_bounty(level_diffs, level: str, difficulty: float, bounties: int, coins: int) -> Tuple[str, float, int, int]:
+def get_level_bounty(level_diffs: Any, level: Optional[str], difficulty: float, bounties: int, coins: int) -> Tuple[str, float, int, int]:
 
     if coins < 50:
         coins = 50

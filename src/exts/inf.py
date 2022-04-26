@@ -2,7 +2,12 @@
 import re
 import time
 from math import floor, ceil
-from typing import Optional
+from typing import (
+    Any,
+    Dict,
+    Optional,
+    List
+)
 
 # packages
 import discord
@@ -11,7 +16,6 @@ from discord.ext import commands
 # local
 from bot import Advinas
 from exts.database import Database
-from infinitode import Leaderboard, Score
 from common.images import Images
 from common.custom import BadChannel, Context, LevelConverter
 from common.views import Paginator, ScorePaginator
@@ -34,14 +38,14 @@ class Inf(commands.Cog):
         self.playerid_regex = re.compile(
             r'U-([A-Z0-9]{4}-){2}[A-Z0-9]{6}')
         inf = load_json("data/inf.json")
-        self.LEVELS: list[str] = list(inf['levels'].keys())
+        self.LEVELS: List[str] = list(inf['levels'].keys())
         self.bot.LEVELS = self.LEVELS
-        self.LEVEL_INFO: dict[str, dict] = inf['levels']
-        self.BOUNTY_DIFFS: dict[str, int] = inf['bountyDifficulties']
-        self.EMOJIS: dict[str, int] = inf['enemy_emojis']
+        self.LEVEL_INFO: Dict[str, Dict[str, Any]] = inf['levels']
+        self.BOUNTY_DIFFS: Dict[str, int] = inf['bountyDifficulties']
+        self.EMOJIS: Dict[str, int] = inf['enemy_emojis']
         self.images = Images()
 
-    async def cog_check(self, ctx: Context) -> bool:
+    def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in self.bot.BOT_CHANNELS:
                 raise BadChannel('Command not used in an allowed channel.')
@@ -91,8 +95,7 @@ class Inf(commands.Cog):
     # Level command
     @commands.hybrid_command(name='level', aliases=['l'], description='Shows useful information about the given level.')
     async def level(self, ctx: Context, level: LevelConverter):
-        data = self.LEVEL_INFO[level.lower(
-        ) if level.startswith('DQ') else level]
+        data = self.LEVEL_INFO[level.lower() if level.startswith('DQ') else level]  # type: ignore # nopep8
         enemy_emojis = "".join(
             [f'<:enemy_{i.lower()}:{self.EMOJIS[f"enemy_{i.lower()}"]}>' for i in data["enemies"]])
         enemy_emojis = enemy_emojis or "None"
@@ -188,7 +191,7 @@ class Inf(commands.Cog):
         if not player:
             pl = await Database.find(nn_col, playerid)
             if not pl:
-                match = self.mention_regex.search(playerid)
+                match = self.mention_regex.search(playerid)  # type: ignore # playerid is always a str here # nopep8
                 new_id = match[0] if match else playerid
                 pl = await Database.find(dc_col, new_id)
                 if not pl:
@@ -209,8 +212,8 @@ class Inf(commands.Cog):
             avatar_bytes = await r.read()
         except:
             avatar_bytes = None
-        await player.get_daily_quest(self.bot.API)
-        await player.get_skill_point(self.bot.API)
+        await player.daily_quest(self.bot.API)
+        await player.skill_point(self.bot.API)
 
         final_buffer = await self.bot.loop.run_in_executor(None, self.images.profile_gen, player, avatar_bytes, ctx.author.id)
 

@@ -13,7 +13,7 @@ class Misc(commands.Cog):
         self.bot: Advinas = bot
         super().__init__()
 
-    async def cog_check(self, ctx: Context) -> bool:
+    def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in self.bot.BOT_CHANNELS:
                 raise BadChannel('Command not used in an allowed channel.')

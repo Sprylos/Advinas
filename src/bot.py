@@ -1,11 +1,22 @@
 # std
 from typing import (
-    Optional
+    Any,
+    Optional,
+    List,
+    Union
 )
 
 # packages
+import infinitode
 from aiohttp import ClientSession
-from discord import Activity, ActivityType, AllowedMentions, Intents
+from discord import (
+    Activity,
+    ActivityType,
+    AllowedMentions,
+    Message,
+    Intents,
+    Interaction
+)
 from discord.ext.commands.errors import NotOwner
 from discord.utils import utcnow
 from motor import motor_asyncio
@@ -19,7 +30,6 @@ from discord.ext.commands import (
 
 # local
 import config
-import infinitode as inf
 from common.custom import (
     BadChannel,
     BadLevel,
@@ -51,20 +61,21 @@ class Advinas(Bot):
             intents=Intents.all()
         )
 
-    async def start(self, *args, **kwargs):
+    async def start(self, *args: Any, **kwargs: Any):
         # this is simply to make sure the session gets closed after the bot shuts down
         async with ClientSession(loop=self.loop) as self.SESSION:
-            await super().start(*args, **kwargs)
+            async with infinitode.Session(session=self.SESSION) as self.API:  # epic
+                await super().start(*args, **kwargs)
 
     async def setup_hook(self):
         for ext in exts:
             await self.load_extension(f'exts.{ext}')
-        self.BOT_CHANNELS: list[int] = config.bot_channels
-        self.API = inf.Session(session=self.SESSION)
+        self.BOT_CHANNELS: List[int] = config.bot_channels
+        self.LEVELS: List[str]
         self.DB: motor_asyncio.AsyncIOMotorDatabase = motor_asyncio.AsyncIOMotorClient(config.mongo).inf2  # nopep8
         self.online_since = utcnow()
 
-    async def get_context(self, origin, *, cls=None):
+    async def get_context(self, origin: Union[Message, Interaction], *, cls: Any = None):
         return await super().get_context(origin, cls=Context)
 
     async def on_ready(self) -> None:
@@ -91,7 +102,7 @@ class Advinas(Bot):
         elif isinstance(err, BadLevel):
             await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
-        elif isinstance(err, (inf.APIError, MissingRequiredArgument)):
+        elif isinstance(err, (infinitode.errors.APIError, MissingRequiredArgument)):
             await ctx.log(str(err))
             content = str(err)
         else:

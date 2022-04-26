@@ -37,10 +37,12 @@ class Player(pomice.Player):
 
         await self.play(track)
 
+        requester = track.requester
+        mention = requester.mention if requester else '@Invalid User'
         if track.is_stream:
-            description = f":red_circle: **LIVE** [{track.title}]({track.uri}) [{track.requester.mention}]"
+            description = f":red_circle: **LIVE** [{track.title}]({track.uri}) [{mention}]"
         else:
-            description = f"[{track.title}]({track.uri}) [{track.requester.mention}]"
+            description = f"[{track.title}]({track.uri}) [{mention}]"
         embed = discord.Embed(title=f"Now playing", description=description)
         embed.set_thumbnail(url=track.thumbnail)
         self.controller = await self.context.send(embed=embed)
