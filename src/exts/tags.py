@@ -1,8 +1,12 @@
 # std
-from typing import Optional
-
+from typing import (
+    Annotated,
+    Any,
+    Optional,
+)
 # packages
 import discord
+from discord import app_commands
 from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorCollection
 
@@ -52,11 +56,14 @@ class Tags(commands.Cog):
         return ctx.guild is not None
 
     async def cog_command_error(self, ctx: Context, err: Exception) -> None:
-        if isinstance(err, commands.CommandInvokeError):
+        if isinstance(err, commands.HybridCommandError):
+            err = err.original
+        if isinstance(err, app_commands.CommandInvokeError):
             err = err.original
         if isinstance(err, TagError):
-            await ctx.reply(err)  # type: ignore
-            await ctx.log(err)  # type: ignore
+            error = str(err)
+            await ctx.reply(error)
+            await ctx.log(error)
 
     async def _get_tag(self, guild_id: int, name: str) -> Optional[dict]:
         if (ret := await self.col.find_one(
@@ -67,24 +74,24 @@ class Tags(commands.Cog):
                 await self.col.insert_one({'guild': guild_id, 'tags': []})
         return ret
 
-    async def _create_tag(self, ctx: Context, name: str, content: str) -> None:
+    async def _create_tag(self, ctx: Any, name: str, content: str) -> None:
         await self.col.update_one(
-            {'guild': ctx.guild.id},  # type: ignore
+            {'guild': ctx.guild.id},
             {'$push': {'tags': {
                 'name': name.lower(), 'content': content, 'uses': 0, 'owner_id': ctx.author.id, 'created_at': ctx.message.created_at.strftime('%c')
             }}}
         )
 
-    async def _create_alias(self, ctx: Context, new_name: str, old_name: str) -> None:
+    async def _create_alias(self, ctx: Any, new_name: str, old_name: str) -> None:
         await self.col.update_one(
-            {'guild': ctx.guild.id},  # type: ignore
+            {'guild': ctx.guild.id},
             {'$push': {'tags': {
                 'name': new_name.lower(), 'alias': old_name.lower(), 'owner_id': ctx.author.id, 'created_at': ctx.message.created_at.strftime('%c')
             }}}
         )
 
     async def used_tag(self, tag: Tag) -> None:
-        await self.col.update_one({'guild': tag.guild_id, 'tags.name': tag.name}, {'$inc': {'tags.0.uses': 1}})
+        await self.col.update_one({'guild': tag.guild_id, 'tags.name': tag.name}, {'$inc': {'tags.$.uses': 1}})
 
     async def delete_tag(self, tag: Tag) -> None:
         await self.col.update_one({'guild': tag.guild_id}, {'$pull': {'tags': {'name': tag.name}}})
@@ -94,22 +101,23 @@ class Tags(commands.Cog):
             raise TagError('Tag not found.')
         if (alias := res['tags'][0].get('alias', None)) is not None:
             if (result := await self._get_tag(guild_id, alias)) is None:
-                await self.delete_tag(Tag.from_db(res))
+                await self.delete_tag(Tag.minimal(res['tags'][0]['name'], res['guild']))
                 raise TagError('Tag not found.')
             res = result
         return Tag.from_db(res)
 
-    async def create_tag(self, ctx: Context, name: str, content: str) -> None:
-        if await self._get_tag(ctx.guild.id, name):  # type: ignore
+    async def create_tag(self, ctx: Any, name: str, content: str) -> None:
+        if await self._get_tag(ctx.guild.id, name):
             raise TagError('A tag with this name already exists.')
         await self._create_tag(ctx, name, content)
-        await ctx.log('Tag successfully created.')
+        await ctx.reply('Tag successfully created.')
 
-    async def create_alias(self, ctx: Context, new_name: str, old_name: str) -> None:
-        if await self._get_tag(ctx.guild.id, new_name):  # type: ignore
+    async def create_alias(self, ctx: Any, new_name: str, old_name: str) -> None:
+        if await self._get_tag(ctx.guild.id, new_name):
             raise TagError('A tag with this name already exists.')
-        if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:  # type: ignore
-            raise TagError(f'A tag with the name of "{old_name}" does not exist.')  # nopep8
+        if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:
+            raise TagError(
+                f'A tag with the name of "{old_name}" does not exist.')
         else:
             if hasattr(tag, 'alias'):
                 raise TagError('Cannot link an alias to another alias.')
@@ -118,14 +126,17 @@ class Tags(commands.Cog):
 
     @staticmethod
     async def can_delete(ctx: Context, tag: Tag) -> None:
-        author: discord.Member = ctx.author  # type: ignore
+        author: Any = ctx.author
         if author.id != tag.owner_id:
             if not (author.guild_permissions.manage_guild or author.guild_permissions.administrator):
-                raise TagError('This is not your tag and you do not have the manager server permission.')  # nopep8
+                raise TagError(
+                    'This is not your tag and you do not have the manager server permission.')
 
-    @commands.hybrid_group(name='tag', invoke_without_command=True)
-    async def tag(self, ctx: Context, *, name: TagName):
-        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
+    @commands.hybrid_group(name='tag', description='Gets and shows the tag with the given name.', fallback='get')
+    @app_commands.guild_only()
+    @app_commands.describe(name='The name of the tag you want to see.')
+    async def tag(self, ctx: Context, *, name: Annotated[str, TagName]):
+        tag = await self.get_tag(ctx.guild.id, name)
 
         await ctx.reply(tag.content)
         await ctx.log()
@@ -133,33 +144,41 @@ class Tags(commands.Cog):
         # update the usage
         await self.used_tag(tag)
 
-    @tag.command(name='create', aliases=['make'])  # type: ignore
-    async def _create(self, ctx: Context, name: TagName, *, content: commands.clean_content):
-        if len(content) > 2000:  # type: ignore
+    @tag.command(name='create', aliases=['make'], description='Creates a new tag with the given name and content.')
+    @app_commands.guild_only()
+    @app_commands.describe(name='The name of the new tag you want to create.', content='The content of the tag.')
+    async def _create(self, ctx: Context, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
+        if len(content) > 2000:
             return await ctx.send('Tag content is a maximum of 2000 characters.')
 
-        await self.create_tag(ctx, name, content)  # type: ignore
+        await self.create_tag(ctx, name, content)
 
         await ctx.log()
 
-    @tag.command(name='alias')
-    async def _alias(self, ctx: Context, new_name: TagName, *, old_name: TagName):
-        await self.create_alias(ctx, new_name, old_name)  # type: ignore
+    @tag.command(name='alias', description='Creates an alias tag that points to another tag.')
+    @app_commands.guild_only()
+    @app_commands.describe(new_name='The name of the alias.', old_name='The name of the tag you want to refer to.')
+    async def _alias(self, ctx: Context, new_name: Annotated[str, TagName], *, old_name: Annotated[str, TagName]):
+        await self.create_alias(ctx, new_name, old_name)
 
         await ctx.log()
 
-    @tag.command(name='remove', aliases=['delete'])
-    async def _remove(self, ctx: Context, name: TagName):
-        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
+    @tag.command(name='remove', aliases=['delete'], description='Deletes the tag with the given name.')
+    @app_commands.guild_only()
+    @app_commands.describe(name='The name of the tag you want to remove.')
+    async def _remove(self, ctx: Context, name: Annotated[str, TagName]):
+        tag = await self.get_tag(ctx.guild.id, name)
         await self.can_delete(ctx, tag)
 
         await self.delete_tag(tag=tag)
         await ctx.reply(f'Tag "{name}" successfully deleted.')
         await ctx.log()
 
-    @tag.command(name='info')
-    async def _info(self, ctx: Context, *, name: TagName):
-        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
+    @tag.command(name='info', description='Shows useful information about the tag with the given name.')
+    @app_commands.guild_only()
+    @app_commands.describe(name='The name of the tag you want to see information about.')
+    async def _info(self, ctx: Context, *, name: Annotated[str, TagName]):
+        tag = await self.get_tag(ctx.guild.id, name)
 
         em = discord.Embed(title=tag.name, timestamp=tag.created_at)
         user = self.bot.get_user(tag.owner_id) or (await self.bot.fetch_user(tag.owner_id))
@@ -177,4 +196,4 @@ class Tags(commands.Cog):
 
 
 async def setup(bot: Advinas):
-    await bot.add_cog(Tags(bot), guild=discord.Object(796313079708123147))
+    await bot.add_cog(Tags(bot))

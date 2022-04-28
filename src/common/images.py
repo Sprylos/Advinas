@@ -133,17 +133,21 @@ class Images():
                 int(level_score.rank)), anchor="rs", font=self.font_scores)
             if level == "zecred":
                 scores_y += 128
-                level_score: Score = player.__daily_quest  # type: ignore
+                s = player.daily_quest
+                lvl_score = s.score if s is not None else 0
+                lvl_rank = s.rank if s is not None else 0
                 write.text((scores_x, scores_y), "{:,}".format(
-                    level_score.score), anchor="rs", font=self.font_scores)
+                    lvl_score), anchor="rs", font=self.font_scores)
                 write.text((scores_x2, scores_y), "#{:,}".format(
-                    int(level_score.rank)), anchor="rs", font=self.font_scores)
+                    lvl_rank), anchor="rs", font=self.font_scores)
                 scores_y += 64
-                level_score: Score = player.__skill_point  # type: ignore
+                s = player.skill_point
+                lvl_score = s.score if s is not None else 0
+                lvl_rank = s.rank if s is not None else 0
                 write.text((scores_x, scores_y), "{:,}".format(
-                    level_score.score), anchor="rs", font=self.font_scores)
+                    lvl_score), anchor="rs", font=self.font_scores)
                 write.text((scores_x2, scores_y), "#{:,}".format(
-                    int(level_score.rank)), anchor="rs", font=self.font_scores)
+                    lvl_rank), anchor="rs", font=self.font_scores)
                 scores_y = (698 - (5 * 128))
                 scores_x += (128 * 3)
                 scores_x2 += (128 * 3)

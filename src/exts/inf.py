@@ -3,6 +3,7 @@ import re
 import time
 from math import floor, ceil
 from typing import (
+    Annotated,
     Any,
     Dict,
     Optional,
@@ -11,8 +12,13 @@ from typing import (
 
 # packages
 import discord
+from discord import app_commands
 from discord.ext import commands
-
+from infinitode import Player
+from infinitode.errors import APIError, BadArgument
+from motor.motor_asyncio import (
+    AsyncIOMotorCollection
+)
 # local
 from bot import Advinas
 from exts.database import Database
@@ -35,8 +41,6 @@ class Inf(commands.Cog):
         super().__init__()
         self.bot: Advinas = bot
         self.mention_regex = re.compile(r'<@!?([0-9]+)>')
-        self.playerid_regex = re.compile(
-            r'U-([A-Z0-9]{4}-){2}[A-Z0-9]{6}')
         inf = load_json("data/inf.json")
         self.LEVELS: List[str] = list(inf['levels'].keys())
         self.bot.LEVELS = self.LEVELS
@@ -53,7 +57,8 @@ class Inf(commands.Cog):
 
     # Score command
     @commands.hybrid_command(name='score', aliases=['sc'], description='Shows the top 200 scores of the given level.')
-    async def score(self, ctx: Context, level: LevelConverter):
+    @app_commands.describe(level='The level which you want to see the score leaderboard for.')
+    async def score(self, ctx: Context, level: Annotated[str, LevelConverter]):
         normal = await self.bot.API.leaderboards(level)
         endless = await self.bot.API.leaderboards(level, difficulty='ENDLESS_I')
         await ctx.log()
@@ -61,7 +66,8 @@ class Inf(commands.Cog):
 
     # Wave command
     @commands.command(name='waves', aliases=['w'], description='Shows the top 200 waves of the given level.')
-    async def waves(self, ctx: Context, level: LevelConverter):
+    @app_commands.describe(level='The level which you want to see the wave leaderboard for.')
+    async def waves(self, ctx: Context, level: Annotated[str, LevelConverter]):
         normal = await self.bot.API.leaderboards(level, mode='waves')
         endless = await self.bot.API.leaderboards(level, mode='waves', difficulty='ENDLESS_I')
         await ctx.log()
@@ -70,15 +76,18 @@ class Inf(commands.Cog):
     # Season command
     @commands.hybrid_command(name='season', aliases=['sl', 'seasonal'], description='Shows the top 100 players of the season.')
     async def season(self, ctx: Context):
+        await ctx.defer()
         lb = await self.bot.API.seasonal_leaderboard()
         await ctx.log()
         await Paginator(LBSource(lb, f'Season {lb.season} Leaderboards', ctx, headline=f'Player Count: {lb.total}')).start(ctx)
 
     # Dailyquest command
     @commands.hybrid_command(name='dailyquest', aliases=['dq'], description='Shows the top dailyquest scores of today or the given the day.')
+    @app_commands.describe(date='The date you want to see the leaderboard for. FORMAT MUST BE YYYY-MM-DD!')
     async def dailyquest(self, ctx: Context, date: Optional[str] = None):
         lb = await self.bot.API.daily_quest_leaderboards(date, warning=False)
         if lb.is_empty:
+            # TODO: Fix
             # entry = await Database.find_by_key(self.bot.DB.dailyquests, date)
             # try:
             #     scores = entry.get(date, None)
@@ -94,7 +103,8 @@ class Inf(commands.Cog):
 
     # Level command
     @commands.hybrid_command(name='level', aliases=['l'], description='Shows useful information about the given level.')
-    async def level(self, ctx: Context, level: LevelConverter):
+    @app_commands.describe(level='The level which you want to see information for.')
+    async def level(self, ctx: Context, level: Annotated[str, LevelConverter]):
         data = self.LEVEL_INFO[level.lower() if level.startswith('DQ') else level]  # type: ignore # nopep8
         enemy_emojis = "".join(
             [f'<:enemy_{i.lower()}:{self.EMOJIS[f"enemy_{i.lower()}"]}>' for i in data["enemies"]])
@@ -125,6 +135,12 @@ class Inf(commands.Cog):
 
     # Bounty command
     @commands.hybrid_command(name='bounty', aliases=['b'], description='Calculates the optimal timings to place your bounties.')
+    @app_commands.describe(
+        coins='The maximum amount of coins a bounty gives you per round. Cap: 200. DEFAULT: 65',
+        difficulty='The portal difficulty you are playing on. Cap: 4500. DEFAULT: 100',
+        bounties='The number of bounties you have. Cap: 12. DEFAULT: 7',
+        level='If a level is provided, the level\'s difficulty will take priority over the given difficulty.',
+    )
     async def bounty(self, ctx: Context, coins: int = 65, difficulty: float = 100.0, bounties: int = 7, level: Optional[str] = None):
         level, difficulty, bounties, coins = get_level_bounty(
             self.BOUNTY_DIFFS, level=level, difficulty=difficulty, bounties=bounties, coins=coins)
@@ -168,30 +184,35 @@ class Inf(commands.Cog):
 
     # Profile command
     @commands.hybrid_command(name='profile', aliases=['prof'], description='Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).')
-    async def profile(self, ctx: Context, playerid: Optional[str] = None):
-        dc_col, nn_col = self.bot.DB.discordnames, self.bot.DB.nicknames
-        pl, player = None, None
-        start_time = time.time()
-        if not playerid:
+    @app_commands.describe(playerid='The playerid of the player you want to see the profile of.')
+    async def profile(self, ctx: Context, playerid: Optional[str] = None) -> Any:
+        await ctx.defer()
+        dc_col: AsyncIOMotorCollection = self.bot.DB.discordnames
+        nn_col: AsyncIOMotorCollection = self.bot.DB.nicknames
+        pl: Dict[str, Any] = {}
+        player: Optional[Player] = None
+        start_time: float = time.perf_counter()
+        if playerid is None:  # no playerid was given
             pl = await Database.find(dc_col, str(ctx.author.id)
                                      ) or await Database.find(nn_col, ctx.author.display_name
                                                               ) or await Database.find(nn_col, ctx.author.name)
-            if pl:
+            if pl:  # the playerid was found in the database using info about the author
                 player = await self.bot.API.player(playerid=next(iter(pl)))
+                playerid = ''  # make typechecker happy
             else:
-                await ctx.log(reason='No player provided.')
+                await ctx.log('No player provided.')
                 return await ctx.reply('Provide a player to search for.')
-        elif self.playerid_regex.match(playerid):
+        else:
             try:
                 player = await self.bot.API.player(playerid=playerid)
-            except:
-                pass
+            except (APIError, BadArgument):
+                pass  # The playerid is invalid, but we don't give up yet
             else:
                 pl = {player.playerid: "<3"}
-        if not player:
+        if not player:  # still no luck
             pl = await Database.find(nn_col, playerid)
             if not pl:
-                match = self.mention_regex.search(playerid)  # type: ignore # playerid is always a str here # nopep8
+                match = self.mention_regex.search(playerid)
                 new_id = match[0] if match else playerid
                 pl = await Database.find(dc_col, new_id)
                 if not pl:
@@ -204,7 +225,8 @@ class Inf(commands.Cog):
                                                'the U- playerid from your profile page (Top left in the main menu).')
         if not player:
             player = await self.bot.API.player(playerid=next(iter(pl)))
-        data = {player.playerid: {'name': player.nickname, 'key': player.nickname.lower()}}  # nopep8
+        data = {player.playerid: {
+            'name': player.nickname, 'key': player.nickname.lower()}}
         await Database.update(nn_col, data=data)
         try:
             r = await self.bot.SESSION.get(player.avatar_link)
@@ -212,15 +234,15 @@ class Inf(commands.Cog):
             avatar_bytes = await r.read()
         except:
             avatar_bytes = None
-        await player.daily_quest(self.bot.API)
-        await player.skill_point(self.bot.API)
+        await player.fetch_daily_quest(self.bot.API)
+        await player.fetch_skill_point(self.bot.API)
 
         final_buffer = await self.bot.loop.run_in_executor(None, self.images.profile_gen, player, avatar_bytes, ctx.author.id)
 
         file = discord.File(filename=f'{player.playerid}.png', fp=final_buffer)
-        await ctx.reply(f'Finished in {time.time() - start_time:0.3f}s', file=file)
+        await ctx.reply(f'Finished in {time.perf_counter() - start_time:0.3f}s', file=file)
         await ctx.log()
 
 
 async def setup(bot: Advinas):
-    await bot.add_cog(Inf(bot), guild=discord.Object(796313079708123147))
+    await bot.add_cog(Inf(bot))

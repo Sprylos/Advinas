@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # std
 import traceback
 from dataclasses import dataclass
@@ -30,18 +32,21 @@ class BadChannel(CheckFailure):
 
 class TagError(RuntimeError):
     '''Raised for internal tag errors that should be ignored by the global error handler.'''
+    pass
 
 
 class Context(commands.Context):
     """Custom Context class for easier logging."""
 
-    async def log(self, reason: Optional[str] = None):
+    async def log(self, reason: Optional[str] = None, /, *, success: Optional[bool] = None):
         '''Logs the usage of commands. Should be called at the end of any command.'''
 
-        success = True if reason is None else False
+        success = success if success is not None else (
+            True if reason is None else False)
 
         command = self.command.name.lower()  # type: ignore
-        args = [str(arg) for arg in self.args[2:]]
+        print(self.args)
+        args = [str(arg) for arg in self.args[1:]]
         content = ' '.join(args) if args and args[0] is not None else ''
 
         value = f'`/{command.lower()}` `{content}`' if content else f'`/{command.lower()}`'
@@ -74,7 +79,7 @@ class Context(commands.Context):
         '''Called when an unhandled Exception occurs to inform me about the issue.'''
 
         command = self.command.name.lower()  # type: ignore
-        args = [str(arg) for arg in self.args[2:]]
+        args = [str(arg) for arg in self.args[1:]]
         content = ' '.join(args) if args and args[0] is not None else ''
 
         tb = codeblock(' '.join(['Error occured in command', command, '\n']) + ''.join(
@@ -151,7 +156,7 @@ class Tag:
     created_at: datetime
 
     @classmethod
-    def from_db(cls, payload: Dict[str, Union[str, List[Dict[str, str]]]]):
+    def from_db(cls, payload: Dict[str, Union[str, List[Dict[str, str]]]]) -> Tag:
         '''
         Example paylod:
         {
@@ -162,5 +167,10 @@ class Tag:
             ]
         }
         '''
-        t = payload['tags'][0]
-        return cls(t['name'], t['content'], int(payload['guild']), t['uses'], t['owner_id'], datetime.strptime(t['created_at'], '%c'))  # type: ignore # nopep8
+        t: Dict[str, str] = payload['tags'][0]  # type: ignore
+        guild = int(payload['guild'])  # type: ignore
+        return cls(t['name'], t['content'], guild, int(t['uses']), int(t['owner_id']), datetime.strptime(t['created_at'], '%c'))
+
+    @classmethod
+    def minimal(cls, name: str, guild: int) -> Tag:
+        return cls(name, '', guild, 0, 0, datetime.now())

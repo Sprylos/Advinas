@@ -1,5 +1,6 @@
 # packages
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 # local
@@ -20,13 +21,13 @@ class Misc(commands.Cog):
         return True
 
     # ping command
-    @commands.hybrid_command(name='ping')
+    @commands.hybrid_command(name='ping', description='Shows the bot\'s latency.')
     async def ping(self, ctx: Context):
         await ctx.reply(f'Latency: {round(self.bot.latency * 1000)}ms.', ephemeral=True)
         await ctx.log()
 
     # invite command
-    @commands.hybrid_command(name='invite')
+    @commands.hybrid_command(name='invite', description='Gives you a link to invite the bot to your own server.')
     async def invite(self, ctx: Context):
         em = discord.Embed(
             description=r'[Invite The Bot](https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands)'
@@ -36,15 +37,15 @@ class Misc(commands.Cog):
         await ctx.log()
 
     # uptime command
-    @commands.hybrid_command(name='uptime')
+    @commands.hybrid_command(name='uptime', description='Shows the bots uptime since the last reboot.')
     async def uptime(self, ctx: Context):
         delta_uptime = discord.utils.utcnow() - self.bot.online_since
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        await ctx.reply(content=f"Online for: **{days}d, {hours}h, {minutes}m, {seconds}s.**")
+        await ctx.reply(content=f"Time since last reboot: **{days}d, {hours}h, {minutes}m, {seconds}s.**")
         await ctx.log()
 
 
 async def setup(bot: Advinas):
-    await bot.add_cog(Misc(bot), guild=discord.Object(796313079708123147))
+    await bot.add_cog(Misc(bot))

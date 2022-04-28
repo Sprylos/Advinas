@@ -10,6 +10,7 @@ from typing import (
 import infinitode
 from aiohttp import ClientSession
 from discord import (
+    app_commands,
     Activity,
     ActivityType,
     AllowedMentions,
@@ -17,14 +18,16 @@ from discord import (
     Intents,
     Interaction
 )
-from discord.ext.commands.errors import NotOwner
 from discord.utils import utcnow
 from motor import motor_asyncio
 from discord.ext.commands import (
     Bot,
+    BadArgument,
     CommandNotFound,
     CommandInvokeError,
+    HybridCommandError,
     MissingRequiredArgument,
+    NotOwner,
     when_mentioned_or
 )
 
@@ -54,7 +57,7 @@ class Advinas(Bot):
     def __init__(self, prefix: Optional[str] = None) -> None:
         super().__init__(
             command_prefix=when_mentioned_or(prefix or 'a!'),
-            activity=Activity(type=ActivityType.watching, name="You | /invite | v2.4"),  # nopep8
+            activity=Activity(type=ActivityType.watching, name="You | /invite | v3.0"),  # nopep8
             allowed_mentions=AllowedMentions(everyone=False, users=True, roles=False, replied_user=False),  # nopep8
             help_command=None,
             case_insensitive=True,
@@ -90,7 +93,10 @@ class Advinas(Bot):
     async def on_command_error(self, ctx: Context, err: Exception) -> None:
         '''Error handler'''
 
-        if isinstance(err, CommandInvokeError):
+        if isinstance(err, (CommandInvokeError, HybridCommandError)):
+            err = err.original
+
+        if isinstance(err, app_commands.CommandInvokeError):
             err = err.original
 
         if isinstance(err, (CommandNotFound, NotOwner, TagError)):
@@ -102,7 +108,7 @@ class Advinas(Bot):
         elif isinstance(err, BadLevel):
             await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
-        elif isinstance(err, (infinitode.errors.APIError, MissingRequiredArgument)):
+        elif isinstance(err, (infinitode.errors.APIError, BadArgument, MissingRequiredArgument)):
             await ctx.log(str(err))
             content = str(err)
         else:

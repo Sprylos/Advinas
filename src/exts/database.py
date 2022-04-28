@@ -36,15 +36,15 @@ class Database(commands.Cog):
         # self.eval_leaderboards.start() # don't
 
     @staticmethod
-    async def find(col: Collection, data: Any):
+    async def find(col: Collection, data: Any) -> Any:
         return await col.find_one({"$text": {"$search": str(data)}}, {'_id': 0})
 
     @staticmethod
-    async def find_by_key(col: Collection, data: Any):
+    async def find_by_key(col: Collection, data: Any) -> Any:
         return await col.find_one({str(data): {'$exists': True}})
 
     @staticmethod
-    async def update(col: Collection, data: Any):
+    async def update(col: Collection, data: Any) -> None:
         if not isinstance(data, Mapping):
             for document in data:
                 await col.update_one(filter=document,
