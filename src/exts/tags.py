@@ -136,7 +136,8 @@ class Tags(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see.')
     async def tag(self, ctx: Context, *, name: Annotated[str, TagName]):
-        tag = await self.get_tag(ctx.guild.id, name)
+        # guild is never None
+        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
 
         await ctx.reply(tag.content)
         await ctx.log()
@@ -167,7 +168,8 @@ class Tags(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to remove.')
     async def _remove(self, ctx: Context, name: Annotated[str, TagName]):
-        tag = await self.get_tag(ctx.guild.id, name)
+        # guild is never None
+        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
         await self.can_delete(ctx, tag)
 
         await self.delete_tag(tag=tag)
@@ -178,7 +180,8 @@ class Tags(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see information about.')
     async def _info(self, ctx: Context, *, name: Annotated[str, TagName]):
-        tag = await self.get_tag(ctx.guild.id, name)
+        # guild is never None
+        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
 
         em = discord.Embed(title=tag.name, timestamp=tag.created_at)
         user = self.bot.get_user(tag.owner_id) or (await self.bot.fetch_user(tag.owner_id))
