@@ -19,7 +19,7 @@ from discord import (
     Interaction
 )
 from discord.utils import utcnow
-from motor import motor_asyncio
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from discord.ext.commands import (
     Bot,
     BadArgument,
@@ -57,8 +57,10 @@ class Advinas(Bot):
     def __init__(self, prefix: Optional[str] = None) -> None:
         super().__init__(
             command_prefix=when_mentioned_or(prefix or 'a!'),
-            activity=Activity(type=ActivityType.watching, name="You | /invite | v3.0"),  # nopep8
-            allowed_mentions=AllowedMentions(everyone=False, users=True, roles=False, replied_user=False),  # nopep8
+            activity=Activity(
+                type=ActivityType.watching, name="You | /invite | v3.0"),
+            allowed_mentions=AllowedMentions(
+                everyone=False, users=True, roles=False, replied_user=False),
             help_command=None,
             case_insensitive=True,
             intents=Intents.all()
@@ -75,7 +77,7 @@ class Advinas(Bot):
             await self.load_extension(f'exts.{ext}')
         self.BOT_CHANNELS: List[int] = config.bot_channels
         self.LEVELS: List[str]
-        self.DB: motor_asyncio.AsyncIOMotorDatabase = motor_asyncio.AsyncIOMotorClient(config.mongo).inf2  # nopep8
+        self.DB: AsyncIOMotorDatabase = AsyncIOMotorClient(config.mongo).inf2
         self.online_since = utcnow()
 
     async def get_context(self, origin: Union[Message, Interaction], *, cls: Any = None):

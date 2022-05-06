@@ -5,10 +5,9 @@ import traceback
 from dataclasses import dataclass
 from datetime import datetime
 from typing import (
+    Any,
     Dict,
-    List,
     Optional,
-    Union
 )
 
 # packages
@@ -31,7 +30,7 @@ class BadChannel(CheckFailure):
 
 
 class TagError(RuntimeError):
-    '''Raised for internal tag errors that should be ignored by the global error handler.'''
+    """Raised for internal tag errors that should be ignored by the global error handler."""
     pass
 
 
@@ -39,13 +38,12 @@ class Context(commands.Context):
     """Custom Context class for easier logging."""
 
     async def log(self, reason: Optional[str] = None, /, *, success: Optional[bool] = None):
-        '''Logs the usage of commands. Should be called at the end of any command.'''
+        """Logs the usage of commands. Should be called at the end of any command."""
 
         success = success if success is not None else (
             True if reason is None else False)
 
         command = self.command.name.lower()  # type: ignore
-        print(self.args)
         args = [str(arg) for arg in self.args[1:]]
         content = ' '.join(args) if args and args[0] is not None else ''
 
@@ -76,7 +74,7 @@ class Context(commands.Context):
         await self.bot._log.send(embed=em)
 
     async def trace(self, err: Exception):
-        '''Called when an unhandled Exception occurs to inform me about the issue.'''
+        """Called when an unhandled Exception occurs to inform me about the issue."""
 
         command = self.command.name.lower()  # type: ignore
         args = [str(arg) for arg in self.args[1:]]
@@ -156,20 +154,11 @@ class Tag:
     created_at: datetime
 
     @classmethod
-    def from_db(cls, payload: Dict[str, Union[str, List[Dict[str, str]]]]) -> Tag:
-        '''
-        Example paylod:
-        {
-            'guild': 796313079708123147, 
-            'tags': [
-                {'name': 'hi', 'content': 'Hello!', 'uses': 0, 
-                'owner_id': 592488492085411840, 'created_at': 'Wed Apr  6 12:27:24 2022'}
-            ]
-        }
-        '''
-        t: Dict[str, str] = payload['tags'][0]  # type: ignore
-        guild = int(payload['guild'])  # type: ignore
-        return cls(t['name'], t['content'], guild, int(t['uses']), int(t['owner_id']), datetime.strptime(t['created_at'], '%c'))
+    def from_db(cls, payload: Dict[str, Any]) -> Tag:
+        """Creates a new Tag object with the given database payload."""
+        t: Dict[str, Any] = payload['tags'][0]
+        guild = int(payload['guild'])
+        return cls(t['name'], t['content'], guild, int(t['uses']), int(t['owner_id']), t['created_at'])
 
     @classmethod
     def minimal(cls, name: str, guild: int) -> Tag:
