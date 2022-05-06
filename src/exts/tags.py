@@ -78,7 +78,7 @@ class Tags(commands.Cog):
         await self.col.update_one(
             {'guild': ctx.guild.id},
             {'$push': {'tags': {
-                'name': name.lower(), 'content': content, 'uses': 0, 'owner_id': ctx.author.id, 'created_at': ctx.message.created_at.strftime('%c')
+                'name': name.lower(), 'content': content, 'uses': 0, 'owner_id': ctx.author.id, 'created_at': ctx.message.created_at
             }}}
         )
 
@@ -86,7 +86,7 @@ class Tags(commands.Cog):
         await self.col.update_one(
             {'guild': ctx.guild.id},
             {'$push': {'tags': {
-                'name': new_name.lower(), 'alias': old_name.lower(), 'owner_id': ctx.author.id, 'created_at': ctx.message.created_at.strftime('%c')
+                'name': new_name.lower(), 'alias': old_name.lower(), 'owner_id': ctx.author.id, 'created_at': ctx.message.created_at
             }}}
         )
 
@@ -188,7 +188,7 @@ class Tags(commands.Cog):
         em.set_author(name=str(user), icon_url=user.display_avatar.url)
         em.add_field(name='Owner', value=f'<@{tag.owner_id}>')
         em.add_field(name='Uses', value=tag.uses)
-        em.set_footer(text='Tag created at')
+        em.set_footer(text='Tag created at (UTC)')
 
         await ctx.reply(embed=em)
         await ctx.log()
