@@ -48,7 +48,7 @@ exts = (
     'inf',
     'misc',
     # 'mod',
-    # 'music',
+    'music',
     'tags',
 )
 
@@ -122,7 +122,8 @@ class Advinas(Bot):
 if __name__ == '__main__':
     bot = Advinas()
 
-    # from subprocess import Popen
-    # process = Popen(['java', '-jar', 'Lavalink.jar'])
-    # time.sleep(15)
+    from subprocess import Popen
+    import time
+    process = Popen(['java', '-jar', 'Lavalink.jar'])
+    time.sleep(10)
     bot.run(config.token)
