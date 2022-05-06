@@ -26,8 +26,8 @@ class Player(pomice.Player):
         super().__init__(*args, **kwargs)
 
         self.queue = asyncio.Queue()
-        self.controller: discord.Message
-        self.context: commands.Context
+        self.controller: Optional[discord.Message] = None
+        self.context: Optional[Context] = None
         self.dj: discord.Member
 
     async def do_next(self) -> None:
@@ -50,7 +50,7 @@ class Player(pomice.Player):
             description = f"[{track.title}]({track.uri}) [{mention}]"
         embed = discord.Embed(title=f"Now playing", description=description)
         embed.set_thumbnail(url=track.thumbnail)
-        self.controller = await self.context.send(embed=embed)
+        self.controller = await self.context.send(embed=embed)  # type: ignore
 
     async def teardown(self):
         with suppress((discord.HTTPException), (KeyError)):
@@ -298,7 +298,6 @@ class Music(commands.Cog):
             if player.queue.qsize() < 3:
                 return await ctx.reply('The queue is empty. Add some songs to shuffle the queue.')
             await ctx.reply('The queue was shuffled.')
-            player: Player
             return random.shuffle(player.queue._queue)  # type: ignore
         else:
             await ctx.reply(f'Only the original requester may shuffle the queue.', delete_after=15)
