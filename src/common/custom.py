@@ -37,22 +37,29 @@ class TagError(RuntimeError):
 class Context(commands.Context):
     """Custom Context class for easier logging."""
 
+    @property
+    def _command_name(self) -> str:
+        return self.command.name  # type: ignore
+
+    @property
+    def _invoked_arguments(self) -> str:
+        command = self._command_name
+
+        if self.invoked_parents:
+            command = ' '.join(self.invoked_parents) + ' ' + command
+
+        return f'`{self.prefix or "/"}{command}` ' + ' '.join([f'`{k}={v}`' for k, v in self.kwargs.items()])
+
     async def log(self, reason: Optional[str] = None, /, *, success: Optional[bool] = None):
         """Logs the usage of commands. Should be called at the end of any command."""
 
         success = success if success is not None else (
             True if reason is None else False)
 
-        command = self.command.name.lower()  # type: ignore
-        args = [str(arg) for arg in self.args[1:]]
-        content = ' '.join(args) if args and args[0] is not None else ''
-
-        value = f'`/{command.lower()}` `{content}`' if content else f'`/{command.lower()}`'
-
         color = Color.green() if success else Color.red()
 
         em = Embed(
-            title=f"**{command.title()} Command** used in `{self.channel}`", colour=color
+            title=f"**{self._command_name.title()} Command** used in `{self.channel}`", colour=color
         ).set_footer(
             text=f"Command run by {self.author}",
             icon_url=self.author.display_avatar.url
@@ -62,7 +69,7 @@ class Context(commands.Context):
             inline=False
         ).add_field(
             name='**Arguments**',
-            value=value,
+            value=self._invoked_arguments,
             inline=False
         )
         if reason:
@@ -76,11 +83,7 @@ class Context(commands.Context):
     async def trace(self, err: Exception):
         """Called when an unhandled Exception occurs to inform me about the issue."""
 
-        command = self.command.name.lower()  # type: ignore
-        args = [str(arg) for arg in self.args[1:]]
-        content = ' '.join(args) if args and args[0] is not None else ''
-
-        tb = codeblock(' '.join(['Error occured in command', command, '\n']) + ''.join(
+        tb = codeblock(' '.join(['Error occured in command', self._command_name, '\n']) + ''.join(
             traceback.format_exception(type(err), err, err.__traceback__)))
         if len(tb) > 1990:
             await self.bot._trace.send(codeblock(tb[2:1990]))
@@ -90,13 +93,13 @@ class Context(commands.Context):
             await self.bot._trace.send(tb)
             tb = tb[:1000] + '```'
         em = Embed(
-            title=f"**{command.title()} Command** used in `{self.channel}`", colour=Color.red()
+            title=f"**{self._command_name.title()} Command** used in `{self.channel}`", colour=Color.red()
         ).set_footer(
             text=f"Command run by {self.author}",
             icon_url=self.author.display_avatar.url
         ).add_field(
             name='**Content**',
-            value=f'`/{command}` `{content}`' if content else f'`/{command}`',
+            value=self._invoked_arguments,
             inline=False
         ).add_field(
             name='**Traceback**',
