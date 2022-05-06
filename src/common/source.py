@@ -1,24 +1,32 @@
-# std
-from typing import Optional
+from __future__ import annotations
 
+# std
+from typing import (
+    Optional,
+    TYPE_CHECKING
+)
 # packages
 import discord
 from discord.ext import menus
+from infinitode import Leaderboard
 
 # locals
 from common.custom import Context
 from common.utils import codeblock
-from infinitode import Leaderboard
+
+if TYPE_CHECKING:
+    from .views import Paginator, ScorePaginator
 
 
 class LBSource(menus.ListPageSource):
-    def __init__(self, data: Leaderboard, title: str, ctx: Context, headline: Optional[str] = None):
+    def __init__(self, ctx: Context, data: Leaderboard, title: str, headline: Optional[str] = None):
         self.title = title
         self.headline = headline
         self.user = ctx.author
+        self.entries: Leaderboard
         super().__init__(data, per_page=20)
 
-    async def format_page(self, menu, entries: Leaderboard):
+    async def format_page(self, menu: Paginator, entries: Leaderboard):
         description = codeblock(
             (f'{self.headline}\n' if self.headline else '') + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
@@ -26,11 +34,11 @@ class LBSource(menus.ListPageSource):
 
 
 class ScoreLBSource(LBSource):
-    def __init__(self, data: Leaderboard, endless_data: Leaderboard, title: str, ctx):
-        super().__init__(data, title=title, ctx=ctx)
+    def __init__(self, ctx: Context, data: Leaderboard, endless_data: Leaderboard, title: str):
+        super().__init__(ctx, data, title=title)
         self.endless_entries = endless_data
 
-    async def get_page(self, menu, page_number):
+    async def get_page(self, menu: ScorePaginator, page_number: int) -> Leaderboard:
         if not menu.endless:
             entries = self.entries
         else:
@@ -38,7 +46,7 @@ class ScoreLBSource(LBSource):
         base = page_number * self.per_page
         return entries[base:base + self.per_page]
 
-    async def format_page(self, menu, entries: Leaderboard):
+    async def format_page(self, menu: ScorePaginator, entries: Leaderboard):
         mode = 'Endless' if menu.endless else 'Normal'
         description = codeblock(f'{mode} mode:\n' + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415

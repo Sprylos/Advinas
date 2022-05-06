@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # std
 import re
 import time
@@ -16,9 +18,8 @@ from discord import app_commands
 from discord.ext import commands
 from infinitode import Player
 from infinitode.errors import APIError, BadArgument
-from motor.motor_asyncio import (
-    AsyncIOMotorCollection
-)
+from motor.motor_asyncio import AsyncIOMotorCollection
+
 # local
 from bot import Advinas
 from exts.database import Database
@@ -62,7 +63,7 @@ class Inf(commands.Cog):
         normal = await self.bot.API.leaderboards(level)
         endless = await self.bot.API.leaderboards(level, difficulty='ENDLESS_I')
         await ctx.log()
-        await ScorePaginator(ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Score)', ctx)).start(ctx)
+        await ScorePaginator(ScoreLBSource(ctx, normal, endless, f'Level {level} Leaderboards (Score)')).start(ctx)
 
     # Wave command
     @commands.command(name='waves', aliases=['w'], description='Shows the top 200 waves of the given level.')
@@ -71,7 +72,7 @@ class Inf(commands.Cog):
         normal = await self.bot.API.leaderboards(level, mode='waves')
         endless = await self.bot.API.leaderboards(level, mode='waves', difficulty='ENDLESS_I')
         await ctx.log()
-        await ScorePaginator(ScoreLBSource(normal, endless, f'Level {level} Leaderboards (Waves)', ctx)).start(ctx)
+        await ScorePaginator(ScoreLBSource(ctx, normal, endless, f'Level {level} Leaderboards (Waves)')).start(ctx)
 
     # Season command
     @commands.hybrid_command(name='season', aliases=['sl', 'seasonal'], description='Shows the top 100 players of the season.')
@@ -79,7 +80,7 @@ class Inf(commands.Cog):
         await ctx.defer()
         lb = await self.bot.API.seasonal_leaderboard()
         await ctx.log()
-        await Paginator(LBSource(lb, f'Season {lb.season} Leaderboards', ctx, headline=f'Player Count: {lb.total}')).start(ctx)
+        await Paginator(LBSource(ctx, lb, f'Season {lb.season} Leaderboards',  headline=f'Player Count: {lb.total}')).start(ctx)
 
     # Dailyquest command
     @commands.hybrid_command(name='dailyquest', aliases=['dq'], description='Shows the top dailyquest scores of today or the given the day.')
@@ -99,13 +100,14 @@ class Inf(commands.Cog):
             return await ctx.reply('Could not find anything for that date. Sorry.')
 
         await ctx.log()
-        await Paginator(LBSource(lb, f'Dailyquest Leaderboards ({date})', ctx)).start(ctx)
+        await Paginator(LBSource(ctx, lb, f'Dailyquest Leaderboards ({date})')).start(ctx)
 
     # Level command
     @commands.hybrid_command(name='level', aliases=['l'], description='Shows useful information about the given level.')
     @app_commands.describe(level='The level which you want to see information for.')
     async def level(self, ctx: Context, level: Annotated[str, LevelConverter]):
-        data = self.LEVEL_INFO[level.lower() if level.startswith('DQ') else level]  # type: ignore # nopep8
+        data = self.LEVEL_INFO[level.lower(
+        ) if level.startswith('DQ') else level]
         enemy_emojis = "".join(
             [f'<:enemy_{i.lower()}:{self.EMOJIS[f"enemy_{i.lower()}"]}>' for i in data["enemies"]])
         enemy_emojis = enemy_emojis or "None"
@@ -123,7 +125,7 @@ class Inf(commands.Cog):
         try:
             rt_lb = await self.bot.API.runtime_leaderboards(level, "U-T68Z-T3JV-HK3DJY")
             em.add_field(name="Top 1% Threshold", value="{:,}".format(int(rt_lb[200].score)))  # nopep8
-        except:
+        except APIError:
             pass
         if base:
             em.add_field(name="Base Effects", value=base, inline=False)
