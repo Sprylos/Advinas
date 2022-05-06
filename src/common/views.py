@@ -1,8 +1,7 @@
 # std
 from typing import (
     Any,
-    Dict,
-    TYPE_CHECKING
+    Dict
 )
 
 # packages

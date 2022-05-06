@@ -1,9 +1,5 @@
 git+https://github.com/Rapptz/discord.py@master
 git+https://github.com/Rapptz/discord-ext-menus@master
-lxml
-bs4
 Pillow
-pymongo
-python-dateutil
-slash-util
+motor
 pomice
