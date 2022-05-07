@@ -102,7 +102,7 @@ class Advinas(Bot):
         if isinstance(err, app_commands.CommandInvokeError):
             err = err.original
 
-        if isinstance(err, (CommandNotFound, NotOwner, TagError)):
+        if isinstance(err, (CommandNotFound, NotOwner)):
             return  # Ignore
         elif isinstance(err, BadChannel):
             await ctx.log('Used in wrong channel.')
@@ -111,7 +111,7 @@ class Advinas(Bot):
         elif isinstance(err, BadLevel):
             await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
-        elif isinstance(err, (infinitode.errors.APIError, BadArgument, MissingRequiredArgument)):
+        elif isinstance(err, (infinitode.errors.APIError, BadArgument, MissingRequiredArgument, TagError)):
             await ctx.log(str(err))
             content = str(err)
         else:

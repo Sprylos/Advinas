@@ -55,16 +55,6 @@ class Tags(commands.Cog):
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
 
-    async def cog_command_error(self, ctx: Context, err: Exception) -> None:
-        if isinstance(err, commands.HybridCommandError):
-            err = err.original
-        if isinstance(err, app_commands.CommandInvokeError):
-            err = err.original
-        if isinstance(err, TagError):
-            error = str(err)
-            await ctx.reply(error)
-            await ctx.log(error)
-
     async def _get_tag(self, guild_id: int, name: str) -> Optional[dict]:
         if (ret := await self.col.find_one(
             {"guild": guild_id, "tags.name": name.lower()},
