@@ -16,7 +16,7 @@ from typing import (
 import discord
 from discord import app_commands
 from discord.ext import commands
-from infinitode import Player
+from infinitode import Player, Leaderboard
 from infinitode.errors import APIError, BadArgument
 from motor.motor_asyncio import AsyncIOMotorCollection
 
@@ -84,23 +84,23 @@ class Inf(commands.Cog):
 
     # Dailyquest command
     @commands.hybrid_command(name='dailyquest', aliases=['dq'], description='Shows the top dailyquest scores of today or the given the day.')
-    @app_commands.describe(date='The date you want to see the leaderboard for. FORMAT MUST BE YYYY-MM-DD!')
+    @app_commands.describe(date='The date you want to see the leaderboard for. Only available beyond 2022-02-09. FORMAT: YYYY-MM-DD!')
     async def dailyquest(self, ctx: Context, date: Optional[str] = None):
         lb = await self.bot.API.daily_quest_leaderboards(date, warning=False)
         if lb.is_empty:
-            # TODO: Fix
-            # entry = await Database.find_by_key(self.bot.DB.dailyquests, date)
-            # try:
-            #     scores = entry.get(date, None)
-            #     lb = Leaderboard('', '', '', '', '', date=date)
-            #     for score in scores:
-            #         lb._append(Score('', '', '', '', **score))
-            # except AttributeError:
-            await ctx.log('Invalid date provided.')
-            return await ctx.reply('Could not find anything for that date. Sorry.')
+            entry = await Database.find_by_key(self.bot.DB.dailyquests, date)
+            try:
+                scores = entry.get(lb.date)
+            except (AttributeError, KeyError):
+                await ctx.log('Invalid date provided.')
+                return await ctx.reply('Could not find anything for that date. Sorry.')
+            payload = {'player': {'total': 69420}, 'leaderboards': scores}
+            lb = Leaderboard.from_payload(
+                '', '', '', '', None, payload, date=lb.date)
 
+        ctx.kwargs['date'] = lb.date
         await ctx.log()
-        await Paginator(LBSource(ctx, lb, f'Dailyquest Leaderboards ({date})')).start(ctx)
+        await Paginator(LBSource(ctx, lb, f'Dailyquest Leaderboards ({lb.date})')).start(ctx)
 
     # Level command
     @commands.hybrid_command(name='level', aliases=['l'], description='Shows useful information about the given level.')
