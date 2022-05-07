@@ -32,7 +32,7 @@ class Database(commands.Cog):
         # make sure the DB is ready
         await asyncio.sleep(1)
         self._discords, self._nicks, self._dailyquests = self.bot.DB.discordnames, self.bot.DB.nicknames, self.bot.DB.dailyquests
-        # self.save_dailyquest_leaderboard.start()
+        self.save_dailyquest_leaderboard.start()
         # self.eval_leaderboards.start() # don't
 
     @staticmethod
