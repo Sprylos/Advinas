@@ -90,6 +90,7 @@ class Advinas(Bot):
         await self.wait_until_ready()
         self._log = await self.fetch_channel(config.log_channel)
         self._trace = await self.fetch_channel(config.trace_channel)
+        self._join = await self.fetch_channel(config.join_channel)
         print("online")
 
     async def on_command_error(self, ctx: Context, err: Exception) -> None:
