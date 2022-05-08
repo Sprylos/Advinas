@@ -47,7 +47,7 @@ exts = (
     'database',
     'inf',
     'misc',
-    # 'mod',
+    'mod',
     'music',
     'tags',
 )
