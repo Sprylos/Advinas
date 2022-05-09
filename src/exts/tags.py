@@ -12,7 +12,12 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 
 # local
 from bot import Advinas
-from common.custom import Context, Tag, TagName, TagError
+from common.custom import (
+    Context,
+    Tag,
+    TagName,
+    TagError
+)
 
 
 class Tags(commands.Cog):
@@ -45,12 +50,6 @@ class Tags(commands.Cog):
             ]
         }
         '''
-
-    # declare group commands
-    # tag_group = app_commands.Group(
-    #     name="tag",
-    #     description="Shows tags and allows for useful utility."
-    # )
 
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
@@ -86,28 +85,36 @@ class Tags(commands.Cog):
     async def delete_tag(self, tag: Tag) -> None:
         await self.col.update_one({'guild': tag.guild_id}, {'$pull': {'tags': {'name': tag.name}}})
 
-    async def get_tag(self, guild_id: int, name: str) -> Tag:
+    async def edit_tag(self, tag: Tag, content: str):
+        await self.col.update_one(
+            {'guild': tag.guild_id, 'tags.name': tag.name},
+            {'$set': {'tags.$.content': content}}
+        )
+
+    async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False) -> Tag:
         if (res := await self._get_tag(guild_id, name)) is None:
             raise TagError('Tag not found.')
         if (alias := res['tags'][0].get('alias', None)) is not None:
             if (result := await self._get_tag(guild_id, alias)) is None:
                 await self.delete_tag(Tag.minimal(res['tags'][0]['name'], res['guild']))
                 raise TagError('Tag not found.')
+            if no_alias:
+                raise TagError('You may not edit an alias.')
             res = result
         return Tag.from_db(res)
 
     async def create_tag(self, ctx: Any, name: str, content: str) -> None:
         if await self._get_tag(ctx.guild.id, name):
-            raise TagError('A tag with this name already exists.')
+            raise TagError(f'A tag with the name "{name}" already exists.')
         await self._create_tag(ctx, name, content)
-        await ctx.reply('Tag successfully created.')
+        await ctx.reply(f'Tag "{name}" successfully created.')
 
     async def create_alias(self, ctx: Any, new_name: str, old_name: str) -> None:
         if await self._get_tag(ctx.guild.id, new_name):
-            raise TagError('A tag with this name already exists.')
+            raise TagError(f'A tag with the name "{new_name}" already exists.')
         if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:
             raise TagError(
-                f'A tag with the name of "{old_name}" does not exist.')
+                f'A tag with the name "{old_name}" does not exist.')
         else:
             if hasattr(tag, 'alias'):
                 raise TagError('Cannot link an alias to another alias.')
@@ -115,7 +122,7 @@ class Tags(commands.Cog):
         await ctx.reply(f'Tag alias "{new_name}" that points to "{old_name}" successfully created.')
 
     @staticmethod
-    async def can_delete(ctx: Context, tag: Tag) -> None:
+    async def is_privileged(ctx: Context, tag: Tag) -> None:
         author: Any = ctx.author
         if author.id != tag.owner_id:
             if not (author.guild_permissions.manage_guild or author.guild_permissions.administrator):
@@ -154,13 +161,25 @@ class Tags(commands.Cog):
 
         await ctx.log()
 
+    @tag.command(name='edit', description='Edits an existing tag. Aliases may not be edited.')
+    @app_commands.guild_only()
+    @app_commands.describe(name='The name of the new tag you want to edit.', content='The new content of the tag.')
+    async def _edit(self, ctx: Context, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
+        # guild is never None
+        tag = await self.get_tag(ctx.guild.id, name, no_alias=True)  # type: ignore # nopep8
+        await self.is_privileged(ctx, tag)
+
+        await self.edit_tag(tag, content)
+        await ctx.reply(f'Tag "{name}" successfully edited.')
+        await ctx.log()
+
     @tag.command(name='remove', aliases=['delete'], description='Deletes the tag with the given name.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to remove.')
     async def _remove(self, ctx: Context, name: Annotated[str, TagName]):
         # guild is never None
         tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
-        await self.can_delete(ctx, tag)
+        await self.is_privileged(ctx, tag)
 
         await self.delete_tag(tag=tag)
         await ctx.reply(f'Tag "{name}" successfully deleted.')
