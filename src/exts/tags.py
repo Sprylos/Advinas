@@ -2,6 +2,8 @@
 from typing import (
     Annotated,
     Any,
+    Dict,
+    List,
     Optional,
 )
 # packages
@@ -12,6 +14,8 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 
 # local
 from bot import Advinas
+from common.source import TagSource
+from common.views import Paginator
 from common.custom import (
     Context,
     Tag,
@@ -54,11 +58,12 @@ class Tags(commands.Cog):
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
 
-    async def _get_tag(self, guild_id: int, name: str) -> Optional[dict]:
-        if (ret := await self.col.find_one(
-            {"guild": guild_id, "tags.name": name.lower()},
-            {"_id": 0, "guild": 1, "tags.$": 1}
-        )) is None:
+    async def _get_tag(self, guild_id: int, name: str) -> Optional[Dict[str, Any]]:
+        ret: Optional[Dict[str, Any]] = await self.col.find_one(
+            {'guild': guild_id, 'tags.name': name.lower()},
+            {'_id': 0, 'guild': 1, 'tags.$': 1}
+        )
+        if ret is None:
             if await self.col.find_one({'guild': guild_id}) is None:
                 await self.col.insert_one({'guild': guild_id, 'tags': []})
         return ret
@@ -85,11 +90,26 @@ class Tags(commands.Cog):
     async def delete_tag(self, tag: Tag) -> None:
         await self.col.update_one({'guild': tag.guild_id}, {'$pull': {'tags': {'name': tag.name}}})
 
-    async def edit_tag(self, tag: Tag, content: str):
+    async def edit_tag(self, tag: Tag, content: str) -> None:
         await self.col.update_one(
             {'guild': tag.guild_id, 'tags.name': tag.name},
             {'$set': {'tags.$.content': content}}
         )
+
+    async def get_tag_list(self, guild_id: int, member_id: Optional[int]) -> List[Dict[str, Any]]:
+        query = {'guild': guild_id}
+        projection = 'tags'
+        if member_id is not None:
+            query.update({'tags.owner_id': member_id})
+            projection += '.$'
+        ret: Optional[Dict[str, List[Dict[str, Any]]]] = await self.col.find_one(query, {projection: 1})
+        if ret is None or ret['tags'] == []:
+            if member_id is not None:
+                if await self.col.find_one({'guild': guild_id}) is None:
+                    await self.col.insert_one({'guild': guild_id, 'tags': []})
+            location = 'for that user' if member_id else 'in that guild'
+            raise TagError(f'No tags found {location}.')
+        return ret['tags']
 
     async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False) -> Tag:
         if (res := await self._get_tag(guild_id, name)) is None:
@@ -201,6 +221,16 @@ class Tags(commands.Cog):
 
         await ctx.reply(embed=em)
         await ctx.log()
+
+    @tag.command(name='list', description='Shows a list of tags available in this server.')
+    @app_commands.guild_only()
+    async def _list(self, ctx: Context, member: Optional[discord.Member] = None):
+        member_id = member.id if member is not None else None
+        name = member.name if member is not None else ctx.guild.name  # type: ignore
+        tag_list = await self.get_tag_list(ctx.guild.id, member_id)  # type: ignore # nopep8
+
+        await ctx.log()
+        await Paginator(TagSource(tag_list, name, ctx.author)).start(ctx)
 
     # @tag.command(name='search')
     # async def _search(self, ctx, *, query: commands.clean_content):
