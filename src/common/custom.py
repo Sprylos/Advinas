@@ -86,8 +86,8 @@ class Context(commands.Context):
         tb = codeblock(' '.join(['Error occured in command', self._command_name, '\n']) + ''.join(
             traceback.format_exception(type(err), err, err.__traceback__)))
         if len(tb) > 1990:
-            await self.bot._trace.send(codeblock(tb[2:1990]))
-            await self.bot._trace.send(codeblock(tb[1990:-2]))
+            await self.bot._trace.send(codeblock(tb[3:1990]))
+            await self.bot._trace.send(codeblock(tb[1990:-3]))
             tb = 'long lol'
         elif len(tb) > 1000:
             await self.bot._trace.send(tb)
