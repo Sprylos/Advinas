@@ -8,7 +8,6 @@ from typing import (
 # packages
 import discord
 from discord.ext import menus
-from infinitode import Leaderboard
 
 # local
 from common.custom import Context
