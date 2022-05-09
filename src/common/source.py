@@ -64,6 +64,6 @@ class TagSource(menus.ListPageSource):
 
     async def format_page(self, menu, page: List[Dict[str, Any]]):
         description = '\n'.join(
-            [f"{tag['name']} (Uses: {tag['uses']})" if not tag.get('alias', None) else f"{tag['name']} (Alias to {tag['alias']})" for tag in page])
+            [f"{tag['name']} (Uses: {tag['uses']})" if not tag.get('alias', None) else f"{tag['name']} (Alias to \"{tag['alias']}\")" for tag in page])
         return discord.Embed(title=f'Tag list for {self.name}', description=codeblock(description), colour=60415
                              ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
