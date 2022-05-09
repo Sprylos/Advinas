@@ -88,10 +88,10 @@ class Context(commands.Context):
         if len(tb) > 1990:
             await self.bot._trace.send(codeblock(tb[3:1990]))
             await self.bot._trace.send(codeblock(tb[1990:-3]))
-            tb = 'long lol'
+            tb = 'Too long'
         elif len(tb) > 1000:
             await self.bot._trace.send(tb)
-            tb = tb[:1000] + '```'
+            tb = 'Too long'
         em = Embed(
             title=f"**{self._command_name.title()} Command** used in `{self.channel}`", colour=Color.red()
         ).set_footer(
