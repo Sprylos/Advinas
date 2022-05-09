@@ -2,6 +2,9 @@ from __future__ import annotations
 
 # std
 from typing import (
+    Any,
+    Dict,
+    List,
     Optional,
     TYPE_CHECKING
 )
@@ -50,4 +53,17 @@ class ScoreLBSource(LBSource):
         mode = 'Endless' if menu.endless else 'Normal'
         description = codeblock(f'{mode} mode:\n' + entries.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
+                             ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
+
+
+class TagSource(menus.ListPageSource):
+    def __init__(self, entries: List[Dict[str, Any]], name: str, user):
+        self.name = name
+        self.user = user
+        super().__init__(entries, per_page=20)
+
+    async def format_page(self, menu, page: List[Dict[str, Any]]):
+        description = '\n'.join(
+            [f"{tag['name']} (Uses: {tag['uses']})" for tag in page])
+        return discord.Embed(title=f'Tag list for {self.name}', description=codeblock(description), colour=60415
                              ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)

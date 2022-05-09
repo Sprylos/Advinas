@@ -1,7 +1,8 @@
 # std
 from typing import (
     Any,
-    Dict
+    Dict,
+    Union
 )
 
 # packages
@@ -17,7 +18,7 @@ gray_style = discord.ButtonStyle.gray
 
 
 class Paginator(discord.ui.View, menus.MenuPages):
-    def __init__(self, source: LBSource, *, delete_message_after=False):
+    def __init__(self, source: Union[LBSource, Any], *, delete_message_after=False):
         super().__init__(timeout=60)
         self._source = source
         self.current_page = 0
@@ -31,12 +32,12 @@ class Paginator(discord.ui.View, menus.MenuPages):
         self.message: discord.Message = await ctx.send(**kwargs)
 
     async def show_page(self, page_number: int) -> None:
-        page: Leaderboard = await self._source.get_page(page_number)
+        page: Any = await self._source.get_page(page_number)
         self.current_page = page_number
         kwargs = await self._get_kwargs_from_page(page)
         await self.message.edit(**kwargs)
 
-    async def _get_kwargs_from_page(self, page: Leaderboard) -> Dict[str, Any]:
+    async def _get_kwargs_from_page(self, page: Any) -> Dict[str, Any]:
         value: Dict[str, Any]
         value = await super()._get_kwargs_from_page(page)  # type: ignore
         if 'view' not in value:
