@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import Any, Optional
+from typing import Any
 
 # packages
 import infinitode
@@ -39,21 +39,22 @@ from common.custom import (
 
 
 # exts to load
-exts = (
+exts = [
     'admin',
     'database',
     'inf',
     'misc',
-    'mod',
     'music',
     'tags',
-)
+]
+if not config.testing:
+    exts += 'mod'
 
 
 class Advinas(Bot):
-    def __init__(self, prefix: Optional[str] = None) -> None:
+    def __init__(self, prefix: str) -> None:
         super().__init__(
-            command_prefix=when_mentioned_or(prefix or 'a!'),
+            command_prefix=when_mentioned_or(prefix),
             activity=Activity(
                 type=ActivityType.watching, name="You | /invite | v3.0"),
             allowed_mentions=AllowedMentions(
@@ -118,7 +119,7 @@ class Advinas(Bot):
 
 
 if __name__ == '__main__':
-    bot = Advinas()
+    bot = Advinas('a?' if config.testing else 'a!')
 
     from subprocess import Popen
     import time
