@@ -48,7 +48,7 @@ exts = [
     'tags',
 ]
 if not config.testing:
-    exts += 'mod'
+    exts.append('mod')
 
 
 class Advinas(Bot):
