@@ -4,13 +4,8 @@ from __future__ import annotations
 import re
 import time
 from math import floor, ceil
-from typing import (
-    Annotated,
-    Any,
-    Dict,
-    Optional,
-    List
-)
+from typing import Annotated, Any, Optional
+
 
 # packages
 import discord
@@ -43,11 +38,11 @@ class Inf(commands.Cog):
         self.bot: Advinas = bot
         self.mention_regex = re.compile(r'<@!?([0-9]+)>')
         inf = load_json("data/inf.json")
-        self.LEVELS: List[str] = list(inf['levels'].keys())
+        self.LEVELS: list[str] = list(inf['levels'].keys())
         self.bot.LEVELS = self.LEVELS
-        self.LEVEL_INFO: Dict[str, Dict[str, Any]] = inf['levels']
-        self.BOUNTY_DIFFS: Dict[str, int] = inf['bountyDifficulties']
-        self.EMOJIS: Dict[str, int] = inf['enemy_emojis']
+        self.LEVEL_INFO: dict[str, dict[str, Any]] = inf['levels']
+        self.BOUNTY_DIFFS: dict[str, int] = inf['bountyDifficulties']
+        self.EMOJIS: dict[str, int] = inf['enemy_emojis']
         self.images = Images()
 
     def cog_check(self, ctx: Context) -> bool:
@@ -191,7 +186,7 @@ class Inf(commands.Cog):
         await ctx.defer()
         dc_col: AsyncIOMotorCollection = self.bot.DB.discordnames
         nn_col: AsyncIOMotorCollection = self.bot.DB.nicknames
-        pl: Dict[str, Any] = {}
+        pl: dict[str, Any] = {}
         player: Optional[Player] = None
         start_time: float = time.perf_counter()
         if playerid is None:  # no playerid was given

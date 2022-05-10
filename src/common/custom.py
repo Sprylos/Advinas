@@ -4,11 +4,7 @@ from __future__ import annotations
 import traceback
 from dataclasses import dataclass
 from datetime import datetime
-from typing import (
-    Any,
-    Dict,
-    Optional,
-)
+from typing import Any, Optional
 
 # packages
 from discord import Color, Embed
@@ -157,9 +153,9 @@ class Tag:
     created_at: datetime
 
     @classmethod
-    def from_db(cls, payload: Dict[str, Any]) -> Tag:
+    def from_db(cls, payload: dict[str, Any]) -> Tag:
         """Creates a new Tag object with the given database payload."""
-        t: Dict[str, Any] = payload['tags'][0]
+        t: dict[str, Any] = payload['tags'][0]
         guild = int(payload['guild'])
         return cls(t['name'], t['content'], guild, int(t['uses']), int(t['owner_id']), t['created_at'])
 

@@ -1,10 +1,7 @@
+from __future__ import annotations
+
 # std
-from typing import (
-    Any,
-    Optional,
-    List,
-    Union
-)
+from typing import Any, Optional
 
 # packages
 import infinitode
@@ -75,12 +72,12 @@ class Advinas(Bot):
     async def setup_hook(self):
         for ext in exts:
             await self.load_extension(f'exts.{ext}')
-        self.BOT_CHANNELS: List[int] = config.bot_channels
-        self.LEVELS: List[str]
+        self.BOT_CHANNELS: list[int] = config.bot_channels
+        self.LEVELS: list[str]
         self.DB: AsyncIOMotorDatabase = AsyncIOMotorClient(config.mongo).inf2
         self.online_since = utcnow()
 
-    async def get_context(self, origin: Union[Message, Interaction], *, cls: Any = None):
+    async def get_context(self, origin: Message | Interaction, *, cls: Any = None):
         return await super().get_context(origin, cls=Context)
 
     async def on_ready(self) -> None:

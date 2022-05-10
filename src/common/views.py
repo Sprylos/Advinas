@@ -1,9 +1,7 @@
+from __future__ import annotations
+
 # std
-from typing import (
-    Any,
-    Dict,
-    Union
-)
+from typing import Any
 
 # packages
 import discord
@@ -17,7 +15,7 @@ gray_style = discord.ButtonStyle.gray
 
 
 class Paginator(discord.ui.View, menus.MenuPages):
-    def __init__(self, source: Union[LBSource, Any], *, delete_message_after=False):
+    def __init__(self, source: LBSource | Any, *, delete_message_after=False):
         super().__init__(timeout=60)
         self._source = source
         self.current_page = 0
@@ -36,8 +34,8 @@ class Paginator(discord.ui.View, menus.MenuPages):
         kwargs = await self._get_kwargs_from_page(page)
         await self.message.edit(**kwargs)
 
-    async def _get_kwargs_from_page(self, page: Any) -> Dict[str, Any]:
-        value: Dict[str, Any]
+    async def _get_kwargs_from_page(self, page: Any) -> dict[str, Any]:
+        value: dict[str, Any]
         value = await super()._get_kwargs_from_page(page)  # type: ignore
         if 'view' not in value:
             value.update({'view': self})
@@ -94,8 +92,8 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
         kwargs = await self._get_kwargs_from_page(page)
         await self.message.edit(**kwargs)
 
-    async def _get_kwargs_from_page(self, page) -> Dict[str, Any]:
-        value: Dict[str, Any]
+    async def _get_kwargs_from_page(self, page) -> dict[str, Any]:
+        value: dict[str, Any]
         value = await super()._get_kwargs_from_page(page)  # type: ignore
         if 'view' not in value:
             value.update({'view': self})

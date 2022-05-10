@@ -1,12 +1,9 @@
+from __future__ import annotations
+
 # std
 import asyncio
 import datetime
-from typing import (
-    Any,
-    Dict,
-    List,
-    Mapping
-)
+from typing import Any, Mapping
 
 # packages
 import discord
@@ -54,16 +51,16 @@ class Database(commands.Cog):
                                  update={"$set": data}, upsert=True)
 
     # this call is ok. Rainys server allows it just fine
-    async def get_all_leaderboards(self) -> Dict[str, Leaderboard]:
-        ret: Dict[str, Leaderboard] = dict()
+    async def get_all_leaderboards(self) -> dict[str, Leaderboard]:
+        ret: dict[str, Leaderboard] = dict()
         for level in self._levels:
             ret[level] = await self.bot.API.leaderboards(level)
         return ret
 
     # this however is a dumb thing to do. It will make 12600 database calls and stop the bots for several minutes.
     # I will fix it soon-ish.
-    async def _get_all_players(self, all_leaderboards: Dict[Any, Leaderboard]) -> List[Dict[str, Any]]:
-        players: List[Dict[str, Any]] = list()
+    async def _get_all_players(self, all_leaderboards: dict[Any, Leaderboard]) -> list[dict[str, Any]]:
+        players: list[dict[str, Any]] = list()
         for _, leaderboard in all_leaderboards.items():
             for score in leaderboard:
                 players.append({score.playerid: {'name': score.nickname, 'key': score.nickname.lower()}})  # type: ignore # nopep8
@@ -71,7 +68,7 @@ class Database(commands.Cog):
         return players
 
     # adds unknown players to the db so you don't always need to use the playerid on the first time
-    async def _add_new_players(self, players: List[Dict[str, Any]]):
+    async def _add_new_players(self, players: list[dict[str, Any]]):
         return await self.update(self._nicks, data=players)
 
     # 12 hours just in case something goes wrong, we have a smaller chance of missing a day

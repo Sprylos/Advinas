@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 # std
 import json
 from math import floor, ceil
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 
 def codeblock(instring: str) -> str:
@@ -18,12 +20,12 @@ def write_json(filename: Any, contents: Any):
         json.dump(contents, outfile, ensure_ascii=True, indent=4)
 
 
-def tablify(indict: Dict[Any, Any]) -> str:
+def tablify(indict: dict[Any, Any]) -> str:
     keys, vals = list(indict.keys()), list(indict.values())
     return '\n'.join([f'{key} {vals[keys.index(key)]}' for key in keys])
 
 
-def get_level_bounty(level_diffs: Any, level: Optional[str], difficulty: float, bounties: int, coins: int) -> Tuple[str, float, int, int]:
+def get_level_bounty(level_diffs: Any, level: Optional[str], difficulty: float, bounties: int, coins: int) -> tuple[str, float, int, int]:
 
     if coins < 50:
         coins = 50

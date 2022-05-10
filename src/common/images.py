@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 # std
 import copy
 import os
 from io import BytesIO
 from datetime import datetime
-from typing import Dict, List, Optional  # basic typing for now
+from typing import Optional  # basic typing for now
 
 # packages
 from PIL import Image, ImageDraw, ImageFont
@@ -56,7 +58,7 @@ class Images():
                     colour = colour[1:]
                 self.tp_h[colour] = Image.open(path+filename)
 
-        self.default_tps: List[List[Dict[int, str]]] = [
+        self.default_tps: list[list[dict[int, str]]] = [
             [
                 {1: "yellow", 2: "yellow", 3: "yellow", 4: "yellow", 5: "cyan", 6: "cyan", 7: "cyan", 8: "cyan",
                     9: "cyan", 10: "white", 11: "white", 12: "white", 13: "indigo", 14: "indigo", 15: "indigo"},

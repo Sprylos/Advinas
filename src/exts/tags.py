@@ -1,11 +1,8 @@
+from __future__ import annotations
+
 # std
-from typing import (
-    Annotated,
-    Any,
-    Dict,
-    List,
-    Optional,
-)
+from typing import Annotated, Any, Optional
+
 # packages
 import discord
 from discord import app_commands
@@ -58,8 +55,8 @@ class Tags(commands.Cog):
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
 
-    async def _get_tag(self, guild_id: int, name: str) -> Optional[Dict[str, Any]]:
-        ret: Optional[Dict[str, Any]] = await self.col.find_one(
+    async def _get_tag(self, guild_id: int, name: str) -> Optional[dict[str, Any]]:
+        ret: Optional[dict[str, Any]] = await self.col.find_one(
             {'guild': guild_id, 'tags.name': name.lower()},
             {'_id': 0, 'guild': 1, 'tags.$': 1}
         )
@@ -96,13 +93,13 @@ class Tags(commands.Cog):
             {'$set': {'tags.$.content': content}}
         )
 
-    async def get_tag_list(self, guild_id: int, member_id: Optional[int]) -> List[Dict[str, Any]]:
+    async def get_tag_list(self, guild_id: int, member_id: Optional[int]) -> list[dict[str, Any]]:
         query = {'guild': guild_id}
         projection = 'tags'
         if member_id is not None:
             query.update({'tags.owner_id': member_id})
             projection += '.$'
-        ret: Optional[Dict[str, List[Dict[str, Any]]]] = await self.col.find_one(query, {projection: 1})
+        ret: Optional[dict[str, list[dict[str, Any]]]] = await self.col.find_one(query, {projection: 1})
         if ret is None or ret['tags'] == []:
             if member_id is not None:
                 if await self.col.find_one({'guild': guild_id}) is None:

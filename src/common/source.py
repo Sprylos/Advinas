@@ -3,8 +3,6 @@ from __future__ import annotations
 # std
 from typing import (
     Any,
-    Dict,
-    List,
     Optional,
     TYPE_CHECKING
 )
@@ -57,12 +55,12 @@ class ScoreLBSource(LBSource):
 
 
 class TagSource(menus.ListPageSource):
-    def __init__(self, entries: List[Dict[str, Any]], name: str, user):
+    def __init__(self, entries: list[dict[str, Any]], name: str, user):
         self.name = name
         self.user = user
         super().__init__(entries, per_page=20)
 
-    async def format_page(self, menu, page: List[Dict[str, Any]]):
+    async def format_page(self, menu, page: list[dict[str, Any]]):
         description = '\n'.join(
             [f"{tag['name']} (Uses: {tag['uses']})" if not tag.get('alias', None) else f"{tag['name']} (Alias to \"{tag['alias']}\")" for tag in page])
         return discord.Embed(title=f'Tag list for {self.name}', description=codeblock(description), colour=60415
