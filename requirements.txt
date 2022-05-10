@@ -3,4 +3,5 @@ git+https://github.com/Rapptz/discord-ext-menus@master
 git+https://github.com/cloudwithax/pomice
 Pillow
 motor
+pymongo[srv]
 infinitode.py
