@@ -127,7 +127,7 @@ class TagName(commands.clean_content):
 
     async def convert(self, ctx: Context, argument: str) -> str:
         converted = await super().convert(ctx, argument)
-        lower = converted.lower().strip()
+        lower = converted.lower().strip().replace('\n', '')
 
         if not lower:
             raise commands.BadArgument('Missing tag name.')
