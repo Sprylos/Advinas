@@ -144,7 +144,7 @@ class Tags(commands.Cog):
         if author.id != tag.owner_id:
             if not (author.guild_permissions.manage_guild or author.guild_permissions.administrator):
                 raise TagError(
-                    'This is not your tag and you do not have the manager server permission.')
+                    'This is not your tag and you do not have the `manage server` permission.')
 
     @commands.hybrid_group(name='tag', description='Gets and shows the tag with the given name.', fallback='get')
     @app_commands.guild_only()
