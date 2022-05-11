@@ -94,19 +94,24 @@ class Tags(commands.Cog):
         )
 
     async def get_tag_list(self, guild_id: int, member_id: Optional[int]) -> list[dict[str, Any]]:
-        query = {'guild': guild_id}
-        projection = 'tags'
         if member_id is not None:
-            query.update({'tags.owner_id': member_id})
-            projection += '.$'
-        ret: Optional[dict[str, list[dict[str, Any]]]] = await self.col.find_one(query, {projection: 1})
-        if ret is None or ret['tags'] == []:
-            if member_id is not None:
-                if await self.col.find_one({'guild': guild_id}) is None:
-                    await self.col.insert_one({'guild': guild_id, 'tags': []})
-            location = 'for that user' if member_id else 'in that guild'
-            raise TagError(f'No tags found {location}.')
-        return ret['tags']
+            resp: Optional[Any] = await self.col.aggregate([
+                {'$unwind': '$tags'},
+                {'$match': {'guild': guild_id, 'tags.owner_id': member_id}},
+                {'$project': {
+                    'name': '$tags.name',
+                    'uses': '$tags.uses',
+                    'alias': '$tags.alias',
+                    '_id': 0
+                }}]).to_list(None)
+            if resp is not None:
+                return resp
+        else:
+            resp: Optional[Any] = await self.col.find_one({'guild': guild_id})
+            if resp is not None and resp['tags'] != []:
+                return resp['tags']
+        location = 'for that user' if member_id else 'in that guild'
+        raise TagError(f'No tags found {location}.')
 
     async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False) -> Tag:
         if (res := await self._get_tag(guild_id, name)) is None:
@@ -221,7 +226,7 @@ class Tags(commands.Cog):
 
     @tag.command(name='list', description='Shows a list of tags available in this server.')
     @app_commands.guild_only()
-    async def _list(self, ctx: Context, member: Optional[discord.Member] = None):
+    async def _list(self, ctx: Context, *, member: Optional[discord.Member] = None):
         member_id = member.id if member is not None else None
         name = member.name if member is not None else ctx.guild.name  # type: ignore
         tag_list = await self.get_tag_list(ctx.guild.id, member_id)  # type: ignore # nopep8
