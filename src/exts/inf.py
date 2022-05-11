@@ -201,7 +201,7 @@ class Inf(commands.Cog):
                 return await ctx.reply('Provide a player to search for.')
         else:
             try:
-                player = await self.bot.API.player(playerid=playerid)
+                player = await self.bot.API.player(playerid=playerid.upper())
             except (APIError, BadArgument):
                 pass  # The playerid is invalid, but we don't give up yet
             else:
