@@ -1,10 +1,9 @@
-# std
 from __future__ import annotations
 
+# std
 import asyncio
 import random
 from typing import Optional
-
 
 # packages
 import pomice
