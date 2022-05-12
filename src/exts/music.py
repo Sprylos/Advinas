@@ -222,10 +222,10 @@ class Music(commands.Cog):
             return await ctx.log('Queue is empty.')
 
         try:
-            track = player.queue.pop(index + 1)
+            track = player.queue.pop(index - 1)
         except IndexError:
             await ctx.reply('No queue element found at that index.')
-            return await ctx.log('Queue is empty.')
+            return await ctx.log('No queue element at that index.')
 
         await ctx.reply(f'Removed **{track.title}** from the queue.')
         await ctx.log()
