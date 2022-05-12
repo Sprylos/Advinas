@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 # std
-import asyncio
 import random
 from typing import Optional
 
@@ -24,7 +23,7 @@ class Player(pomice.Player):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.queue = asyncio.Queue()
+        self.queue: list[pomice.Track] = []
         self.controller: Optional[discord.Message] = None
         self.context: Optional[Context] = None
         self.dj: discord.Member
@@ -35,8 +34,8 @@ class Player(pomice.Player):
                 await self.controller.delete()
 
         try:
-            track: pomice.Track = self.queue.get_nowait()
-        except asyncio.queues.QueueEmpty:
+            track: pomice.Track = self.queue.pop(0)
+        except IndexError:
             return  # await self.teardown()
 
         await self.play(track)
@@ -149,11 +148,11 @@ class Music(commands.Cog):
         if isinstance(results, pomice.Playlist):
             queued = results.tracks[0].title
             for track in results.tracks:
-                await player.queue.put(track)
+                player.queue.append(track)
         else:
             track = results[0]
             queued = track.title
-            await player.queue.put(track)
+            player.queue.append(track)
 
         if not player.is_playing:
             await player.do_next()
@@ -192,18 +191,43 @@ class Music(commands.Cog):
         if not player.is_connected:
             return await ctx.log('Player is not connected.')
 
-        if player.queue.qsize() < 1:
+        if len(player.queue) < 1:
             await ctx.reply('The queue is empty. Add some songs to view the queue.')
             return await ctx.log('Queue is empty.')
 
         songs = str()
-        for c, track in enumerate(player.queue._queue):  # type: ignore
-            songs += f'{c+1}. [{track.title}]({track.uri}) [{track.requester.mention}]\n'
+        for c, track in enumerate(player.queue):
+            songs += f'{c+1}. [{track.title}]({track.uri}) [{track.requester.mention if track.requester else "Not found."}]\n'
             if c == 14:
                 songs += '...\n'
                 break
         embed = discord.Embed(title='Queue', description=songs[:-1])
         await ctx.reply(embed=embed)
+        await ctx.log()
+
+    @commands.hybrid_command(name='remove', aliases=['rm'], description='Removes a song from the queue.')
+    @app_commands.guild_only()
+    @app_commands.describe(index='The index of the song that should be removed from the queue (first song = 1).')
+    async def _remove(self, ctx: Context, index: int):
+        player: Player = ctx.voice_client  # type: ignore
+        if not player:
+            await ctx.reply('The bot is not in a voice channel.')
+            return await ctx.log('Bot is not in a voice channel.')
+
+        if not player.is_connected:
+            return await ctx.log('Player is not connected.')
+
+        if len(player.queue) < 1:
+            await ctx.reply('The queue is empty.')
+            return await ctx.log('Queue is empty.')
+
+        try:
+            track = player.queue.pop(index + 1)
+        except IndexError:
+            await ctx.reply('No queue element found at that index.')
+            return await ctx.log('Queue is empty.')
+
+        await ctx.reply(f'Removed **{track.title}** from the queue.')
         await ctx.log()
 
     @commands.hybrid_command(name='pause', aliases=['pau', 'pa'], description='Pauses the current song.')
@@ -294,10 +318,10 @@ class Music(commands.Cog):
             return await ctx.log('Player is not connected.')
 
         if self.is_privileged(ctx):
-            if player.queue.qsize() < 3:
+            if len(player.queue) < 1:
                 return await ctx.reply('The queue is empty. Add some songs to shuffle the queue.')
             await ctx.reply('The queue was shuffled.')
-            return random.shuffle(player.queue._queue)  # type: ignore
+            return random.shuffle(player.queue)
         else:
             await ctx.reply(f'Only the original requester may shuffle the queue.', delete_after=15)
 
