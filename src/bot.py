@@ -22,6 +22,7 @@ from discord.ext.commands import (
     BadArgument,
     CommandNotFound,
     CommandInvokeError,
+    ExpectedClosingQuoteError,
     HybridCommandError,
     MissingRequiredArgument,
     NotOwner,
@@ -109,7 +110,7 @@ class Advinas(Bot):
         elif isinstance(err, BadLevel):
             await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
-        elif isinstance(err, (infinitode.errors.APIError, BadArgument, MissingRequiredArgument, TagError)):
+        elif isinstance(err, (infinitode.errors.APIError, BadArgument, MissingRequiredArgument, TagError, ExpectedClosingQuoteError)):
             await ctx.log(str(err))
             content = str(err)
         else:
