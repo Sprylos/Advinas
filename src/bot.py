@@ -17,6 +17,7 @@ from discord import (
 )
 from discord.utils import utcnow
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from pomice.exceptions import InvalidSpotifyClientAuthorization
 from discord.ext.commands import (
     Bot,
     BadArgument,
@@ -110,7 +111,10 @@ class Advinas(Bot):
         elif isinstance(err, BadLevel):
             await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
-        elif isinstance(err, (infinitode.errors.APIError, BadArgument, MissingRequiredArgument, TagError, ExpectedClosingQuoteError)):
+        elif isinstance(err, InvalidSpotifyClientAuthorization):
+            await ctx.log('Spotify link provided.')
+            content = 'Spotify links are not supported at the time, sorry.'
+        elif isinstance(err, (infinitode.errors.APIError, infinitode.errors.BadArgument, BadArgument, MissingRequiredArgument, TagError, ExpectedClosingQuoteError)):
             await ctx.log(str(err))
             content = str(err)
         else:
