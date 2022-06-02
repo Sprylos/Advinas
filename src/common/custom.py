@@ -2,12 +2,14 @@ from __future__ import annotations
 
 # std
 import traceback
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Optional
 
 # packages
-from discord import Color, Embed
+import pomice
+import discord
 from discord.ext import commands
 from discord.ext.commands.errors import BadArgument, CheckFailure
 
@@ -30,8 +32,69 @@ class TagError(RuntimeError):
     pass
 
 
+class NoPlayerError(RuntimeError):
+    """Raised when the bot is not in a voice channel."""
+    pass
+
+
+class PlayerNotConnectedError(RuntimeError):
+    """Raised when the player is not connected."""
+    pass
+
+
+class Player(pomice.Player):
+    """Custom pomice Player class."""
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+
+        self.queue: list[pomice.Track] = []
+        self.controller: Optional[discord.Message] = None
+        self.context: Context
+        self.dj: discord.Member
+
+    async def do_next(self) -> None:
+        if self.controller:
+            with suppress(discord.HTTPException):
+                await self.controller.delete()
+
+        try:
+            track: pomice.Track = self.queue.pop(0)
+        except IndexError:
+            return  # await self.teardown()
+
+        await self.play(track)
+
+        requester = track.requester
+        mention = requester.mention if requester else '@Invalid User'
+        if track.is_stream:
+            description = f":red_circle: **LIVE** [{track.title}]({track.uri}) [{mention}]"
+        else:
+            description = f"[{track.title}]({track.uri}) [{mention}]"
+        embed = discord.Embed(title=f"Now playing", description=description)
+        embed.set_thumbnail(url=track.thumbnail)
+        if hasattr(self, 'context'):
+            self.controller = await self.context.send(embed=embed)
+
+    async def teardown(self):
+        with suppress((discord.HTTPException), (KeyError)):
+            await self.destroy()
+            if self.controller:
+                await self.controller.delete()
+
+    def set_context(self, ctx: Context):
+        self.context = ctx
+        # always in guild
+        if isinstance(ctx.author, discord.Member):
+            self.dj = ctx.author
+
+
 class Context(commands.Context):
     """Custom Context class for easier logging."""
+
+    @property
+    def voice_client(self) -> Optional[Player]:
+        return super().voice_client  # type: ignore
 
     @property
     def _command_name(self) -> str:
@@ -52,9 +115,9 @@ class Context(commands.Context):
         success = success if success is not None else (
             True if reason is None else False)
 
-        color = Color.green() if success else Color.red()
+        color = discord.Color.green() if success else discord.Color.red()
 
-        em = Embed(
+        em = discord.Embed(
             title=f"**{self._command_name.title()} Command** used in `{self.channel}`", colour=color
         ).set_footer(
             text=f"Command run by {self.author}",
@@ -88,8 +151,8 @@ class Context(commands.Context):
         elif len(tb) > 1000:
             await self.bot._trace.send(tb)
             tb = 'Too long'
-        em = Embed(
-            title=f"**{self._command_name.title()} Command** used in `{self.channel}`", colour=Color.red()
+        em = discord.Embed(
+            title=f"**{self._command_name.title()} Command** used in `{self.channel}`", colour=discord.Color.red()
         ).set_footer(
             text=f"Command run by {self.author}",
             icon_url=self.author.display_avatar.url

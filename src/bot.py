@@ -17,7 +17,7 @@ from discord import (
 )
 from discord.utils import utcnow
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from pomice.exceptions import InvalidSpotifyClientAuthorization
+from pomice.exceptions import InvalidSpotifyClientAuthorization, TrackLoadError
 from discord.ext.commands import (
     Bot,
     BadArgument,
@@ -36,6 +36,8 @@ from common.custom import (
     BadChannel,
     BadLevel,
     Context,
+    NoPlayerError,
+    PlayerNotConnectedError,
     TagError
 )
 
@@ -95,6 +97,8 @@ class Advinas(Bot):
 
     async def on_command_error(self, ctx: Context, err: Exception) -> None:
         '''Error handler'''
+        excs = (infinitode.errors.APIError, infinitode.errors.BadArgument, BadArgument,
+                MissingRequiredArgument, TagError, ExpectedClosingQuoteError, TrackLoadError)
 
         if isinstance(err, (CommandInvokeError, HybridCommandError)):
             err = err.original
@@ -111,10 +115,16 @@ class Advinas(Bot):
         elif isinstance(err, BadLevel):
             await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
+        elif isinstance(err, NoPlayerError):
+            await ctx.log('Bot is not in a voice channel.')
+            content = 'The bot is not in a voice channel.'
+        elif isinstance(err, PlayerNotConnectedError):
+            await ctx.log('Player is not connected.')
+            content = 'The player is not connected.'
         elif isinstance(err, InvalidSpotifyClientAuthorization):
             await ctx.log('Spotify link provided.')
             content = 'Spotify links are not supported at the time, sorry.'
-        elif isinstance(err, (infinitode.errors.APIError, infinitode.errors.BadArgument, BadArgument, MissingRequiredArgument, TagError, ExpectedClosingQuoteError)):
+        elif isinstance(err, excs):
             await ctx.log(str(err))
             content = str(err)
         else:
