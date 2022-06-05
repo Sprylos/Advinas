@@ -7,7 +7,7 @@ from typing import Optional
 # packages
 import pomice
 import discord
-from discord import app_commands
+from discord import app_commands, ClientException
 from discord.ext import commands
 
 # local
@@ -72,7 +72,11 @@ class Music(commands.Cog):
                 await ctx.reply('You must be in a voice channel in order to use this command!')
                 return await ctx.log('Member not in a voice channel.')
 
-        await channel.connect(cls=Player)
+        try:
+            await channel.connect(cls=Player)
+        except ClientException as e:
+            await ctx.reply(str(e))
+            return await ctx.log(str(e))
         player: Player = ctx.voice_client  # type: ignore
         player.set_context(ctx)
         await ctx.reply(f'Joined the voice channel `{channel.name}`.')
