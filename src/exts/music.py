@@ -96,7 +96,9 @@ class Music(commands.Cog):
         if not player:
             await ctx.invoke(self._join)
             player: Optional[Player] = ctx.voice_client
-            assert player is not None
+            if not player:
+                await ctx.reply('Failed to create player (try again).')
+                return await ctx.log("Failed to create player.")
 
         results = await player.get_tracks(search, ctx=ctx)
 
@@ -226,7 +228,8 @@ class Music(commands.Cog):
 
     @commands.hybrid_command(name='skip', aliases=['s', 'next', 'sk'], description='Skips the currently playing song.')
     @app_commands.guild_only()
-    async def _skip(self, ctx: Context):
+    @app_commands.describe(to='The index of the song that should be skipped to. DEFAULT: 1')
+    async def _skip(self, ctx: Context, to: int = 1):
         player: Optional[Player] = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
@@ -234,7 +237,15 @@ class Music(commands.Cog):
             raise PlayerNotConnectedError('Bot is not connected.')
 
         if ctx.author == player.current.requester or self.is_privileged(ctx):
-            await ctx.reply('The song was skipped.')
+            if to > 1:
+                if len(player.queue) < to:
+                    await ctx.reply('The queue is not long enough to skip to that index.')
+                    return await ctx.log('Queue is not long enough to skip to that index.')
+                del player.queue[:to - 1]
+            elif to < 1:
+                await ctx.reply('The index must be >= 1.')
+                return await ctx.log('Index must be >= 1.')
+            await ctx.reply(f'Skipped to **{player.queue[0].title}**.')
             await player.stop()
             return await ctx.log()
         else:
