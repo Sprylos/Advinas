@@ -225,3 +225,19 @@ class Tag:
     @classmethod
     def minimal(cls, name: str, guild: int) -> Tag:
         return cls(name, '', guild, 0, 0, datetime.now())
+
+
+@dataclass
+class TagAlias:
+    name: str
+    alias: str
+    guild_id: int
+    owner_id: int
+    created_at: datetime
+
+    @classmethod
+    def from_db(cls, payload: dict[str, Any]) -> TagAlias:
+        """Creates a new TagAlias object with the given database payload."""
+        t: dict[str, Any] = payload['tags'][0]
+        guild = int(payload['guild'])
+        return cls(t['name'], t['alias'], guild, int(t['owner_id']), t['created_at'])
