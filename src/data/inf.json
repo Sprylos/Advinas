@@ -880,10 +880,20 @@
             "difficulty": 90
         },
         "dq2": {
-            "enemies": [],
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "FIGHTER"
+            ],
             "quests": {},
             "base": {},
-            "music": ""
+            "music": "",
+            "difficulty": 90
         },
         "dq3": {
             "enemies": [
