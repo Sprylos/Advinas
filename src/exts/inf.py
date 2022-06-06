@@ -120,7 +120,7 @@ class Inf(commands.Cog):
         try:
             rt_lb = await self.bot.API.runtime_leaderboards(level, "U-T68Z-T3JV-HK3DJY")
             em.add_field(name="Top 1% Threshold", value="{:,}".format(int(rt_lb[200].score)))  # nopep8
-        except APIError:
+        except (APIError, BadArgument):
             pass
         if base:
             em.add_field(name="Base Effects", value=base, inline=False)
