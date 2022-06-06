@@ -13,6 +13,8 @@ from discord.ext import commands
 # local
 from bot import Advinas
 from config import host, port, password
+from common.views import Paginator
+from common.source import QueueSource
 from common.custom import (
     BadChannel,
     Context,
@@ -157,15 +159,8 @@ class Music(commands.Cog):
             await ctx.reply('The queue is empty. Add some songs to view the queue.')
             return await ctx.log('Queue is empty.')
 
-        songs = str()
-        for c, track in enumerate(player.queue):
-            songs += f'{c+1}. [{track.title}]({track.uri}) [{track.requester.mention if track.requester else "Not found."}]\n'
-            if c == 14:
-                songs += '...\n'
-                break
-        embed = discord.Embed(title='Queue', description=songs[:-1])
-        await ctx.reply(embed=embed)
         await ctx.log()
+        await Paginator(QueueSource(player.queue, ctx.author)).start(ctx)
 
     @commands.hybrid_command(name='remove', aliases=['rm'], description='Removes a song from the queue.')
     @app_commands.guild_only()

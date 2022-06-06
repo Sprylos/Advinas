@@ -6,9 +6,11 @@ from typing import (
     Optional,
     TYPE_CHECKING
 )
+
 # packages
 import discord
 from discord.ext import menus
+from pomice import Track
 from infinitode import Leaderboard
 
 # locals
@@ -64,4 +66,16 @@ class TagSource(menus.ListPageSource):
         description = '\n'.join(
             [f"{tag['name']} (Uses: {tag['uses']})" if not tag.get('alias', None) else f"{tag['name']} (Alias to \"{tag['alias']}\")" for tag in page])
         return discord.Embed(title=f'Tag list for {self.name}', description=codeblock(description), colour=60415
+                             ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
+
+
+class QueueSource(menus.ListPageSource):
+    def __init__(self, entries, user):
+        self.user = user
+        super().__init__(entries, per_page=15)
+
+    async def format_page(self, menu, page: list[Track]):
+        description = '\n'.join(
+            [f'{c+1}. [{track.title}]({track.uri}) [{track.requester.mention if track.requester else "@Invalid User"}]' for c, track in enumerate(page)])
+        return discord.Embed(title='Queue', description=description, colour=60415
                              ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
