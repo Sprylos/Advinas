@@ -101,8 +101,7 @@ class Inf(commands.Cog):
     @commands.hybrid_command(name='level', aliases=['l'], description='Shows useful information about the given level.')
     @app_commands.describe(level='The level which you want to see information for.')
     async def level(self, ctx: Context, level: Annotated[str, LevelConverter]):
-        data = self.LEVEL_INFO[level.lower(
-        ) if level.startswith('DQ') else level]
+        data = self.LEVEL_INFO[level]
         enemy_emojis = "".join(
             [f'<:enemy_{i.lower()}:{self.EMOJIS[f"enemy_{i.lower()}"]}>' for i in data["enemies"]])
         enemy_emojis = enemy_emojis or "None"
