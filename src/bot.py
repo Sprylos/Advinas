@@ -24,6 +24,7 @@ from discord.ext.commands import (
     CommandNotFound,
     CommandInvokeError,
     ExpectedClosingQuoteError,
+    UnexpectedQuoteError,
     HybridCommandError,
     MissingRequiredArgument,
     NotOwner,
@@ -97,8 +98,8 @@ class Advinas(Bot):
 
     async def on_command_error(self, ctx: Context, err: Exception) -> None:
         '''Error handler'''
-        excs = (infinitode.errors.APIError, infinitode.errors.BadArgument, BadArgument,
-                MissingRequiredArgument, TagError, ExpectedClosingQuoteError, TrackLoadError)
+        excs = (infinitode.errors.APIError, infinitode.errors.BadArgument, BadArgument, TrackLoadError,
+                MissingRequiredArgument, TagError, ExpectedClosingQuoteError, UnexpectedQuoteError,)
 
         if isinstance(err, (CommandInvokeError, HybridCommandError)):
             err = err.original
