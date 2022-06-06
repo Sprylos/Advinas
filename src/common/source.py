@@ -62,7 +62,7 @@ class TagSource(menus.ListPageSource):
         self.user = user
         super().__init__(entries, per_page=20)
 
-    async def format_page(self, menu, page: list[dict[str, Any]]):
+    async def format_page(self, menu: Paginator, page: list[dict[str, Any]]):
         description = '\n'.join(
             [f"{tag['name']} (Uses: {tag['uses']})" if not tag.get('alias', None) else f"{tag['name']} (Alias to \"{tag['alias']}\")" for tag in page])
         return discord.Embed(title=f'Tag list for {self.name}', description=codeblock(description), colour=60415
@@ -74,8 +74,8 @@ class QueueSource(menus.ListPageSource):
         self.user = user
         super().__init__(entries, per_page=15)
 
-    async def format_page(self, menu, page: list[Track]):
+    async def format_page(self, menu: Paginator, page: list[Track]):
         description = '\n'.join(
-            [f'{c+1}. [{track.title}]({track.uri}) [{track.requester.mention if track.requester else "@Invalid User"}]' for c, track in enumerate(page)])
+            [f'{menu.current_page * 15 + c}. [{track.title}]({track.uri}) [{track.requester.mention if track.requester else "@Invalid User"}]' for c, track in enumerate(page, start=1)])
         return discord.Embed(title='Queue', description=description, colour=60415
                              ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
