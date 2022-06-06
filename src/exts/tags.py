@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any, Literal, Optional, overload
 
 # packages
 import discord
@@ -16,6 +16,7 @@ from common.views import Paginator
 from common.custom import (
     Context,
     Tag,
+    TagAlias,
     TagName,
     TagError
 )
@@ -84,7 +85,7 @@ class Tags(commands.Cog):
     async def used_tag(self, tag: Tag) -> None:
         await self.col.update_one({'guild': tag.guild_id, 'tags.name': tag.name}, {'$inc': {'tags.$.uses': 1}})
 
-    async def delete_tag(self, tag: Tag) -> None:
+    async def delete_tag(self, tag: Tag | TagAlias) -> None:
         await self.col.update_one({'guild': tag.guild_id}, {'$pull': {'tags': {'name': tag.name}}})
 
     async def edit_tag(self, tag: Tag, content: str) -> None:
@@ -113,7 +114,15 @@ class Tags(commands.Cog):
         location = 'for that user' if member_id else 'in that guild'
         raise TagError(f'No tags found {location}.')
 
-    async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False) -> Tag:
+    @overload
+    async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False, return_alias: Literal[False] = False) -> Tag:
+        ...
+
+    @overload
+    async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False, return_alias: Literal[True] = True) -> Tag | TagAlias:
+        ...
+
+    async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False, return_alias: bool = False) -> Tag | TagAlias:
         if (res := await self._get_tag(guild_id, name)) is None:
             raise TagError('Tag not found.')
         if (alias := res['tags'][0].get('alias', None)) is not None:
@@ -122,7 +131,10 @@ class Tags(commands.Cog):
                 raise TagError('Tag not found.')
             if no_alias:
                 raise TagError('You may not edit an alias.')
-            res = result
+            if not return_alias:
+                res = result
+            else:
+                return TagAlias.from_db(res)
         return Tag.from_db(res)
 
     async def create_tag(self, ctx: Any, name: str, content: str) -> None:
@@ -144,7 +156,7 @@ class Tags(commands.Cog):
         await ctx.reply(f'Tag alias "{new_name}" that points to "{old_name}" successfully created.')
 
     @staticmethod
-    async def is_privileged(ctx: Context, tag: Tag) -> None:
+    async def is_privileged(ctx: Context, tag: Tag | TagAlias) -> None:
         author: Any = ctx.author
         if author.id != tag.owner_id:
             if not (author.guild_permissions.manage_guild or author.guild_permissions.administrator):
@@ -155,8 +167,8 @@ class Tags(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see.')
     async def tag(self, ctx: Context, *, name: Annotated[str, TagName]):
-        # guild is never None
-        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
+        assert ctx.guild is not None
+        tag = await self.get_tag(ctx.guild.id, name)
 
         await ctx.reply(tag.content)
         await ctx.log()
@@ -187,8 +199,8 @@ class Tags(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the new tag you want to edit.', content='The new content of the tag.')
     async def _edit(self, ctx: Context, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
-        # guild is never None
-        tag = await self.get_tag(ctx.guild.id, name, no_alias=True)  # type: ignore # nopep8
+        assert ctx.guild is not None
+        tag = await self.get_tag(ctx.guild.id, name, no_alias=True)
         await self.is_privileged(ctx, tag)
 
         await self.edit_tag(tag, content)
@@ -199,8 +211,8 @@ class Tags(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to remove.')
     async def _remove(self, ctx: Context, name: Annotated[str, TagName]):
-        # guild is never None
-        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
+        assert ctx.guild is not None
+        tag = await self.get_tag(ctx.guild.id, name, return_alias=True)
         await self.is_privileged(ctx, tag)
 
         await self.delete_tag(tag=tag)
@@ -211,8 +223,8 @@ class Tags(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see information about.')
     async def _info(self, ctx: Context, *, name: Annotated[str, TagName]):
-        # guild is never None
-        tag = await self.get_tag(ctx.guild.id, name)  # type: ignore
+        assert ctx.guild is not None
+        tag = await self.get_tag(ctx.guild.id, name)
 
         em = discord.Embed(title=tag.name, timestamp=tag.created_at)
         user = self.bot.get_user(tag.owner_id) or (await self.bot.fetch_user(tag.owner_id))
@@ -227,9 +239,10 @@ class Tags(commands.Cog):
     @tag.command(name='list', description='Shows a list of tags available in this server.')
     @app_commands.guild_only()
     async def _list(self, ctx: Context, *, member: Optional[discord.Member] = None):
+        assert ctx.guild is not None
         member_id = member.id if member is not None else None
-        name = member.name if member is not None else ctx.guild.name  # type: ignore
-        tag_list = await self.get_tag_list(ctx.guild.id, member_id)  # type: ignore # nopep8
+        name = member.name if member is not None else ctx.guild.name
+        tag_list = await self.get_tag_list(ctx.guild.id, member_id)
 
         await ctx.log()
         await Paginator(TagSource(tag_list, name, ctx.author)).start(ctx)
