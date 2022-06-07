@@ -5,7 +5,7 @@ import traceback
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 # packages
 import pomice
@@ -52,6 +52,7 @@ class Player(pomice.Player):
         self.controller: Optional[discord.Message] = None
         self.context: Context
         self.dj: discord.Member
+        self.loop_mode: Optional[Literal['Song', 'Queue']] = None
 
     async def do_next(self) -> None:
         if self.controller:
@@ -62,6 +63,9 @@ class Player(pomice.Player):
             track: pomice.Track = self.queue.pop(0)
         except IndexError:
             return  # await self.teardown()
+        else:
+            if self.loop_mode == 'Queue':
+                self.queue.append(track)
 
         await self.play(track)
 

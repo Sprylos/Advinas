@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # std
 import random
-from typing import Optional
+from typing import Literal, Optional
 
 # packages
 import pomice
@@ -54,6 +54,8 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_pomice_track_end(self, player: Player, track, _):
+        if player.loop_mode == 'Song':
+            player.queue.insert(0, track)
         await player.do_next()
 
     @commands.Cog.listener()
@@ -161,6 +163,30 @@ class Music(commands.Cog):
 
         await ctx.log()
         await Paginator(QueueSource(player.queue, ctx.author)).start(ctx)
+
+    @commands.hybrid_command(name='loop', aliases=['l'], description='Changes the loop mode to the given mode.')
+    @app_commands.guild_only()
+    @app_commands.describe(mode='The mode to change the loop mode to. Can be `Song`, `Queue`, or `None`. Changes to next mode if omitted.')
+    async def _loop(self, ctx: Context, mode: Optional[Literal['Song', 'Queue', 'None']] = None):
+        player: Optional[Player] = ctx.voice_client
+        if not player:
+            raise NoPlayerError('Bot is not in voice channel.')
+        if not player.is_connected:
+            raise PlayerNotConnectedError('Bot is not connected.')
+
+        if mode in ('Song', 'Queue'):
+            player.loop_mode = mode
+        elif mode == 'None':
+            player.loop_mode = None
+        else:
+            if player.loop_mode is None:
+                player.loop_mode = 'Song'
+            elif player.loop_mode == 'Song':
+                player.loop_mode = 'Queue'
+            else:
+                player.loop_mode = None
+        await ctx.reply(f'Loop mode set to `{player.loop_mode}`.')
+        await ctx.log()
 
     @commands.hybrid_command(name='remove', aliases=['rm'], description='Removes a song from the queue.')
     @app_commands.guild_only()

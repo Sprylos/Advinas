@@ -98,7 +98,7 @@ class Inf(commands.Cog):
         await Paginator(LBSource(ctx, lb, f'Dailyquest Leaderboards ({lb.date})')).start(ctx)
 
     # Level command
-    @commands.hybrid_command(name='level', aliases=['l'], description='Shows useful information about the given level.')
+    @commands.hybrid_command(name='level', aliases=['lvl'], description='Shows useful information about the given level.')
     @app_commands.describe(level='The level which you want to see information for.')
     async def level(self, ctx: Context, level: Annotated[str, LevelConverter]):
         data = self.LEVEL_INFO[level.lower(

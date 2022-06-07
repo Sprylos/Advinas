@@ -21,6 +21,7 @@ from pomice.exceptions import InvalidSpotifyClientAuthorization, TrackLoadError
 from discord.ext.commands import (
     Bot,
     BadArgument,
+    BadLiteralArgument,
     CommandNotFound,
     CommandInvokeError,
     ExpectedClosingQuoteError,
@@ -98,8 +99,8 @@ class Advinas(Bot):
 
     async def on_command_error(self, ctx: Context, err: Exception) -> None:
         '''Error handler'''
-        excs = (infinitode.errors.APIError, infinitode.errors.BadArgument, BadArgument, TrackLoadError,
-                MissingRequiredArgument, TagError, ExpectedClosingQuoteError, UnexpectedQuoteError,)
+        excs = (infinitode.errors.APIError, infinitode.errors.BadArgument, BadArgument, BadLiteralArgument,
+                TrackLoadError, MissingRequiredArgument, TagError, ExpectedClosingQuoteError, UnexpectedQuoteError,)
 
         if isinstance(err, (CommandInvokeError, HybridCommandError)):
             err = err.original
@@ -140,5 +141,5 @@ if __name__ == '__main__':
     from subprocess import Popen
     import time
     process = Popen(['java', '-jar', 'Lavalink.jar'])
-    time.sleep(10)
+    time.sleep(15)
     bot.run(config.token)
