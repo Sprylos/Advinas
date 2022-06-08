@@ -12,7 +12,6 @@ import pomice
 import discord
 from discord.ext import commands
 from discord.ext.commands import BadArgument, CheckFailure
-from bot import Advinas
 
 # local
 from common.utils import codeblock
