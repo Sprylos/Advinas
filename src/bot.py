@@ -92,9 +92,9 @@ class Advinas(Bot):
 
     async def ready(self):
         await self.wait_until_ready()
-        self._log = await self.fetch_channel(config.log_channel)
-        self._trace = await self.fetch_channel(config.trace_channel)
-        self._join = await self.fetch_channel(config.join_channel)
+        self._log = self.get_partial_messageable(config.log_channel)
+        self._trace = self.get_partial_messageable(config.trace_channel)
+        self._join = self.get_partial_messageable(config.join_channel)
         print("online")
 
     async def on_command_error(self, ctx: Context, err: Exception) -> None:
@@ -141,5 +141,5 @@ if __name__ == '__main__':
     from subprocess import Popen
     import time
     process = Popen(['java', '-jar', 'Lavalink.jar'])
-    time.sleep(15)
+    time.sleep(10)
     bot.run(config.token)
