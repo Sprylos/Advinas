@@ -270,10 +270,15 @@ class Music(commands.Cog):
                     await ctx.reply('The queue is not long enough to skip to that index.')
                     return await ctx.log('Queue is not long enough to skip to that index.')
                 del player.queue[:to - 1]
+                if len(player.queue) > 0:
+                    await ctx.reply(f'Skipped to **{player.queue[0].title}**.')
+                else:
+                    await ctx.reply('Skipped to the end of the queue.')
             elif to < 1:
                 await ctx.reply('The index must be >= 1.')
                 return await ctx.log('Index must be >= 1.')
-            await ctx.reply(f'Skipped to **{player.queue[0].title}**.')
+            else:
+                await ctx.reply(f'Skipped **{player.current.title}**.')
             await player.stop()
             return await ctx.log()
         else:
