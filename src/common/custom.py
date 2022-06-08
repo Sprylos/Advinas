@@ -11,7 +11,8 @@ from typing import Any, Literal, Optional
 import pomice
 import discord
 from discord.ext import commands
-from discord.ext.commands.errors import BadArgument, CheckFailure
+from discord.ext.commands import BadArgument, CheckFailure
+from bot import Advinas
 
 # local
 from common.utils import codeblock
@@ -93,7 +94,7 @@ class Player(pomice.Player):
             self.dj = ctx.author
 
 
-class Context(commands.Context):
+class Context(commands.Context[Advinas]):
     """Custom Context class for easier logging."""
 
     @property

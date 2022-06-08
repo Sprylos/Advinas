@@ -29,9 +29,9 @@ class LBSource(menus.ListPageSource):
         self.entries: Leaderboard
         super().__init__(data, per_page=20)
 
-    async def format_page(self, menu: Paginator, entries: Leaderboard):
+    async def format_page(self, menu: Paginator, page: Leaderboard):
         description = codeblock(
-            (f'{self.headline}\n' if self.headline else '') + entries.format_scores())
+            (f'{self.headline}\n' if self.headline else '') + page.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
                              ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
 
@@ -49,15 +49,15 @@ class ScoreLBSource(LBSource):
         base = page_number * self.per_page
         return entries[base:base + self.per_page]
 
-    async def format_page(self, menu: ScorePaginator, entries: Leaderboard):
+    async def format_page(self, menu: ScorePaginator, page: Leaderboard):
         mode = 'Endless' if menu.endless else 'Normal'
-        description = codeblock(f'{mode} mode:\n' + entries.format_scores())
+        description = codeblock(f'{mode} mode:\n' + page.format_scores())
         return discord.Embed(title=self.title, description=description, colour=60415
                              ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
 
 
 class TagSource(menus.ListPageSource):
-    def __init__(self, entries: list[dict[str, Any]], name: str, user):
+    def __init__(self, entries: list[dict[str, Any]], name: str, user: discord.User | discord.Member):
         self.name = name
         self.user = user
         super().__init__(entries, per_page=20)
@@ -70,7 +70,7 @@ class TagSource(menus.ListPageSource):
 
 
 class QueueSource(menus.ListPageSource):
-    def __init__(self, entries, user):
+    def __init__(self, entries: list[Track], user: discord.User | discord.Member):
         self.user = user
         super().__init__(entries, per_page=15)
 

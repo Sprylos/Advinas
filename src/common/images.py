@@ -9,7 +9,7 @@ from typing import Optional  # basic typing for now
 
 # packages
 from PIL import Image, ImageDraw, ImageFont
-from infinitode import Player, Score  # no longer local!!
+from infinitode import Player  # no longer local!!
 
 
 # This whole file is a mess.
@@ -42,8 +42,8 @@ class Images():
         self.font_rpl = ImageFont.truetype(
             r'assets/fonts/default/Lato-Regular.ttf', 48)
         self.small_fonts = ["rumble", "dev", "zecred"]
-        self.tp_h = {}
-        self.tp_v = {}
+        self.tp_h: dict[str, Image.Image] = {}
+        self.tp_v: dict[str, Image.Image] = {}
         path = 'assets/images/profile/teleporters/'
 
         for filename in os.listdir(path):

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import Any
+from typing import Any, Optional
 
 # packages
 import discord
@@ -15,13 +15,13 @@ gray_style = discord.ButtonStyle.gray
 
 
 class Paginator(discord.ui.View, menus.MenuPages):
-    def __init__(self, source: LBSource | Any, *, delete_message_after=False):
+    def __init__(self, source: LBSource | Any):
         super().__init__(timeout=60)
         self._source = source
+        self.delete_message_after = False
         self.current_page = 0
-        self.delete_message_after = delete_message_after
 
-    async def start(self, ctx: Context, *, channel=None, wait=False) -> None:
+    async def start(self, ctx: Context, *, channel: Optional[discord.TextChannel] = None, wait: bool = False) -> None:
         await self._source._prepare_once()
         self.ctx = ctx
         page = await self._source.get_page(0)
@@ -73,7 +73,7 @@ class Paginator(discord.ui.View, menus.MenuPages):
             button.disabled = True  # type: ignore
         await self.show_current_page()
 
-    def manage_buttons(self, new_page):
+    def manage_buttons(self, new_page: int):
         if new_page == 0:
             self.first_page.disabled = True
             self.before_page.disabled = True
@@ -95,17 +95,17 @@ class Paginator(discord.ui.View, menus.MenuPages):
             self.last_page.disabled = False
 
     @discord.ui.button(emoji='<:leftmost:935926623230910535>', disabled=True, style=gray_style)
-    async def first_page(self, inter, button):
+    async def first_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(0)
         await self.show_page(inter, 0)
 
     @discord.ui.button(emoji='<:left:893612797743759431>', disabled=True, style=gray_style)
-    async def before_page(self, inter, button):
+    async def before_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self.current_page - 1)
         await self.show_checked_page(inter, self.current_page - 1)
 
     @discord.ui.button(emoji='<:right:893612798242856962>', style=gray_style)
-    async def next_page(self, inter, button):
+    async def next_page(self, inter: discord.Interaction, button: Any):
         new_page = self.current_page + 1
         if new_page == self._source.get_max_pages():
             self.next_page.disabled = True
@@ -115,20 +115,20 @@ class Paginator(discord.ui.View, menus.MenuPages):
         await self.show_checked_page(inter, new_page)
 
     @discord.ui.button(emoji='<:rightmost:935926623591612506>', style=gray_style)
-    async def last_page(self, inter, button):
+    async def last_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self._source.get_max_pages() - 1)
         await self.show_page(inter, self._source.get_max_pages() - 1)
 
 
 class ScorePaginator(discord.ui.View, menus.MenuPages):
-    def __init__(self, source: ScoreLBSource, *, delete_message_after=False):
+    def __init__(self, source: ScoreLBSource):
         super().__init__(timeout=60)
         self._source = source
         self.current_page = 0
-        self.delete_message_after = delete_message_after
+        self.delete_message_after = False
         self.endless: bool = False
 
-    async def start(self, ctx: Context, *, channel=None, wait=False) -> None:
+    async def start(self, ctx: Context, *, channel: Optional[discord.TextChannel] = None, wait: bool = False) -> None:
         await self._source._prepare_once()
         self.ctx = ctx
         page = await self._source.get_page(self, 0)
@@ -163,7 +163,7 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
             else:
                 await self.message.edit(**kwargs)
 
-    async def _get_kwargs_from_page(self, page) -> dict[str, Any]:
+    async def _get_kwargs_from_page(self, page: Any) -> dict[str, Any]:
         value: dict[str, Any]
         value = await super()._get_kwargs_from_page(page)  # type: ignore
         if 'view' not in value:
@@ -183,7 +183,7 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
             button.disabled = True  # type: ignore
         await self.show_current_page()
 
-    def manage_buttons(self, new_page):
+    def manage_buttons(self, new_page: int):
         if new_page == 0:
             self.first_page.disabled = True
             self.before_page.disabled = True
@@ -205,22 +205,22 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
             self.last_page.disabled = False
 
     @discord.ui.button(emoji='<:leftmost:935926623230910535>', disabled=True, style=gray_style)
-    async def first_page(self, inter, button):
+    async def first_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(0)
         await self.show_page(inter, 0)
 
     @discord.ui.button(emoji='<:left:893612797743759431>', disabled=True, style=gray_style)
-    async def before_page(self, inter, button):
+    async def before_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self.current_page - 1)
         await self.show_checked_page(inter, self.current_page - 1)
 
     @discord.ui.button(label='Change Mode', style=gray_style)
-    async def normal_endless(self, inter, button):
+    async def normal_endless(self, inter: discord.Interaction, button: Any):
         self.endless = (not self.endless)
         await self.show_current_page(inter)
 
     @discord.ui.button(emoji='<:right:893612798242856962>', style=gray_style)
-    async def next_page(self, inter, button):
+    async def next_page(self, inter: discord.Interaction, button: Any):
         new_page = self.current_page + 1
         if new_page == self._source.get_max_pages():
             self.next_page.disabled = True
@@ -230,7 +230,7 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
         await self.show_checked_page(inter, new_page)
 
     @discord.ui.button(emoji='<:rightmost:935926623591612506>', style=gray_style)
-    async def last_page(self, inter, button):
+    async def last_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self._source.get_max_pages() - 1)
         await self.show_page(inter, self._source.get_max_pages() - 1)
 

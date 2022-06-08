@@ -46,24 +46,24 @@ class Music(commands.Cog):
         # always in guild
         return player.dj == ctx.author or ctx.author.guild_permissions.kick_members  # type: ignore
 
-    async def cog_check(self, ctx) -> bool:
+    async def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in (*self.bot.BOT_CHANNELS, 666369102981496832):
                 raise BadChannel('Command not used in an allowed channel.')
         return not not ctx.guild  # True if used in a guild
 
     @commands.Cog.listener()
-    async def on_pomice_track_end(self, player: Player, track, _):
+    async def on_pomice_track_end(self, player: Player, track: pomice.Track, _):
         if player.loop_mode == 'Song':
             player.queue.insert(0, track)
         await player.do_next()
 
     @commands.Cog.listener()
-    async def on_pomice_track_stuck(self, player: Player, track, _):
+    async def on_pomice_track_stuck(self, player: Player, track: pomice.Track, _):
         await player.do_next()
 
     @commands.Cog.listener()
-    async def on_pomice_track_exception(self, player: Player, track, _):
+    async def on_pomice_track_exception(self, player: Player, track: pomice.Track, _):
         await player.do_next()
 
     @commands.hybrid_command(name='join', aliases=['j', 'summon', 'con', 'connect'], description='Makes the bot join your or the given voice channel.')
