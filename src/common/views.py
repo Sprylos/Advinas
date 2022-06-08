@@ -73,20 +73,50 @@ class Paginator(discord.ui.View, menus.MenuPages):
             button.disabled = True  # type: ignore
         await self.show_current_page()
 
-    @discord.ui.button(emoji='<:leftmost:935926623230910535>', style=gray_style)
+    def manage_buttons(self, new_page):
+        if new_page == 0:
+            self.first_page.disabled = True
+            self.before_page.disabled = True
+            if self._source.get_max_pages() > 1:
+                self.next_page.disabled = False
+                self.last_page.disabled = False
+            else:
+                self.next_page.disabled = True
+                self.last_page.disabled = True
+        elif new_page == self._source.get_max_pages() - 1:
+            self.first_page.disabled = False
+            self.before_page.disabled = False
+            self.next_page.disabled = True
+            self.last_page.disabled = True
+        else:
+            self.first_page.disabled = False
+            self.before_page.disabled = False
+            self.next_page.disabled = False
+            self.last_page.disabled = False
+
+    @discord.ui.button(emoji='<:leftmost:935926623230910535>', disabled=True, style=gray_style)
     async def first_page(self, inter, button):
+        self.manage_buttons(0)
         await self.show_page(inter, 0)
 
-    @discord.ui.button(emoji='<:left:893612797743759431>', style=gray_style)
+    @discord.ui.button(emoji='<:left:893612797743759431>', disabled=True, style=gray_style)
     async def before_page(self, inter, button):
+        self.manage_buttons(self.current_page - 1)
         await self.show_checked_page(inter, self.current_page - 1)
 
     @discord.ui.button(emoji='<:right:893612798242856962>', style=gray_style)
     async def next_page(self, inter, button):
-        await self.show_checked_page(inter, self.current_page + 1)
+        new_page = self.current_page + 1
+        if new_page == self._source.get_max_pages():
+            self.next_page.disabled = True
+            self.last_page.disabled = True
+            return await self.show_current_page()
+        self.manage_buttons(new_page)
+        await self.show_checked_page(inter, new_page)
 
     @discord.ui.button(emoji='<:rightmost:935926623591612506>', style=gray_style)
     async def last_page(self, inter, button):
+        self.manage_buttons(self._source.get_max_pages() - 1)
         await self.show_page(inter, self._source.get_max_pages() - 1)
 
 
@@ -123,12 +153,15 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
             # An error happened that can be handled, so ignore it.
             pass
 
-    async def show_current_page(self):
+    async def show_current_page(self, inter: discord.Interaction | None = None):
         if self._source.is_paginating():
             page_number = self.current_page
             page: Any = await self._source.get_page(self, page_number)
             kwargs = await self._get_kwargs_from_page(page)
-            await self.message.edit(**kwargs)
+            if inter is not None:
+                await inter.response.edit_message(**kwargs)
+            else:
+                await self.message.edit(**kwargs)
 
     async def _get_kwargs_from_page(self, page) -> dict[str, Any]:
         value: dict[str, Any]
@@ -150,25 +183,55 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
             button.disabled = True  # type: ignore
         await self.show_current_page()
 
-    @discord.ui.button(emoji='<:leftmost:935926623230910535>', style=gray_style)
+    def manage_buttons(self, new_page):
+        if new_page == 0:
+            self.first_page.disabled = True
+            self.before_page.disabled = True
+            if self._source.get_max_pages() > 1:
+                self.next_page.disabled = False
+                self.last_page.disabled = False
+            else:
+                self.next_page.disabled = True
+                self.last_page.disabled = True
+        elif new_page == self._source.get_max_pages() - 1:
+            self.first_page.disabled = False
+            self.before_page.disabled = False
+            self.next_page.disabled = True
+            self.last_page.disabled = True
+        else:
+            self.first_page.disabled = False
+            self.before_page.disabled = False
+            self.next_page.disabled = False
+            self.last_page.disabled = False
+
+    @discord.ui.button(emoji='<:leftmost:935926623230910535>', disabled=True, style=gray_style)
     async def first_page(self, inter, button):
+        self.manage_buttons(0)
         await self.show_page(inter, 0)
 
-    @discord.ui.button(emoji='<:left:893612797743759431>', style=gray_style)
+    @discord.ui.button(emoji='<:left:893612797743759431>', disabled=True, style=gray_style)
     async def before_page(self, inter, button):
+        self.manage_buttons(self.current_page - 1)
         await self.show_checked_page(inter, self.current_page - 1)
 
     @discord.ui.button(label='Change Mode', style=gray_style)
     async def normal_endless(self, inter, button):
         self.endless = (not self.endless)
-        await self.show_current_page()
+        await self.show_current_page(inter)
 
     @discord.ui.button(emoji='<:right:893612798242856962>', style=gray_style)
     async def next_page(self, inter, button):
-        await self.show_checked_page(inter, self.current_page + 1)
+        new_page = self.current_page + 1
+        if new_page == self._source.get_max_pages():
+            self.next_page.disabled = True
+            self.last_page.disabled = True
+            return await self.show_current_page()
+        self.manage_buttons(new_page)
+        await self.show_checked_page(inter, new_page)
 
     @discord.ui.button(emoji='<:rightmost:935926623591612506>', style=gray_style)
     async def last_page(self, inter, button):
+        self.manage_buttons(self._source.get_max_pages() - 1)
         await self.show_page(inter, self._source.get_max_pages() - 1)
 
 
