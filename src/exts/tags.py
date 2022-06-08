@@ -5,7 +5,7 @@ from typing import Annotated, Any, Literal, Optional, overload
 
 # packages
 import discord
-from discord import app_commands
+from discord import Interaction, app_commands
 from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorCollection
 
@@ -163,7 +163,53 @@ class Tags(commands.Cog):
                 raise TagError(
                     'This is not your tag and you do not have the `manage server` permission.')
 
-    @commands.hybrid_group(name='tag', description='Gets and shows the tag with the given name.', fallback='get')
+    @app_commands.command(name='t', description='Gets and shows the tag with the given name.')
+    @app_commands.guild_only()
+    @app_commands.describe(name='The name of the tag you want to see.')
+    async def tag_command(self, inter: Interaction, name: str) -> None:
+        name = name.lower().strip().replace('\n', '')
+        try:
+            if not name:
+                raise commands.BadArgument('Missing tag name.')
+            if len(name) > 100:
+                raise commands.BadArgument(
+                    'Tag name is a maximum of 100 characters.')
+
+            assert inter.guild is not None
+            tag = await self.get_tag(inter.guild.id, name)
+        except (commands.BadArgument, TagError) as e:
+            await inter.response.send_message(e)
+            if isinstance(inter.client, Advinas):
+                em = discord.Embed(
+                    title=f"**Tag Command** used in `{inter.channel}`", colour=discord.Color.red()
+                ).set_footer(
+                    text=f"Command run by {inter.user.name}", icon_url=inter.user.display_avatar.url
+                ).add_field(
+                    name='**Success**', value='`False`', inline=False
+                ).add_field(
+                    name='**Arguments**', value=f'`/t` name=`{name}`', inline=False
+                ).add_field(
+                    name='**Reason', value=e, inline=False
+                )
+                await self.bot._log.send(embed=em)
+            return
+
+        await inter.response.send_message(tag.content)
+        await self.used_tag(tag)
+
+        if isinstance(inter.client, Advinas):
+            em = discord.Embed(
+                title=f"**Tag Command** used in `{inter.channel}`", colour=discord.Color.green()
+            ).set_footer(
+                text=f"Command run by {inter.user.name}", icon_url=inter.user.display_avatar.url
+            ).add_field(
+                name='**Success**', value='`True`', inline=False
+            ).add_field(
+                name='**Arguments**', value=f'`/t` name=`{name}`', inline=False
+            )
+            await self.bot._log.send(embed=em)
+
+    @commands.hybrid_group(name='tag', aliases=['t'], description='Gets and shows the tag with the given name.', fallback='get')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see.')
     async def tag(self, ctx: Context, *, name: Annotated[str, TagName]):
