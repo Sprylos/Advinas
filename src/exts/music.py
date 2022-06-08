@@ -138,6 +138,9 @@ class Music(commands.Cog):
         if not player.is_connected:
             raise PlayerNotConnectedError('Bot is not connected.')
         track = player.current
+        if not track:
+            await ctx.reply('No track is currently playing.')
+            return await ctx.log('No track is currently playing.')
         mention = track.requester.mention if track.requester else '@Invalid User'
         if track.is_stream:
             description = f":red_circle: **LIVE** [{track.title}]({track.uri}) [{mention}]"
