@@ -62,7 +62,7 @@ class Advinas(Bot):
         super().__init__(
             command_prefix=when_mentioned_or(prefix),
             activity=Activity(
-                type=ActivityType.watching, name="You | /invite | v3.0"),
+                type=ActivityType.watching, name="You | /invite | v3.1"),
             allowed_mentions=AllowedMentions(
                 everyone=False, users=True, roles=False, replied_user=False),
             help_command=None,
