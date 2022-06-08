@@ -115,7 +115,7 @@ class Music(commands.Cog):
             return await ctx.log('No results found for query.')
 
         if isinstance(results, pomice.Playlist):
-            queued = results.tracks[0].title
+            queued = results.name
             for track in results.tracks:
                 player.queue.append(track)
         else:
