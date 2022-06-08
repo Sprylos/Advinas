@@ -94,7 +94,7 @@ class Player(pomice.Player):
             self.dj = ctx.author
 
 
-class Context(commands.Context[Advinas]):
+class Context(commands.Context):
     """Custom Context class for easier logging."""
 
     @property
@@ -204,9 +204,10 @@ class TagName(commands.clean_content):
 
         # get tag command.
         root = ctx.bot.get_command('tag')
-        if first_word in root.all_commands:
-            raise commands.BadArgument(
-                'This tag name starts with a reserved word.')
+        if isinstance(root, commands.HybridGroup):
+            if first_word in root.all_commands:
+                raise commands.BadArgument(
+                    'This tag name starts with a reserved word.')
 
         return converted if not self.lower else lower
 
