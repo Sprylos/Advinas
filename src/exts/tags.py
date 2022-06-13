@@ -25,12 +25,13 @@ from common.custom import (
 class Tags(commands.Cog):
     def __init__(self, bot: Advinas):
         self.bot = bot
-        self.cache: dict[int, list[dict[str, Any]]] = {}
+        self.cache: dict[int, dict[str, Tag | TagAlias]] = {}
         bot.loop.create_task(self.ready())
 
     async def ready(self):
         await self.bot.wait_until_ready()
         self.col: AsyncIOMotorCollection = self.bot.DB.tags
+        await self.cache_tags()
         '''
         Document Schema:
         {
@@ -57,10 +58,7 @@ class Tags(commands.Cog):
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
 
-    async def cog_load(self) -> None:
-        await self.cache_tags()
-
-    async def _get_tag(self, guild_id: int, name: str) -> Optional[dict[str, Any]]:
+    async def _fetch_tag(self, guild_id: int, name: str) -> Optional[dict[str, Any]]:
         ret: Optional[dict[str, Any]] = await self.col.find_one(
             {'guild': guild_id, 'tags.name': name.lower()},
             {'_id': 0, 'guild': 1, 'tags.$': 1}
@@ -118,6 +116,9 @@ class Tags(commands.Cog):
         location = 'for that user' if member_id else 'in that guild'
         raise TagError(f'No tags found {location}.')
 
+    def _get_tag(self, guild_id: int, name: str) -> Optional[Tag | TagAlias]:
+        return self.cache.get(guild_id, {}).get(name, None)
+
     @overload
     async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False, return_alias: Literal[False] = False) -> Tag:
         ...
@@ -127,40 +128,40 @@ class Tags(commands.Cog):
         ...
 
     async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False, return_alias: bool = False) -> Tag | TagAlias:
-        if (res := await self._get_tag(guild_id, name)) is None:
+        tag: Optional[Tag | TagAlias] = self._get_tag(guild_id, name)
+        if tag is None:
             raise TagError('Tag not found.')
-        if (alias := res['tags'][0].get('alias', None)) is not None:
-            if (result := await self._get_tag(guild_id, alias)) is None:
-                await self.delete_tag(Tag.minimal(res['tags'][0]['name'], res['guild']))
+        if isinstance(tag, TagAlias):
+            if (main_tag := self._get_tag(tag.guild_id, tag.alias)) is None:
+                await self.delete_tag(Tag.minimal(name, guild_id))
+                await self.cache_tags()
                 raise TagError('Tag not found.')
             if no_alias:
                 raise TagError('You may not edit an alias.')
             if not return_alias:
-                res = result
-            else:
-                return TagAlias.from_db(res)
-        return Tag.from_db(res)
+                return main_tag
+        return tag
 
     async def create_tag(self, ctx: Any, name: str, content: str) -> None:
-        if await self._get_tag(ctx.guild.id, name):
+        if self._get_tag(ctx.guild.id, name):
             raise TagError(f'A tag with the name "{name}" already exists.')
         await self._create_tag(ctx, name, content)
         await ctx.reply(f'Tag "{name}" successfully created.')
 
     async def create_alias(self, ctx: Any, new_name: str, old_name: str) -> None:
-        if await self._get_tag(ctx.guild.id, new_name):
+        if self._get_tag(ctx.guild.id, new_name):
             raise TagError(f'A tag with the name "{new_name}" already exists.')
-        if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:
+        if (tag := self._get_tag(ctx.guild.id, old_name)) is None:
             raise TagError(
                 f'A tag with the name "{old_name}" does not exist.')
         else:
-            if hasattr(tag, 'alias'):
+            if isinstance(tag, TagAlias):
                 raise TagError('Cannot link an alias to another alias.')
         await self._create_alias(ctx, new_name, old_name)
         await ctx.reply(f'Tag alias "{new_name}" that points to "{old_name}" successfully created.')
 
     @staticmethod
-    async def is_privileged(ctx: Context, tag: Tag | TagAlias) -> None:
+    def is_privileged(ctx: Context, tag: Tag | TagAlias) -> None:
         author: Any = ctx.author
         if author.id != tag.owner_id:
             if not (author.guild_permissions.manage_guild or author.guild_permissions.administrator):
@@ -169,7 +170,15 @@ class Tags(commands.Cog):
 
     async def cache_tags(self) -> None:
         async for doc in self.col.find({}, {'_id': 0, 'guild': 1, 'tags': 1}):
-            self.cache[doc['guild']] = doc['tags']
+            tags = doc['tags']
+            self.cache[doc['guild']] = {
+                t['name']: (Tag(**t, guild_id=doc['guild']) if 'alias' not in t else TagAlias(**t, guild_id=doc['guild'])) for t in tags}
+
+    @commands.command(name='cache')
+    @commands.is_owner()
+    async def _cache(self, ctx: Context) -> None:
+        await self.cache_tags()
+        await ctx.reply('Cache updated.')
 
     @app_commands.command(name='t', description='Gets and shows the tag with the given name.')
     @app_commands.guild_only()
@@ -257,7 +266,7 @@ class Tags(commands.Cog):
     async def _edit(self, ctx: Context, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
         assert ctx.guild is not None
         tag = await self.get_tag(ctx.guild.id, name, no_alias=True)
-        await self.is_privileged(ctx, tag)
+        self.is_privileged(ctx, tag)
 
         await self.edit_tag(tag, content)
         await ctx.reply(f'Tag "{name}" successfully edited.')
@@ -271,7 +280,7 @@ class Tags(commands.Cog):
     async def _remove(self, ctx: Context, name: Annotated[str, TagName]):
         assert ctx.guild is not None
         tag = await self.get_tag(ctx.guild.id, name, return_alias=True)
-        await self.is_privileged(ctx, tag)
+        self.is_privileged(ctx, tag)
 
         await self.delete_tag(tag=tag)
         await ctx.reply(f'Tag "{name}" successfully deleted.')
