@@ -25,6 +25,7 @@ from common.custom import (
 class Tags(commands.Cog):
     def __init__(self, bot: Advinas):
         self.bot = bot
+        self.cache: dict[int, list[dict[str, Any]]] = {}
         bot.loop.create_task(self.ready())
 
     async def ready(self):
@@ -55,6 +56,9 @@ class Tags(commands.Cog):
 
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
+
+    async def cog_load(self) -> None:
+        await self.cache_tags()
 
     async def _get_tag(self, guild_id: int, name: str) -> Optional[dict[str, Any]]:
         ret: Optional[dict[str, Any]] = await self.col.find_one(
@@ -163,6 +167,10 @@ class Tags(commands.Cog):
                 raise TagError(
                     'This is not your tag and you do not have the `manage server` permission.')
 
+    async def cache_tags(self) -> None:
+        async for doc in self.col.find({}, {'_id': 0, 'guild': 1, 'tags': 1}):
+            self.cache[doc['guild']] = doc['tags']
+
     @app_commands.command(name='t', description='Gets and shows the tag with the given name.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see.')
@@ -230,6 +238,7 @@ class Tags(commands.Cog):
             return await ctx.send('Tag content is a maximum of 2000 characters.')
 
         await self.create_tag(ctx, name, content)
+        await self.cache_tags()
 
         await ctx.log()
 
@@ -238,6 +247,7 @@ class Tags(commands.Cog):
     @app_commands.describe(new_name='The name of the alias.', old_name='The name of the tag you want to refer to.')
     async def _alias(self, ctx: Context, new_name: Annotated[str, TagName], *, old_name: Annotated[str, TagName]):
         await self.create_alias(ctx, new_name, old_name)
+        await self.cache_tags()
 
         await ctx.log()
 
@@ -251,6 +261,8 @@ class Tags(commands.Cog):
 
         await self.edit_tag(tag, content)
         await ctx.reply(f'Tag "{name}" successfully edited.')
+        await self.cache_tags()
+
         await ctx.log()
 
     @tag.command(name='remove', aliases=['delete'], description='Deletes the tag with the given name.')
@@ -263,6 +275,8 @@ class Tags(commands.Cog):
 
         await self.delete_tag(tag=tag)
         await ctx.reply(f'Tag "{name}" successfully deleted.')
+        await self.cache_tags()
+
         await ctx.log()
 
     @tag.command(name='info', description='Shows useful information about the tag with the given name.')
