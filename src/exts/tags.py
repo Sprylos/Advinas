@@ -183,7 +183,7 @@ class Tags(commands.Cog):
     @app_commands.command(name='t', description='Gets and shows the tag with the given name.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see.')
-    async def tag_command(self, inter: Interaction, name: str) -> None:
+    async def t(self, inter: Interaction, name: str) -> None:
         name = name.lower().strip().replace('\n', '')
         try:
             if not name:
@@ -304,6 +304,17 @@ class Tags(commands.Cog):
 
         await ctx.reply(embed=em)
         await ctx.log()
+
+    @t.autocomplete('name')
+    @tag.autocomplete('name')
+    @_create.autocomplete('name')
+    @_alias.autocomplete('old_name')
+    @_edit.autocomplete('name')
+    @_remove.autocomplete('name')
+    @_info.autocomplete('name')
+    async def t_name_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
+        tags = self.cache.get(inter.guild.id, {}).keys()  # type: ignore
+        return [app_commands.Choice(name=name, value=name) for name in tags if name.startswith(current)][:25]
 
     @tag.command(name='list', description='Shows a list of tags available in this server.')
     @app_commands.guild_only()
