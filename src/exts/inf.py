@@ -3,13 +3,14 @@ from __future__ import annotations
 # std
 import re
 import time
+import itertools
 from math import floor, ceil
 from typing import Annotated, Any, Optional
 
 
 # packages
 import discord
-from discord import app_commands
+from discord import Interaction, app_commands
 from discord.ext import commands
 from infinitode import Player, Leaderboard
 from infinitode.errors import APIError, BadArgument
@@ -44,6 +45,13 @@ class Inf(commands.Cog):
         self.BOUNTY_DIFFS: dict[str, int] = inf['bountyDifficulties']
         self.EMOJIS: dict[str, int] = inf['enemy_emojis']
         self.images = Images()
+        bot.loop.create_task(self.ready())
+
+    async def ready(self):
+        await self.bot.wait_until_ready()
+        payload: list[dict[str, Any]] = await self.bot.DB.nicknames.find({}, {'_id': 0}).to_list(None)  # nopep8
+        self.PLAYERIDS = {next(iter(doc.values()))['key'] for doc in payload} | {
+            next(iter(doc)) for doc in payload}
 
     def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
@@ -61,7 +69,7 @@ class Inf(commands.Cog):
         await ScorePaginator(ScoreLBSource(ctx, normal, endless, f'Level {level} Leaderboards (Score)')).start(ctx)
 
     # Wave command
-    @commands.command(name='waves', aliases=['w'], description='Shows the top 200 waves of the given level.')
+    @commands.hybrid_command(name='waves', aliases=['w'], description='Shows the top 200 waves of the given level.')
     @app_commands.describe(level='The level which you want to see the wave leaderboard for.')
     async def waves(self, ctx: Context, level: Annotated[str, LevelConverter]):
         normal = await self.bot.API.leaderboards(level, mode='waves')
@@ -179,6 +187,13 @@ class Inf(commands.Cog):
         await ctx.reply(embed=em)
         await ctx.log()
 
+    @score.autocomplete('level')
+    @waves.autocomplete('level')
+    @level.autocomplete('level')
+    @bounty.autocomplete('level')
+    async def level_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
+        return [app_commands.Choice(name=i, value=i) for i in self.LEVELS if i.startswith(current.lower())][:25]
+
     # Profile command
     @commands.hybrid_command(name='profile', aliases=['prof'], description='Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).')
     @app_commands.describe(playerid='The playerid of the player you want to see the profile of.')
@@ -240,6 +255,10 @@ class Inf(commands.Cog):
         file = discord.File(filename=f'{player.playerid}.png', fp=final_buffer)
         await ctx.reply(f'Finished in {time.perf_counter() - start_time:0.3f}s', file=file)
         await ctx.log()
+
+    @profile.autocomplete('playerid')
+    async def playerid_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
+        return [app_commands.Choice(name=i, value=i) for i in self.PLAYERIDS if i.startswith(current.lower())][:25]
 
 
 async def setup(bot: Advinas):
