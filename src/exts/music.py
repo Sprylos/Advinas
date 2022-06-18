@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # std
 import random
-from typing import Literal, Optional
+from typing import Literal, Optional, TYPE_CHECKING
 
 # packages
 import pomice
@@ -11,7 +11,6 @@ from discord import app_commands, ClientException
 from discord.ext import commands
 
 # local
-from bot import Advinas
 from config import host, port, password
 from common.views import Paginator
 from common.source import QueueSource
@@ -22,6 +21,9 @@ from common.custom import (
     Player,
     PlayerNotConnectedError
 )
+
+if TYPE_CHECKING:
+    from bot import Advinas
 
 
 class Music(commands.Cog):

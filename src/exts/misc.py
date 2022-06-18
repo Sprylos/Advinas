@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+# std
+from typing import TYPE_CHECKING
+
 # packages
 import discord
 from discord.ext import commands
 
 # local
-from bot import Advinas
 from common.views import Invite
 from common.custom import BadChannel, Context
+
+if TYPE_CHECKING:
+    from bot import Advinas
 
 
 class Misc(commands.Cog):

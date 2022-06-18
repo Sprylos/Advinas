@@ -3,17 +3,19 @@ from __future__ import annotations
 # std
 import asyncio
 import datetime
-from typing import Any, Mapping
+from typing import Any, Mapping, TYPE_CHECKING
 
 # packages
 import discord
 from motor.motor_asyncio import AsyncIOMotorCollection as Collection
 from discord.ext import commands, tasks
+from infinitode.leaderboard import Leaderboard
 
 # local
-from bot import Advinas
 from common.utils import load_json
-from infinitode.leaderboard import Leaderboard
+
+if TYPE_CHECKING:
+    from bot import Advinas
 
 
 class Database(commands.Cog):

@@ -3,9 +3,8 @@ from __future__ import annotations
 # std
 import re
 import time
-import itertools
 from math import floor, ceil
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any, Optional, TYPE_CHECKING
 
 
 # packages
@@ -17,7 +16,6 @@ from infinitode.errors import APIError, BadArgument
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 # local
-from bot import Advinas
 from exts.database import Database
 from common.images import Images
 from common.custom import BadChannel, Context, LevelConverter
@@ -31,6 +29,9 @@ from common.utils import (
     tablify,
     load_json
 )
+
+if TYPE_CHECKING:
+    from bot import Advinas
 
 
 class Inf(commands.Cog):

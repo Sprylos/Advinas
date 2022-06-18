@@ -5,7 +5,7 @@ import traceback
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, TYPE_CHECKING
 
 # packages
 import pomice
@@ -15,6 +15,9 @@ from discord.ext.commands import BadArgument, CheckFailure
 
 # local
 from common.utils import codeblock
+
+if TYPE_CHECKING:
+    from bot import Advinas
 
 
 class BadLevel(BadArgument):
@@ -93,7 +96,7 @@ class Player(pomice.Player):
             self.dj = ctx.author
 
 
-class Context(commands.Context):
+class Context(commands.Context[Advinas]):
     """Custom Context class for easier logging."""
 
     @property

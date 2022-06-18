@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import Annotated, Any, Literal, Optional, overload
+from typing import Annotated, Any, Literal, Optional, overload, TYPE_CHECKING
 
 # packages
 import discord
@@ -10,7 +10,6 @@ from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 # local
-from bot import Advinas
 from common.source import TagSource
 from common.views import Paginator
 from common.custom import (
@@ -20,6 +19,9 @@ from common.custom import (
     TagName,
     TagError
 )
+
+if TYPE_CHECKING:
+    from bot import Advinas
 
 
 class Tags(commands.Cog):
