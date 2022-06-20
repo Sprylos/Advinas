@@ -25,7 +25,27 @@ def tablify(indict: dict[Any, Any]) -> str:
     return '\n'.join([f'{key} {vals[keys.index(key)]}' for key in keys])
 
 
-def get_level_bounty(level_diffs: Any, level: Optional[str], difficulty: float, bounties: int, coins: int) -> tuple[str, float, int, int]:
+def get_level_bounty(level_diffs: dict[str, int | float], level: Optional[str], difficulty: int | float, bounties: int, coins: int) -> tuple[str, float, int, int]:
+    if level is not None:
+        level = level.replace('_', '.').replace(
+            ',', '.').replace('-', '.').replace(' ', '.').lower()
+        try:
+            difficulty = level_diffs[level]
+        except KeyError:
+            level = 'Invalid Level'
+        else:
+            if level == 'dq3':
+                bounties, coins = 10, 50
+            elif level == 'dq4':
+                bounties, coins = 10, 200
+            elif level == 'dq8':
+                bounties, coins = 3, 50
+            elif level == 'rumble':
+                bounties = 3
+            if level.startswith('dq'):
+                level = level.upper()
+    else:
+        level = 'No level provided'
 
     if coins < 50:
         coins = 50
@@ -39,26 +59,8 @@ def get_level_bounty(level_diffs: Any, level: Optional[str], difficulty: float, 
         bounties = 12
     elif bounties < 1:
         bounties = 1
-    if not level:
-        return 'No level provided', difficulty, bounties, coins
-    try:
-        _level = level.replace('_', '.').replace(
-            ',', '.').replace('-', '.').replace(' ', '.').lower()
-        _difficulty: float = level_diffs[level]
-        _bounties, _coins = bounties, coins
-        if level == 'dq3':
-            _bounties, _coins = 10, 50
-        elif level == 'dq4':
-            _bounties, _coins = 10, 200
-        elif level == 'dq8':
-            _bounties, _coins = 3, 50
-        elif level == 'rumble':
-            _bounties = 3
-        if _level.startswith('dq'):
-            _level = _level.upper()
-        return _level, _difficulty, _bounties, _coins
-    except KeyError:
-        return 'Invalid Level', difficulty, bounties, coins
+
+    return level, difficulty, bounties, coins
 
 
 def round_to_nearest(n: int, m: int) -> int:

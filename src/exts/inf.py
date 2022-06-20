@@ -43,7 +43,7 @@ class Inf(commands.Cog):
         self.LEVELS: list[str] = list(inf['levels'].keys())
         self.bot.LEVELS = self.LEVELS
         self.LEVEL_INFO: dict[str, dict[str, Any]] = inf['levels']
-        self.BOUNTY_DIFFS: dict[str, int] = inf['bountyDifficulties']
+        self.BOUNTY_DIFFS: dict[str, int | float] = inf['bountyDifficulties']
         self.EMOJIS: dict[str, int] = inf['enemy_emojis']
         self.images = Images()
         bot.loop.create_task(self.ready())
