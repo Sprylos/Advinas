@@ -96,7 +96,7 @@ class Player(pomice.Player):
             self.dj = ctx.author
 
 
-class Context(commands.Context[Advinas]):
+class Context(commands.Context['Advinas']):
     """Custom Context class for easier logging."""
 
     @property
