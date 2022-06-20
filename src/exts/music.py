@@ -7,7 +7,7 @@ from typing import Literal, Optional, TYPE_CHECKING
 # packages
 import pomice
 import discord
-from discord import app_commands, ClientException
+from discord import app_commands, ClientException, VoiceChannel
 from discord.ext import commands
 
 # local
@@ -129,6 +129,41 @@ class Music(commands.Cog):
             await player.do_next()
         else:
             await ctx.reply(f'Queued **{queued}**.')
+        await ctx.log()
+
+    @commands.hybrid_command(name='reconnect', aliases=['rc'], description='Reconnects to the channel while saving the current queue (In case the bot dies).')
+    @app_commands.guild_only()
+    async def _reconnect(self, ctx: Context):
+        old_player: Optional[Player] = ctx.voice_client
+        if not old_player:
+            raise NoPlayerError('Bot is not in voice channel.')
+        if not old_player.is_connected:
+            raise PlayerNotConnectedError('Bot is not connected.')
+
+        channel: Optional[VoiceChannel] = getattr(ctx.author.voice, 'channel', None)  # type: ignore # nopep8
+        if not channel:
+            await ctx.reply('You must be in a voice channel in order to use this command!')
+            return await ctx.log('Member not in a voice channel.')
+
+        queue = [old_player.current]
+        queue.extend(old_player.queue)
+        await old_player.teardown()
+
+        try:
+            await channel.connect(cls=Player)
+        except ClientException as e:
+            await ctx.reply(str(e))
+            return await ctx.log(str(e))
+
+        player: Optional[Player] = ctx.voice_client
+        if not player:
+            await ctx.reply('Failed to create player (try again).')
+            return await ctx.log("Failed to create player.")
+        player.set_context(ctx)
+        player.queue.extend(queue)
+
+        await player.do_next()
+        await ctx.reply('Reconnected the bot.')
         await ctx.log()
 
     @commands.hybrid_command(name='nowplaying', aliases=['np', 'now', 'playing'], description='Shows the currently playing song.')
