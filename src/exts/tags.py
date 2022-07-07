@@ -118,7 +118,12 @@ class Tags(commands.Cog):
         location = 'for that user' if member_id else 'in that guild'
         raise TagError(f'No tags found {location}.')
 
-    def _get_tag(self, guild_id: int, name: str) -> Optional[Tag | TagAlias]:
+    async def _get_tag(self, guild_id: int, name: str) -> Optional[Tag | TagAlias]:
+        if guild_id not in self.cache:
+            self.cache[guild_id] = {}
+            if await self.col.find_one({'guild': guild_id}) is None:
+                await self.col.insert_one({'guild': guild_id, 'tags': []})
+            return None
         return self.cache.get(guild_id, {}).get(name, None)
 
     @overload
@@ -130,11 +135,11 @@ class Tags(commands.Cog):
         ...
 
     async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False, return_alias: bool = False) -> Tag | TagAlias:
-        tag: Optional[Tag | TagAlias] = self._get_tag(guild_id, name)
+        tag: Optional[Tag | TagAlias] = await self._get_tag(guild_id, name)
         if tag is None:
             raise TagError('Tag not found.')
         if isinstance(tag, TagAlias):
-            if (main_tag := self._get_tag(tag.guild_id, tag.alias)) is None:
+            if (main_tag := await self._get_tag(tag.guild_id, tag.alias)) is None:
                 await self.delete_tag(Tag.minimal(name, guild_id))
                 await self.cache_tags()
                 raise TagError('Tag not found.')
@@ -145,15 +150,15 @@ class Tags(commands.Cog):
         return tag
 
     async def create_tag(self, ctx: Any, name: str, content: str) -> None:
-        if self._get_tag(ctx.guild.id, name):
+        if await self._get_tag(ctx.guild.id, name):
             raise TagError(f'A tag with the name "{name}" already exists.')
         await self._create_tag(ctx, name, content)
         await ctx.reply(f'Tag "{name}" successfully created.')
 
     async def create_alias(self, ctx: Any, new_name: str, old_name: str) -> None:
-        if self._get_tag(ctx.guild.id, new_name):
+        if await self._get_tag(ctx.guild.id, new_name):
             raise TagError(f'A tag with the name "{new_name}" already exists.')
-        if (tag := self._get_tag(ctx.guild.id, old_name)) is None:
+        if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:
             raise TagError(
                 f'A tag with the name "{old_name}" does not exist.')
         else:
