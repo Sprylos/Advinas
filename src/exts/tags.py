@@ -314,7 +314,6 @@ class Tags(commands.Cog):
 
     @t.autocomplete('name')
     @tag.autocomplete('name')
-    @_create.autocomplete('name')
     @_alias.autocomplete('old_name')
     @_edit.autocomplete('name')
     @_remove.autocomplete('name')
