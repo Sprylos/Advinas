@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import Annotated, Any, Literal, Optional, overload, TYPE_CHECKING
+from typing import Annotated, Any, Literal, overload, TYPE_CHECKING
 
 # packages
 import discord
@@ -60,8 +60,8 @@ class Tags(commands.Cog):
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
 
-    async def _fetch_tag(self, guild_id: int, name: str) -> Optional[dict[str, Any]]:
-        ret: Optional[dict[str, Any]] = await self.col.find_one(
+    async def _fetch_tag(self, guild_id: int, name: str) -> dict[str, Any] | None:
+        ret: dict[str, Any] | None = await self.col.find_one(
             {'guild': guild_id, 'tags.name': name.lower()},
             {'_id': 0, 'guild': 1, 'tags.$': 1}
         )
@@ -98,9 +98,9 @@ class Tags(commands.Cog):
             {'$set': {'tags.$.content': content}}
         )
 
-    async def get_tag_list(self, guild_id: int, member_id: Optional[int]) -> list[dict[str, Any]]:
+    async def get_tag_list(self, guild_id: int, member_id: int | None) -> list[dict[str, Any]]:
         if member_id is not None:
-            resp: Optional[Any] = await self.col.aggregate([
+            resp: Any | None = await self.col.aggregate([
                 {'$unwind': '$tags'},
                 {'$match': {'guild': guild_id, 'tags.owner_id': member_id}},
                 {'$project': {
@@ -112,13 +112,13 @@ class Tags(commands.Cog):
             if resp is not None:
                 return resp
         else:
-            resp: Optional[Any] = await self.col.find_one({'guild': guild_id})
+            resp: Any | None = await self.col.find_one({'guild': guild_id})
             if resp is not None and resp['tags'] != []:
                 return resp['tags']
         location = 'for that user' if member_id else 'in that guild'
         raise TagError(f'No tags found {location}.')
 
-    async def _get_tag(self, guild_id: int, name: str) -> Optional[Tag | TagAlias]:
+    async def _get_tag(self, guild_id: int, name: str) -> Tag | TagAlias | None:
         if guild_id not in self.cache:
             self.cache[guild_id] = {}
             if await self.col.find_one({'guild': guild_id}) is None:
@@ -135,7 +135,7 @@ class Tags(commands.Cog):
         ...
 
     async def get_tag(self, guild_id: int, name: str, *, no_alias: bool = False, return_alias: bool = False) -> Tag | TagAlias:
-        tag: Optional[Tag | TagAlias] = await self._get_tag(guild_id, name)
+        tag: Tag | TagAlias | None = await self._get_tag(guild_id, name)
         if tag is None:
             raise TagError('Tag not found.')
         if isinstance(tag, TagAlias):
@@ -324,7 +324,7 @@ class Tags(commands.Cog):
 
     @tag.command(name='list', description='Shows a list of tags available in this server.')
     @app_commands.guild_only()
-    async def _list(self, ctx: Context, *, member: Optional[discord.Member] = None):
+    async def _list(self, ctx: Context, *, member: discord.Member | None = None):
         assert ctx.guild is not None
         member_id = member.id if member is not None else None
         name = member.name if member is not None else ctx.guild.name

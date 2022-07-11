@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # std
 import random
-from typing import Literal, Optional, TYPE_CHECKING
+from typing import Literal, TYPE_CHECKING
 
 # packages
 import pomice
@@ -44,7 +44,7 @@ class Music(commands.Cog):
         )
 
     def is_privileged(self, ctx: Context) -> bool:
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         # always in guild
         return player.dj == ctx.author or ctx.author.guild_permissions.kick_members  # type: ignore
 
@@ -71,7 +71,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='join', aliases=['j', 'summon', 'con', 'connect'], description='Makes the bot join your or the given voice channel.')
     @app_commands.guild_only()
     @app_commands.describe(channel='The channel you want the bot to join. Defaults to the channel you are in.')
-    async def _join(self, ctx: Context, *, channel: Optional[discord.VoiceChannel] = None):
+    async def _join(self, ctx: Context, *, channel: discord.VoiceChannel | None = None):
         if not channel:
             channel = getattr(ctx.author.voice, 'channel', None)  # type: ignore # nopep8
             if not channel:
@@ -91,7 +91,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='leave', aliases=['disconnect', 'dc', 'disc', 'lv'], description='Makes the bot leave its current voice channel.')
     @app_commands.guild_only()
     async def _leave(self, ctx: Context):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not connected.')
         await player.destroy()
@@ -102,10 +102,10 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(search='The song/songs to play, can be a keyword to search or a direct link.')
     async def _play(self, ctx: Context, *, search: str):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             await ctx.invoke(self._join)
-            player: Optional[Player] = ctx.voice_client
+            player: Player | None = ctx.voice_client
             if not player:
                 await ctx.reply('Failed to create player (try again).')
                 return await ctx.log("Failed to create player.")
@@ -134,7 +134,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='reconnect', aliases=['rc'], description='Reconnects to the channel while saving the current queue (In case the bot dies).')
     @app_commands.guild_only()
     async def _reconnect(self, ctx: Context):
-        old_player: Optional[Player] = ctx.voice_client
+        old_player: Player | None = ctx.voice_client
         if not old_player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not old_player.is_connected:
@@ -155,7 +155,7 @@ class Music(commands.Cog):
             await ctx.reply(str(e))
             return await ctx.log(str(e))
 
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             await ctx.reply('Failed to create player (try again).')
             return await ctx.log("Failed to create player.")
@@ -169,7 +169,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='nowplaying', aliases=['np', 'now', 'playing'], description='Shows the currently playing song.')
     @app_commands.guild_only()
     async def _nowplaying(self, ctx: Context):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -191,7 +191,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='queue', aliases=['q'], description='Shows the current song queue.')
     @app_commands.guild_only()
     async def _queue(self, ctx: Context):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -207,8 +207,8 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='loop', aliases=['l'], description='Changes the loop mode to the given mode.')
     @app_commands.guild_only()
     @app_commands.describe(mode='The mode to change the loop mode to. Can be `Song`, `Queue`, or `None`. Changes to next mode if omitted.')
-    async def _loop(self, ctx: Context, mode: Optional[Literal['Song', 'Queue', 'None']] = None):
-        player: Optional[Player] = ctx.voice_client
+    async def _loop(self, ctx: Context, mode: Literal['Song', 'Queue', 'None'] | None = None):
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -232,7 +232,7 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(index='The index of the song that should be removed from the queue (first song = 1).')
     async def _remove(self, ctx: Context, index: int):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -254,7 +254,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='pause', aliases=['pau', 'pa'], description='Pauses the current song.')
     @app_commands.guild_only()
     async def _pause(self, ctx: Context):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -274,7 +274,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='resume', aliases=['res', 'r'], description='Resume the current song.')
     @app_commands.guild_only()
     async def _resume(self, ctx: Context):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -295,7 +295,7 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(to='The index of the song that should be skipped to. DEFAULT: 1')
     async def _skip(self, ctx: Context, to: int = 1):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -325,7 +325,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='stop', description='Stops the player.')
     @app_commands.guild_only()
     async def _stop(self, ctx: Context):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -342,7 +342,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='shuffle', aliases=['mix', 'shuf'], description='Shuffles the queue.')
     @app_commands.guild_only()
     async def _shuffle(self, ctx: Context):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:
@@ -363,7 +363,7 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(volume='The amount you want to set the volume to.')
     async def _volume(self, ctx: Context, *, volume: float):
-        player: Optional[Player] = ctx.voice_client
+        player: Player | None = ctx.voice_client
         if not player:
             raise NoPlayerError('Bot is not in voice channel.')
         if not player.is_connected:

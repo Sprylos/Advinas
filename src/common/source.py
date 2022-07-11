@@ -1,11 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import (
-    Any,
-    Optional,
-    TYPE_CHECKING
-)
+from typing import Any, TYPE_CHECKING
 
 # packages
 import discord
@@ -22,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class LBSource(menus.ListPageSource):
-    def __init__(self, ctx: Context, data: Leaderboard, title: str, headline: Optional[str] = None):
+    def __init__(self, ctx: Context, data: Leaderboard, title: str, headline: str | None = None):
         self.title = title
         self.headline = headline
         self.user = ctx.author

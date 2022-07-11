@@ -5,7 +5,7 @@ import traceback
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Literal, Optional, TYPE_CHECKING
+from typing import Any, Literal, TYPE_CHECKING
 
 # packages
 import pomice
@@ -52,10 +52,10 @@ class Player(pomice.Player):
         super().__init__(*args, **kwargs)
 
         self.queue: list[pomice.Track] = []
-        self.controller: Optional[discord.Message] = None
+        self.controller: discord.Message | None = None
         self.context: Context
         self.dj: discord.Member
-        self.loop_mode: Optional[Literal['Song', 'Queue']] = None
+        self.loop_mode: Literal['Song', 'Queue'] | None = None
 
     async def do_next(self) -> None:
         if self.controller:
@@ -100,7 +100,7 @@ class Context(commands.Context['Advinas']):
     """Custom Context class for easier logging."""
 
     @property
-    def voice_client(self) -> Optional[Player]:
+    def voice_client(self) -> Player | None:
         return super().voice_client  # type: ignore
 
     @property
@@ -116,7 +116,7 @@ class Context(commands.Context['Advinas']):
 
         return f'`{self.prefix or "/"}{command}` ' + ' '.join([f'`{k}={v}`' for k, v in self.kwargs.items()])
 
-    async def log(self, reason: Optional[str] = None, /, *, success: Optional[bool] = None):
+    async def log(self, reason: str | None = None, /, *, success: bool | None = None):
         """Logs the usage of commands. Should be called at the end of any command."""
 
         success = success if success is not None else (

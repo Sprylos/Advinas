@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import Any, Optional
+from typing import Any
 
 # packages
 import discord
@@ -21,7 +21,7 @@ class Paginator(discord.ui.View, menus.MenuPages):
         self.delete_message_after = False
         self.current_page = 0
 
-    async def start(self, ctx: Context, *, channel: Optional[discord.TextChannel] = None, wait: bool = False) -> None:
+    async def start(self, ctx: Context, *, channel: discord.TextChannel | None = None, wait: bool = False) -> None:
         await self._source._prepare_once()
         self.ctx = ctx
         page = await self._source.get_page(0)
@@ -128,7 +128,7 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
         self.delete_message_after = False
         self.endless: bool = False
 
-    async def start(self, ctx: Context, *, channel: Optional[discord.TextChannel] = None, wait: bool = False) -> None:
+    async def start(self, ctx: Context, *, channel: discord.TextChannel | None = None, wait: bool = False) -> None:
         await self._source._prepare_once()
         self.ctx = ctx
         page = await self._source.get_page(self, 0)

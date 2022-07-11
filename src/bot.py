@@ -4,44 +4,16 @@ from __future__ import annotations
 from typing import Any
 
 # packages
+import pomice
+import aiohttp
+import discord
 import infinitode
-from aiohttp import ClientSession
-from discord import (
-    app_commands,
-    Activity,
-    ActivityType,
-    AllowedMentions,
-    Message,
-    Intents,
-    Interaction
-)
-from discord.utils import utcnow
+from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from pomice.exceptions import InvalidSpotifyClientAuthorization, TrackLoadError
-from discord.ext.commands import (
-    Bot,
-    BadArgument,
-    BadLiteralArgument,
-    CommandNotFound,
-    CommandInvokeError,
-    ExpectedClosingQuoteError,
-    UnexpectedQuoteError,
-    HybridCommandError,
-    MissingRequiredArgument,
-    NotOwner,
-    when_mentioned_or
-)
 
 # local
 import config
-from common.custom import (
-    BadChannel,
-    BadLevel,
-    Context,
-    NoPlayerError,
-    PlayerNotConnectedError,
-    TagError
-)
+from common import custom
 
 
 # exts to load
@@ -57,22 +29,22 @@ if not config.testing:
     exts.append('mod')
 
 
-class Advinas(Bot):
+class Advinas(commands.Bot):
     def __init__(self, prefix: str) -> None:
         super().__init__(
-            command_prefix=when_mentioned_or(prefix),
-            activity=Activity(
-                type=ActivityType.watching, name="You | /invite | v3.1"),
-            allowed_mentions=AllowedMentions(
+            command_prefix=commands.when_mentioned_or(prefix),
+            activity=discord.Activity(
+                type=discord.ActivityType.watching, name="You | /invite | v3.1"),
+            allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=True, roles=False, replied_user=False),
             help_command=None,
             case_insensitive=True,
-            intents=Intents.all()
+            intents=discord.Intents.all()
         )
 
     async def start(self, token: str, *, reconnect: bool = True):
         # this is simply to make sure the session gets closed after the bot shuts down
-        async with ClientSession(loop=self.loop) as self.SESSION:
+        async with aiohttp.ClientSession(loop=self.loop) as self.SESSION:
             async with infinitode.Session(session=self.SESSION) as self.API:  # epic
                 await super().start(token, reconnect=reconnect)
 
@@ -82,10 +54,10 @@ class Advinas(Bot):
         self.BOT_CHANNELS: list[int] = config.bot_channels
         self.LEVELS: list[str]
         self.DB: AsyncIOMotorDatabase = AsyncIOMotorClient(config.mongo).inf2
-        self.online_since = utcnow()
+        self.online_since = discord.utils.utcnow()
 
-    async def get_context(self, origin: Message | Interaction, *, cls: Any = None):
-        return await super().get_context(origin, cls=Context)
+    async def get_context(self, origin: discord.Message | discord.Interaction, *, cls: Any = None):
+        return await super().get_context(origin, cls=custom.Context)
 
     async def on_ready(self) -> None:
         self.loop.create_task(self.ready())
@@ -97,33 +69,33 @@ class Advinas(Bot):
         self._join = self.get_partial_messageable(config.join_channel)
         print("online")
 
-    async def on_command_error(self, ctx: Context, err: Exception) -> None:
+    async def on_command_error(self, ctx: custom.Context, err: Exception) -> None:
         '''Error handler'''
-        excs = (infinitode.errors.APIError, infinitode.errors.BadArgument, BadArgument, BadLiteralArgument,
-                TrackLoadError, MissingRequiredArgument, TagError, ExpectedClosingQuoteError, UnexpectedQuoteError,)
+        excs = (infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
+                pomice.TrackLoadError, commands.MissingRequiredArgument, custom.TagError, commands.ExpectedClosingQuoteError, commands.UnexpectedQuoteError,)
 
-        if isinstance(err, (CommandInvokeError, HybridCommandError)):
+        if isinstance(err, (commands.CommandInvokeError, commands.HybridCommandError)):
             err = err.original
 
-        if isinstance(err, app_commands.CommandInvokeError):
+        if isinstance(err, discord.app_commands.CommandInvokeError):
             err = err.original
 
-        if isinstance(err, (CommandNotFound, NotOwner)):
+        if isinstance(err, (commands.CommandNotFound, commands.NotOwner)):
             return  # Ignore
-        elif isinstance(err, BadChannel):
+        elif isinstance(err, custom.BadChannel):
             await ctx.log('Used in wrong channel.')
             await ctx.send('Use commands in <#616583511826104355>.', delete_after=3, ephemeral=True)
             return
-        elif isinstance(err, BadLevel):
+        elif isinstance(err, custom.BadLevel):
             await ctx.log('Invalid Level provided.')
             content = 'The provided level is invalid.'
-        elif isinstance(err, NoPlayerError):
+        elif isinstance(err, custom.NoPlayerError):
             await ctx.log('Bot is not in a voice channel.')
             content = 'The bot is not in a voice channel.'
-        elif isinstance(err, PlayerNotConnectedError):
+        elif isinstance(err, custom.PlayerNotConnectedError):
             await ctx.log('Player is not connected.')
             content = 'The player is not connected.'
-        elif isinstance(err, InvalidSpotifyClientAuthorization):
+        elif isinstance(err, pomice.InvalidSpotifyClientAuthorization):
             await ctx.log('Spotify link provided.')
             content = 'Spotify links are not supported at the time, sorry.'
         elif isinstance(err, excs):

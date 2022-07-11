@@ -4,7 +4,7 @@ from __future__ import annotations
 import re
 import time
 from math import floor, ceil
-from typing import Annotated, Any, Optional, TYPE_CHECKING
+from typing import Annotated, Any, TYPE_CHECKING
 
 
 # packages
@@ -89,7 +89,7 @@ class Inf(commands.Cog):
     # Dailyquest command
     @commands.hybrid_command(name='dailyquest', aliases=['dq'], description='Shows the top dailyquest scores of today or the given the day.')
     @app_commands.describe(date='The date you want to see the leaderboard for. Only available beyond 2022-02-09. FORMAT: YYYY-MM-DD!')
-    async def dailyquest(self, ctx: Context, date: Optional[str] = None):
+    async def dailyquest(self, ctx: Context, date: str | None = None):
         lb = await self.bot.API.daily_quest_leaderboards(date, warning=False)
         if lb.is_empty:
             entry = await Database.find_by_key(self.bot.DB.dailyquests, date)
@@ -147,7 +147,7 @@ class Inf(commands.Cog):
         bounties='The number of bounties you have. Cap: 12. DEFAULT: 7',
         level='If a level is provided, the level\'s difficulty will take priority over the given difficulty.',
     )
-    async def bounty(self, ctx: Context, coins: int = 65, difficulty: float = 100.0, bounties: int = 7, level: Optional[str] = None):
+    async def bounty(self, ctx: Context, coins: int = 65, difficulty: float = 100.0, bounties: int = 7, level: str | None = None):
         level, difficulty, bounties, coins = get_level_bounty(
             self.BOUNTY_DIFFS, level=level, difficulty=difficulty, bounties=bounties, coins=coins)
         keep = coins * 50
@@ -198,12 +198,12 @@ class Inf(commands.Cog):
     # Profile command
     @commands.hybrid_command(name='profile', aliases=['prof'], description='Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).')
     @app_commands.describe(playerid='The playerid of the player you want to see the profile of.')
-    async def profile(self, ctx: Context, playerid: Optional[str] = None) -> Any:
+    async def profile(self, ctx: Context, playerid: str | None = None) -> Any:
         await ctx.defer()
         dc_col: AsyncIOMotorCollection = self.bot.DB.discordnames
         nn_col: AsyncIOMotorCollection = self.bot.DB.nicknames
         pl: dict[str, Any] = {}
-        player: Optional[Player] = None
+        player: Player | None = None
         start_time: float = time.perf_counter()
         if playerid is None:  # no playerid was given
             pl = await Database.find(dc_col, str(ctx.author.id)

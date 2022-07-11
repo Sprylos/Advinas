@@ -3,7 +3,7 @@ from __future__ import annotations
 # std
 import json
 from math import floor, ceil
-from typing import Any, Optional
+from typing import Any
 
 
 def codeblock(instring: str) -> str:
@@ -25,7 +25,7 @@ def tablify(indict: dict[Any, Any]) -> str:
     return '\n'.join([f'{key} {vals[keys.index(key)]}' for key in keys])
 
 
-def get_level_bounty(level_diffs: dict[str, int | float], level: Optional[str], difficulty: int | float, bounties: int, coins: int) -> tuple[str, float, int, int]:
+def get_level_bounty(level_diffs: dict[str, int | float], level: str | None, difficulty: int | float, bounties: int, coins: int) -> tuple[str, float, int, int]:
     if level is not None:
         level = level.replace('_', '.').replace(
             ',', '.').replace('-', '.').replace(' ', '.').lower()

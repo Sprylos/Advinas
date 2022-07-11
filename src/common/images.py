@@ -5,7 +5,6 @@ import copy
 import os
 from io import BytesIO
 from datetime import datetime
-from typing import Optional  # basic typing for now
 
 # packages
 from PIL import Image, ImageDraw, ImageFont
@@ -95,7 +94,7 @@ class Images():
             ],
         ]
 
-    def profile_gen(self, player: Player, avatar_bytes: Optional[bytes] = None, userid: Optional[int] = None) -> BytesIO:
+    def profile_gen(self, player: Player, avatar_bytes: bytes | None = None, userid: int | None = None) -> BytesIO:
         '''Generates the profile image for the profile command'''
         try:
             bg = Image.open(f"assets/images/profile/custom/{userid}.png")
