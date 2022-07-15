@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # std
 import random
-from typing import Literal, TYPE_CHECKING
+from typing import Annotated, Literal, TYPE_CHECKING
 
 # packages
 import pomice
@@ -19,7 +19,8 @@ from common.custom import (
     Context,
     NoPlayerError,
     Player,
-    PlayerNotConnectedError
+    PlayerNotConnectedError,
+    SeekTime,
 )
 
 if TYPE_CHECKING:
@@ -291,7 +292,7 @@ class Music(commands.Cog):
             await ctx.reply(f'Only the original requester may resume the player.')
             return await ctx.log('Not privileged to resume.')
 
-    @commands.hybrid_command(name='skip', aliases=['s', 'next', 'sk'], description='Skips the currently playing song.')
+    @commands.hybrid_command(name='skip', aliases=['s', 'next'], description='Skips the currently playing song.')
     @app_commands.guild_only()
     @app_commands.describe(to='The index of the song that should be skipped to. DEFAULT: 1')
     async def _skip(self, ctx: Context, to: int = 1):
@@ -381,6 +382,28 @@ class Music(commands.Cog):
 
         await player.set_volume(vol)
         await ctx.reply(f'Set the volume to **{vol}**%')
+        await ctx.log()
+
+    @commands.hybrid_command(name='seek', aliases=['sk'], description='Changes the players position in the song.')
+    @app_commands.guild_only()
+    @app_commands.describe(time='The time you want to seek to.')
+    async def _seek(self, ctx: Context, *, time: Annotated[int, SeekTime]):
+        player: Player | None = ctx.voice_client
+        if not player:
+            raise NoPlayerError('Bot is not in voice channel.')
+        if not player.is_connected:
+            raise PlayerNotConnectedError('Bot is not connected.')
+
+        if not (ctx.author == player.current.requester or self.is_privileged(ctx)):
+            await ctx.reply(f'Only the song requester or the original requester may seek in the song.')
+            return await ctx.log('Not privileged to seek.')
+
+        try:
+            await player.seek(time * 1000)
+        except pomice.TrackInvalidPosition:
+            await ctx.reply('The provided time is invalid.')
+            return await ctx.log('Invalid time provided.')
+        await ctx.reply(f'Set the position to **{time}** seconds.')
         await ctx.log()
 
 

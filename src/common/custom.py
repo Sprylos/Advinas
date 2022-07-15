@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 # std
+import re
 import traceback
 from contextlib import suppress
 from dataclasses import dataclass
@@ -94,6 +95,27 @@ class Player(pomice.Player):
         # always in guild
         if isinstance(ctx.author, discord.Member):
             self.dj = ctx.author
+
+
+class SeekTime(commands.Converter):
+    compiled = re.compile(
+        """
+           (?:(?P<hours>[0-9]{1,5})(?:hours?|h))?        # e.g. 12h
+           (?:(?P<minutes>[0-9]{1,5})(?:minutes?|m))?    # e.g. 10m
+           (?:(?P<seconds>[0-9]{1,5})(?:seconds?|s))?    # e.g. 15s
+        """,
+        re.VERBOSE,
+    )
+
+    async def convert(self, ctx: Context, argument: str):
+        """Converts the given time into seconds."""
+        match = self.compiled.fullmatch(argument)
+        if match is None or not match.group(0):
+            await ctx.reply('The provided time is invalid.')
+            return await ctx.log('Invalid time provided.')
+
+        data = {k: int(v) for k, v in match.groupdict(default=0).items()}
+        return data.get('hours', 0) * 3600 + data.get('minutes', 0) * 60 + data.get('seconds', 0)
 
 
 class Context(commands.Context['Advinas']):

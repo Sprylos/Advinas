@@ -71,8 +71,11 @@ class Advinas(commands.Bot):
 
     async def on_command_error(self, ctx: custom.Context, err: Exception) -> None:
         '''Error handler'''
-        excs = (infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
-                pomice.TrackLoadError, commands.MissingRequiredArgument, custom.TagError, commands.ExpectedClosingQuoteError, commands.UnexpectedQuoteError,)
+        excs = (
+            infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
+            pomice.TrackLoadError, commands.MissingRequiredArgument, custom.TagError, commands.ExpectedClosingQuoteError,
+            commands.UnexpectedQuoteError,
+        )
 
         if isinstance(err, (commands.CommandInvokeError, commands.HybridCommandError)):
             err = err.original
