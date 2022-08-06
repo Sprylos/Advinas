@@ -239,7 +239,6 @@ class Tags(commands.Cog):
         tag = await self.get_tag(ctx.guild.id, name)
 
         await ctx.reply(tag.content)
-        await ctx.log()
 
         # update the usage
         await self.used_tag(tag)
@@ -254,16 +253,12 @@ class Tags(commands.Cog):
         await self.create_tag(ctx, name, content)
         await self.cache_tags()
 
-        await ctx.log()
-
     @tag.command(name='alias', description='Creates an alias tag that points to another tag.')
     @app_commands.guild_only()
     @app_commands.describe(new_name='The name of the alias.', old_name='The name of the tag you want to refer to.')
     async def _alias(self, ctx: Context, new_name: Annotated[str, TagName], *, old_name: Annotated[str, TagName]):
         await self.create_alias(ctx, new_name, old_name)
         await self.cache_tags()
-
-        await ctx.log()
 
     @tag.command(name='edit', description='Edits an existing tag. Aliases may not be edited.')
     @app_commands.guild_only()
@@ -277,8 +272,6 @@ class Tags(commands.Cog):
         await ctx.reply(f'Tag "{name}" successfully edited.')
         await self.cache_tags()
 
-        await ctx.log()
-
     @tag.command(name='remove', aliases=['delete'], description='Deletes the tag with the given name.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to remove.')
@@ -290,8 +283,6 @@ class Tags(commands.Cog):
         await self.delete_tag(tag=tag)
         await ctx.reply(f'Tag "{name}" successfully deleted.')
         await self.cache_tags()
-
-        await ctx.log()
 
     @tag.command(name='info', description='Shows useful information about the tag with the given name.')
     @app_commands.guild_only()
@@ -308,7 +299,6 @@ class Tags(commands.Cog):
         em.set_footer(text='Tag created at (UTC)')
 
         await ctx.reply(embed=em)
-        await ctx.log()
 
     @t.autocomplete('name')
     @tag.autocomplete('name')
@@ -328,7 +318,6 @@ class Tags(commands.Cog):
         name = member.name if member is not None else ctx.guild.name
         tag_list = await self.get_tag_list(ctx.guild.id, member_id)
 
-        await ctx.log()
         await Paginator(TagSource(tag_list, name, ctx.author)).start(ctx)
 
     # @tag.command(name='search')

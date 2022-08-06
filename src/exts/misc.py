@@ -30,9 +30,9 @@ class Misc(commands.Cog):
     @commands.hybrid_command(name='ping', description='Shows the bot\'s latency.')
     async def ping(self, ctx: Context):
         await ctx.reply(f'Latency: {round(self.bot.latency * 1000)}ms.', ephemeral=True)
-        await ctx.log()
 
     # invite command
+
     @commands.hybrid_command(name='invite', description='Gives you a link to invite the bot to your own server.')
     async def invite(self, ctx: Context):
         em = discord.Embed(
@@ -40,9 +40,9 @@ class Misc(commands.Cog):
         ).set_footer(
             text=f'Requested by {ctx.author}', icon_url=ctx.author.display_avatar.url)
         await ctx.reply(embed=em, view=Invite())
-        await ctx.log()
 
     # uptime command
+
     @commands.hybrid_command(name='uptime', description='Shows the bots uptime since the last reboot.')
     async def uptime(self, ctx: Context):
         delta_uptime = discord.utils.utcnow() - self.bot.online_since
@@ -50,7 +50,6 @@ class Misc(commands.Cog):
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
         await ctx.reply(content=f"Time since last reboot: **{days}d, {hours}h, {minutes}m, {seconds}s.**")
-        await ctx.log()
 
 
 async def setup(bot: Advinas):

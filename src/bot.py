@@ -69,8 +69,12 @@ class Advinas(commands.Bot):
         self._join = self.get_partial_messageable(config.join_channel)
         print("online")
 
+    async def on_command_completion(self, ctx: custom.Context) -> None:
+        """Handles completed commands."""
+        await ctx.log()
+
     async def on_command_error(self, ctx: custom.Context, err: Exception) -> None:
-        '''Error handler'''
+        """Handles errored commands."""
         excs = (
             infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
             pomice.TrackLoadError, commands.MissingRequiredArgument, custom.TagError, commands.ExpectedClosingQuoteError,

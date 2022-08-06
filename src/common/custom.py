@@ -127,16 +127,7 @@ class Context(commands.Context['Advinas']):
 
     @property
     def _command_name(self) -> str:
-        return self.command.name  # type: ignore
-
-    @property
-    def _invoked_arguments(self) -> str:
-        command = self._command_name
-
-        if self.invoked_parents:
-            command = ' '.join(self.invoked_parents) + ' ' + command
-
-        return f'`{self.prefix or "/"}{command}` ' + ' '.join([f'`{k}={v}`' for k, v in self.kwargs.items()])
+        return self.command.name if self.command else 'Unknown'
 
     async def log(self, reason: str | None = None, /, *, success: bool | None = None):
         """Logs the usage of commands. Should be called at the end of any command."""
@@ -154,12 +145,26 @@ class Context(commands.Context['Advinas']):
         ).add_field(
             name='**Success**',
             value=f'`{success}`',
-            inline=False
+            inline=True
+        ).add_field(
+            name='**Prefix**',
+            value=f'`{self.prefix}`',
+            inline=True
         ).add_field(
             name='**Arguments**',
-            value=self._invoked_arguments,
+            value=' '.join([f'`{a}`' for a in self.args]) or 'None',
             inline=False
-        )
+        ).add_field(
+            name='**Keyword Arguments**',
+            value=' '.join(
+                [f'`{k}={v}`' for k, v in self.kwargs.items()]) or 'None',
+            inline=False)
+        if self.interaction is None:
+            em.add_field(
+                name='**Message**',
+                value=f'`{self.message.content}`',
+                inline=False
+            )
         if reason:
             em.add_field(
                 name='**Reason**',
@@ -186,10 +191,25 @@ class Context(commands.Context['Advinas']):
             text=f"Command run by {self.author}",
             icon_url=self.author.display_avatar.url
         ).add_field(
-            name='**Content**',
-            value=self._invoked_arguments,
+            name='**Prefix**',
+            value=f'`{self.prefix}`',
+            inline=True
+        ).add_field(
+            name='**Arguments**',
+            value=' '.join([f'`{a}`' for a in self.args]) or 'None',
             inline=False
         ).add_field(
+            name='**Keyword Arguments**',
+            value=' '.join(
+                [f'`{k}={v}`' for k, v in self.kwargs.items()]) or 'None',
+            inline=False)
+        if self.interaction is None:
+            em.add_field(
+                name='**Message**',
+                value=f'`{self.message.content}`',
+                inline=False
+            )
+        em.add_field(
             name='**Traceback**',
             value=tb,
             inline=False

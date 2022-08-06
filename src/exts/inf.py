@@ -66,7 +66,7 @@ class Inf(commands.Cog):
     async def score(self, ctx: Context, level: Annotated[str, LevelConverter]):
         normal = await self.bot.API.leaderboards(level)
         endless = await self.bot.API.leaderboards(level, difficulty='ENDLESS_I')
-        await ctx.log()
+
         await ScorePaginator(ScoreLBSource(ctx, normal, endless, f'Level {level} Leaderboards (Score)')).start(ctx)
 
     # Wave command
@@ -75,7 +75,7 @@ class Inf(commands.Cog):
     async def waves(self, ctx: Context, level: Annotated[str, LevelConverter]):
         normal = await self.bot.API.leaderboards(level, mode='waves')
         endless = await self.bot.API.leaderboards(level, mode='waves', difficulty='ENDLESS_I')
-        await ctx.log()
+
         await ScorePaginator(ScoreLBSource(ctx, normal, endless, f'Level {level} Leaderboards (Waves)')).start(ctx)
 
     # Season command
@@ -83,7 +83,7 @@ class Inf(commands.Cog):
     async def season(self, ctx: Context):
         await ctx.defer()
         lb = await self.bot.API.seasonal_leaderboard()
-        await ctx.log()
+
         await Paginator(LBSource(ctx, lb, f'Season {lb.season} Leaderboards',  headline=f'Player Count: {lb.total}')).start(ctx)
 
     # Dailyquest command
@@ -103,7 +103,7 @@ class Inf(commands.Cog):
                 '', '', '', '', None, payload, date=lb.date)
 
         ctx.kwargs['date'] = lb.date
-        await ctx.log()
+
         await Paginator(LBSource(ctx, lb, f'Dailyquest Leaderboards ({lb.date})')).start(ctx)
 
     # Level command
@@ -137,9 +137,9 @@ class Inf(commands.Cog):
             em.add_field(name="Quest Effects", value=quests, inline=False)
 
         await ctx.reply(embed=em, file=file)
-        await ctx.log()
 
     # Bounty command
+
     @commands.hybrid_command(name='bounty', aliases=['b'], description='Calculates the optimal timings to place your bounties.')
     @app_commands.describe(
         coins='The maximum amount of coins a bounty gives you per round. Cap: 200. DEFAULT: 65',
@@ -186,7 +186,6 @@ class Inf(commands.Cog):
             name="Safe Buy", value=codeblock('\n'.join(lBuy)), inline=True)
 
         await ctx.reply(embed=em)
-        await ctx.log()
 
     @score.autocomplete('level')
     @waves.autocomplete('level')
@@ -255,7 +254,6 @@ class Inf(commands.Cog):
 
         file = discord.File(filename=f'{player.playerid}.png', fp=final_buffer)
         await ctx.reply(f'Finished in {time.perf_counter() - start_time:0.3f}s', file=file)
-        await ctx.log()
 
     @profile.autocomplete('playerid')
     async def playerid_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
