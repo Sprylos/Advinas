@@ -9,13 +9,13 @@ from datetime import datetime
 from typing import Any, Literal, TYPE_CHECKING
 
 # packages
-import pomice
+import wavelink
 import discord
 from discord.ext import commands
 from discord.ext.commands import BadArgument, CheckFailure
 
 # local
-from common.utils import codeblock
+from common.utils import codeblock, convert_seconds
 
 if TYPE_CHECKING:
     from bot import Advinas
@@ -46,17 +46,26 @@ class PlayerNotConnectedError(RuntimeError):
     pass
 
 
-class Player(pomice.Player):
-    """Custom pomice Player class."""
+class Player(wavelink.Player):
+    """Custom wavelink Player class."""
 
     def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
-        self.queue: list[pomice.Track] = []
         self.controller: discord.Message | None = None
         self.context: Context
         self.dj: discord.Member
         self.loop_mode: Literal['Song', 'Queue'] | None = None
+
+    def now_playing(self, track: wavelink.YouTubeTrack, *, new: bool = False) -> discord.Embed:
+        if track.is_stream():
+            title = f":red_circle: **LIVE** {track.title}"
+        else:
+            title = track.title
+        embed = discord.Embed(
+            title=title, description=f'Duration: {convert_seconds(self.position if not new else 0)}/{convert_seconds(track.length)}', url=track.uri
+        ).set_footer(text=f'Author: {track.author}', icon_url=track.thumbnail)
+        return embed.set_thumbnail(url=track.thumbnail)
 
     async def do_next(self) -> None:
         if self.controller:
@@ -64,31 +73,16 @@ class Player(pomice.Player):
                 await self.controller.delete()
 
         try:
-            track: pomice.Track = self.queue.pop(0)
-        except IndexError:
+            track: wavelink.YouTubeTrack = self.queue.get()  # type: ignore
+        except wavelink.QueueEmpty:
             return  # await self.teardown()
-        else:
-            if self.loop_mode == 'Queue':
-                self.queue.append(track)
+
+        if self.loop_mode == 'Queue':
+            self.queue.put(track)
 
         await self.play(track)
-
-        requester = track.requester
-        mention = requester.mention if requester else '@Invalid User'
-        if track.is_stream:
-            description = f":red_circle: **LIVE** [{track.title}]({track.uri}) [{mention}]"
-        else:
-            description = f"[{track.title}]({track.uri}) [{mention}]"
-        embed = discord.Embed(title=f"Now playing", description=description)
-        embed.set_thumbnail(url=track.thumbnail)
         if hasattr(self, 'context'):
-            self.controller = await self.context.send(embed=embed)
-
-    async def teardown(self):
-        with suppress((discord.HTTPException), (KeyError)):
-            await self.destroy()
-            if self.controller:
-                await self.controller.delete()
+            self.controller = await self.context.send(embed=self.now_playing(track, new=True))
 
     def set_context(self, ctx: Context):
         self.context = ctx
@@ -107,12 +101,13 @@ class SeekTime(commands.Converter):
         re.VERBOSE,
     )
 
-    async def convert(self, ctx: Context, argument: str):
+    async def convert(self, ctx: Context, argument: str) -> int | None:
         """Converts the given time into seconds."""
         match = self.compiled.fullmatch(argument)
         if match is None or not match.group(0):
             await ctx.reply('The provided time is invalid.')
-            return await ctx.log('Invalid time provided.')
+            await ctx.log('Invalid time provided.')
+            return
 
         data = {k: int(v) for k, v in match.groupdict(default=0).items()}
         return data.get('hours', 0) * 3600 + data.get('minutes', 0) * 60 + data.get('seconds', 0)
@@ -226,6 +221,25 @@ class LevelConverter(commands.Converter):
         if level.startswith('dq'):
             level = level.upper()
         return level
+
+
+class SyntheticQueue:
+    def __init__(self, queue: wavelink.WaitQueue) -> None:
+        self.tracks = queue
+        self.name = str(len(queue)) + ' tracks'
+
+
+class SongConverter(commands.Converter):
+    async def convert(self, ctx: Context, song: str | SyntheticQueue) -> wavelink.YouTubeTrack | wavelink.YouTubePlaylist | SyntheticQueue:
+        if isinstance(song, SyntheticQueue):
+            return song
+        track = await wavelink.YouTubeTrack.search(song)
+        if track:
+            return track[0]
+        playlist = await wavelink.YouTubePlaylist.search(song)
+        if not playlist:
+            raise BadArgument("Invalid song provided.")
+        return playlist  # type: ignore
 
 
 class TagName(commands.clean_content):

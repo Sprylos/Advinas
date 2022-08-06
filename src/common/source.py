@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 # std
-from typing import Any, TYPE_CHECKING
+from typing import Any, List, TYPE_CHECKING
 
 # packages
+import wavelink
 import discord
 from discord.ext import menus
-from pomice import Track
 from infinitode import Leaderboard
 
 # locals
@@ -66,12 +66,12 @@ class TagSource(menus.ListPageSource):
 
 
 class QueueSource(menus.ListPageSource):
-    def __init__(self, entries: list[Track], user: discord.User | discord.Member):
+    def __init__(self, entries: List[wavelink.YouTubeTrack], user: discord.User | discord.Member):
         self.user = user
         super().__init__(entries, per_page=15)
 
-    async def format_page(self, menu: Paginator, page: list[Track]):
+    async def format_page(self, menu: Paginator, page: List[wavelink.YouTubeTrack]):
         description = '\n'.join(
-            [f'{menu.current_page * 15 + c}. [{track.title}]({track.uri}) [{track.requester.mention if track.requester else "@Invalid User"}]' for c, track in enumerate(page, start=1)])
+            [f'{menu.current_page * 15 + c}. [{track.title}]({track.uri}) by {track.author}' for c, track in enumerate(page, start=1)])
         return discord.Embed(title='Queue', description=description, colour=60415
                              ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)

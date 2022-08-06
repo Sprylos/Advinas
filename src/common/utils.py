@@ -25,6 +25,15 @@ def tablify(indict: dict[Any, Any]) -> str:
     return '\n'.join([f'{key} {vals[keys.index(key)]}' for key in keys])
 
 
+def convert_seconds(s: float) -> str:
+    '''Converts seconds to a better readable time format.'''
+    if s < 0:
+        return '0:00'
+    m = int(s // 60)
+    s = int(s % 60)
+    return f'{m}:{s:02d}'
+
+
 def get_level_bounty(level_diffs: dict[str, int | float], level: str | None, difficulty: int | float, bounties: int, coins: int) -> tuple[str, float, int, int]:
     if level is not None:
         level = level.replace('_', '.').replace(

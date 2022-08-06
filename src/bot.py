@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 # packages
-import pomice
+import wavelink
 import aiohttp
 import discord
 import infinitode
@@ -77,7 +77,7 @@ class Advinas(commands.Bot):
         """Handles errored commands."""
         excs = (
             infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
-            pomice.TrackLoadError, commands.MissingRequiredArgument, custom.TagError, commands.ExpectedClosingQuoteError,
+            wavelink.LoadTrackError, commands.MissingRequiredArgument, custom.TagError, commands.ExpectedClosingQuoteError,
             commands.UnexpectedQuoteError,
         )
 
@@ -102,9 +102,6 @@ class Advinas(commands.Bot):
         elif isinstance(err, custom.PlayerNotConnectedError):
             await ctx.log('Player is not connected.')
             content = 'The player is not connected.'
-        elif isinstance(err, pomice.InvalidSpotifyClientAuthorization):
-            await ctx.log('Spotify link provided.')
-            content = 'Spotify links are not supported at the time, sorry.'
         elif isinstance(err, excs):
             await ctx.log(str(err))
             content = str(err)
