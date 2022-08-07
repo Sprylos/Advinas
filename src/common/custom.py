@@ -142,12 +142,20 @@ class Context(commands.Context['Advinas']):
             value=f'`{success}`',
             inline=True
         ).add_field(
+            name='**Channel**',
+            value=f'`{self.channel}` in `{self.guild.name if self.guild else "DM"}`',
+            inline=True
+        ).add_field(
             name='**Prefix**',
             value=f'`{self.prefix}`',
+            inline=False
+        ).add_field(
+            name='**Command**',
+            value=f'`{self._command_name.title()}`',
             inline=True
         ).add_field(
             name='**Arguments**',
-            value=' '.join([f'`{a}`' for a in self.args]) or 'None',
+            value=' '.join([f'`{a}`' for a in self.args[2:]]) or 'None',
             inline=False
         ).add_field(
             name='**Keyword Arguments**',
@@ -186,12 +194,20 @@ class Context(commands.Context['Advinas']):
             text=f"Command run by {self.author}",
             icon_url=self.author.display_avatar.url
         ).add_field(
+            name='**Channel**',
+            value=f'`{self.channel}` in `{self.guild.name if self.guild else "DM"}`',
+            inline=True
+        ).add_field(
             name='**Prefix**',
             value=f'`{self.prefix}`',
+            inline=False
+        ).add_field(
+            name='**Command**',
+            value=f'`{self._command_name.title()}`',
             inline=True
         ).add_field(
             name='**Arguments**',
-            value=' '.join([f'`{a}`' for a in self.args]) or 'None',
+            value=' '.join([f'`{a}`' for a in self.args[2:]]) or 'None',
             inline=False
         ).add_field(
             name='**Keyword Arguments**',
