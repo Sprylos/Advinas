@@ -8,6 +8,7 @@ from typing import Annotated, Any, TYPE_CHECKING
 
 
 # packages
+import aiohttp
 import discord
 from discord import Interaction, app_commands
 from discord.ext import commands
@@ -242,10 +243,10 @@ class Inf(commands.Cog):
             'name': player.nickname, 'key': player.nickname.lower()}}
         await Database.update(nn_col, data=data)
         try:
-            r = await self.bot.SESSION.get(player.avatar_link)
+            r = await self.bot.session.get(player.avatar_link)
             r.raise_for_status()
             avatar_bytes = await r.read()
-        except:
+        except aiohttp.ClientResponseError:
             avatar_bytes = None
         await player.fetch_daily_quest(self.bot.API)
         await player.fetch_skill_point(self.bot.API)

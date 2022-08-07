@@ -44,8 +44,8 @@ class Advinas(commands.Bot):
 
     async def start(self, token: str, *, reconnect: bool = True):
         # this is simply to make sure the session gets closed after the bot shuts down
-        async with aiohttp.ClientSession(loop=self.loop) as self.SESSION:
-            async with infinitode.Session(session=self.SESSION) as self.API:  # epic
+        async with aiohttp.ClientSession(loop=self.loop) as self.session:
+            async with infinitode.Session(session=self.session) as self.API:  # epic
                 await super().start(token, reconnect=reconnect)
 
     async def setup_hook(self):
