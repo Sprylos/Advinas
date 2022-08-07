@@ -34,7 +34,7 @@ class Advinas(commands.Bot):
         super().__init__(
             command_prefix=commands.when_mentioned_or(prefix),
             activity=discord.Activity(
-                type=discord.ActivityType.watching, name="You | /invite | v3.1"),
+                type=discord.ActivityType.watching, name="You | /invite | v3.2"),
             allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=True, roles=False, replied_user=False),
             help_command=None,
