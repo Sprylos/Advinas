@@ -59,17 +59,21 @@ class Music(commands.Cog):
         return not not ctx.guild  # True if used in a guild
 
     @commands.Cog.listener()
-    async def on_wavelink_track_end(self, player: Player, track: wavelink.Track, reason: Any):
+    async def on_wavelink_track_end(self, player: Player, track: wavelink.YouTubeTrack, reason: Literal['FINISHED', 'REPLACED', 'CLEANUP', 'LOAD_FAILED']) -> None:
+        if reason in ('REPLACED', 'LOAD_FAILED'):
+            return
         if player.loop_mode == 'Song':
             player.queue.put_at_front(track)
+        elif player.loop_mode == 'Queue':
+            player.queue.put(track)
         await player.do_next()
 
     @commands.Cog.listener()
-    async def on_wavelink_track_stuck(self, player: Player, track: wavelink.Track, threshold: Any):
+    async def on_wavelink_track_stuck(self, player: Player, track: wavelink.YouTubeTrack, **_: Any) -> None:
         await player.do_next()
 
     @commands.Cog.listener()
-    async def on_wavelink_track_exception(self, player: Player, track: wavelink.Track, error: Any):
+    async def on_wavelink_track_exception(self, player: Player, track: wavelink.YouTubeTrack, **_: Any) -> None:
         await player.do_next()
 
     async def join(self, ctx: Context, channel: discord.VoiceChannel | None = None) -> Player | None:
@@ -119,6 +123,7 @@ class Music(commands.Cog):
             queued = search.name
             for track in search.tracks:
                 player.queue.put(track)
+            player.loop_mode = getattr(search, 'loop', None)
         else:
             queued = search.title
             player.queue.put(search)
@@ -144,11 +149,11 @@ class Music(commands.Cog):
 
         current = old_player.source
         queue = old_player.queue.copy()
+        loop = old_player.loop_mode
         await old_player.disconnect()
-
-        play = self.bot.get_command('play')
-        if play is not None:
-            await ctx.invoke(play, search=SyntheticQueue(queue))  # type: ignore # nopep8
+        if current is not None:
+            queue.put_at_front(current)
+        await ctx.invoke(self._play, search=SyntheticQueue(queue, loop))
 
     @commands.hybrid_command(name='nowplaying', aliases=['np', 'now', 'playing'], description='Shows the currently playing song.')
     @app_commands.guild_only()
