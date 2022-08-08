@@ -9,7 +9,8 @@ from discord.ext import commands
 
 # local
 from common.views import Invite
-from common.custom import BadChannel, Context
+from common.custom import Context
+from common.errors import BadChannel
 
 if TYPE_CHECKING:
     from bot import Advinas
@@ -23,7 +24,7 @@ class Misc(commands.Cog):
     def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in self.bot.BOT_CHANNELS:
-                raise BadChannel('Command not used in an allowed channel.')
+                raise BadChannel
         return True
 
     # ping command

@@ -19,7 +19,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 # local
 from exts.database import Database
 from common.images import Images
-from common.custom import BadChannel, Context, LevelConverter
+from common.custom import Context, LevelConverter
 from common.views import Paginator, ScorePaginator
 from common.source import LBSource, ScoreLBSource
 from common.utils import (
@@ -28,7 +28,13 @@ from common.utils import (
     get_level_bounty,
     codeblock,
     tablify,
-    load_json
+    load_json,
+)
+from common.errors import (
+    BadChannel,
+    InvalidDateError,
+    InvalidPlayerError,
+    NoPlayerProvidedError,
 )
 
 if TYPE_CHECKING:
@@ -58,7 +64,7 @@ class Inf(commands.Cog):
     def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in self.bot.BOT_CHANNELS:
-                raise BadChannel('Command not used in an allowed channel.')
+                raise BadChannel
         return True
 
     # Score command
@@ -97,8 +103,7 @@ class Inf(commands.Cog):
             try:
                 scores = entry.get(lb.date)
             except (AttributeError, KeyError):
-                await ctx.log('Invalid date provided.')
-                return await ctx.reply('Could not find anything for that date. Sorry.')
+                raise InvalidDateError from None
             payload = {'player': {'total': 69420}, 'leaderboards': scores}
             lb = Leaderboard.from_payload(
                 '', '', '', '', None, payload, date=lb.date)
@@ -213,8 +218,7 @@ class Inf(commands.Cog):
                 player = await self.bot.API.player(playerid=next(iter(pl)))
                 playerid = ''  # make typechecker happy
             else:
-                await ctx.log('No player provided.')
-                return await ctx.reply('Provide a player to search for.')
+                raise NoPlayerProvidedError
         else:
             try:
                 upper = playerid.upper()
@@ -234,9 +238,7 @@ class Inf(commands.Cog):
                     if member:
                         pl = await Database.find(dc_col, str(member.id))
                     if not pl:
-                        await ctx.log('The provided player is invalid.')
-                        return await ctx.reply('Could not find player. Check for spelling mistakes or try using '
-                                               'the U- playerid from your profile page (Top left in the main menu).')
+                        raise InvalidPlayerError
         if not player:
             player = await self.bot.API.player(playerid=next(iter(pl)))
         data = {player.playerid: {

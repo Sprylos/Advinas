@@ -13,7 +13,7 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 # local
 import config
-from common import custom
+from common import custom, errors
 
 
 # exts to load
@@ -77,8 +77,8 @@ class Advinas(commands.Bot):
         """Handles errored commands."""
         excs = (
             infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
-            wavelink.LoadTrackError, commands.MissingRequiredArgument, custom.TagError, commands.ExpectedClosingQuoteError,
-            commands.UnexpectedQuoteError,
+            wavelink.LoadTrackError, commands.MissingRequiredArgument, errors.TagError, commands.ExpectedClosingQuoteError,
+            commands.UnexpectedQuoteError, discord.ClientException,
         )
 
         if isinstance(err, (commands.CommandInvokeError, commands.HybridCommandError)):
@@ -89,22 +89,16 @@ class Advinas(commands.Bot):
 
         if isinstance(err, (commands.CommandNotFound, commands.NotOwner)):
             return  # Ignore
-        elif isinstance(err, custom.BadChannel):
+        elif isinstance(err, errors.BadChannel):
             await ctx.log('Used in wrong channel.')
             await ctx.send('Use commands in <#616583511826104355>.', delete_after=3, ephemeral=True)
             return
-        elif isinstance(err, custom.BadLevel):
-            await ctx.log('Invalid Level provided.')
-            content = 'The provided level is invalid.'
-        elif isinstance(err, custom.NoPlayerError):
-            await ctx.log('Bot is not in a voice channel.')
-            content = 'The bot is not in a voice channel.'
-        elif isinstance(err, custom.PlayerNotConnectedError):
-            await ctx.log('Player is not connected.')
-            content = 'The player is not connected.'
+        elif isinstance(err, errors.BadLevel | errors.InCommandError):
+            content = err.args[0]
+            await ctx.log(getattr(err, 'log', content))
         elif isinstance(err, excs):
-            await ctx.log(str(err))
             content = str(err)
+            await ctx.log(content)
         else:
             await ctx.trace(err)
             content = 'Something went really wrong and the issue has been reported. Please try again later.'

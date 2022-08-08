@@ -12,38 +12,13 @@ from typing import Any, Literal, TYPE_CHECKING
 import wavelink
 import discord
 from discord.ext import commands
-from discord.ext.commands import BadArgument, CheckFailure
 
 # local
 from common.utils import codeblock, convert_seconds
+from common.errors import BadLevel
 
 if TYPE_CHECKING:
     from bot import Advinas
-
-
-class BadLevel(BadArgument):
-    """Exception raised when the provided level is not valid."""
-    pass
-
-
-class BadChannel(CheckFailure):
-    """Exception raised when the message channel is not an allowed channel."""
-    pass
-
-
-class TagError(RuntimeError):
-    """Raised for internal tag errors that should be ignored by the global error handler."""
-    pass
-
-
-class NoPlayerError(RuntimeError):
-    """Raised when the bot is not in a voice channel."""
-    pass
-
-
-class PlayerNotConnectedError(RuntimeError):
-    """Raised when the player is not connected."""
-    pass
 
 
 class Player(wavelink.Player):
@@ -147,7 +122,7 @@ class Context(commands.Context['Advinas']):
             inline=False
         ).add_field(
             name='**Command**',
-            value=f'`{self._command_name.title()}`',
+            value=f'`{self._command_name}`',
             inline=True
         ).add_field(
             name='**Arguments**',
@@ -199,7 +174,7 @@ class Context(commands.Context['Advinas']):
             inline=False
         ).add_field(
             name='**Command**',
-            value=f'`{self._command_name.title()}`',
+            value=f'`{self._command_name}`',
             inline=True
         ).add_field(
             name='**Arguments**',
@@ -250,7 +225,7 @@ class SongConverter(commands.Converter):
         if 'soundcloud.com' in song:
             track = await wavelink.SoundCloudTrack.search(song)
             if not track:
-                raise BadArgument("Could not find track.")
+                raise commands.BadArgument("Could not find track.")
             return track[0]
         if 'youtube.com' in song:
             node = wavelink.NodePool.get_node()
@@ -263,9 +238,9 @@ class SongConverter(commands.Converter):
             try:
                 playlist = await wavelink.YouTubePlaylist.search(song)
             except wavelink.LavalinkException:
-                raise BadArgument("Could not find track.")
+                raise commands.BadArgument("Could not find track.")
             if not playlist:
-                raise BadArgument("Could not find track.")
+                raise commands.BadArgument("Could not find track.")
             return playlist  # type: ignore
         tracks = await wavelink.YouTubeTrack.search(song)
         if tracks:
@@ -274,9 +249,9 @@ class SongConverter(commands.Converter):
             try:
                 playlist = await wavelink.YouTubePlaylist.search(song)
             except wavelink.LavalinkException:
-                raise BadArgument("Could not find track.")
+                raise commands.BadArgument("Could not find track.")
             if not playlist:
-                raise BadArgument("Could not find track.")
+                raise commands.BadArgument("Could not find track.")
             return playlist  # type: ignore
 
 

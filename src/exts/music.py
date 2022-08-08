@@ -15,12 +15,23 @@ from common.utils import convert_seconds
 from config import host, port, password
 from common.views import Paginator
 from common.source import QueueSource
-from common.custom import (
+from common.errors import (
+    AlreadyPausedError,
     BadChannel,
-    Context,
+    IndexTooSmallError,
+    InvalidTimeError,
     NoPlayerError,
-    Player,
+    NoTrackPlayingError,
+    NotInVoiceChannelError,
+    NotPausedError,
+    NotPrivilegedError,
     PlayerNotConnectedError,
+    QueueEmptyError,
+    QueueTooShortError,
+)
+from common.custom import (
+    Context,
+    Player,
     SeekTime,
     SongConverter,
     SyntheticQueue,
@@ -55,7 +66,7 @@ class Music(commands.Cog):
     async def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in (*self.bot.BOT_CHANNELS, 666369102981496832):
-                raise BadChannel('Command not used in an allowed channel.')
+                raise BadChannel
         return not not ctx.guild  # True if used in a guild
 
     @commands.Cog.listener()
@@ -76,18 +87,13 @@ class Music(commands.Cog):
     async def on_wavelink_track_exception(self, player: Player, track: wavelink.YouTubeTrack, **_: Any) -> None:
         await player.do_next()
 
-    async def join(self, ctx: Context, channel: discord.VoiceChannel | None = None) -> Player | None:
-        if not channel:
+    async def join(self, ctx: Context, channel: discord.VoiceChannel | None = None) -> Player:
+        if channel is None:
             channel = getattr(ctx.author.voice, 'channel', None)  # type: ignore # nopep8
-            if not channel:
-                await ctx.reply('You must be in a voice channel in order to use this command!')
-                return await ctx.log('Member not in a voice channel.')
+            if channel is None:
+                raise NotInVoiceChannelError
 
-        try:
-            player = await channel.connect(cls=Player)
-        except ClientException as e:
-            await ctx.reply(str(e))
-            return await ctx.log(str(e))
+        player = await channel.connect(cls=Player)
         player.set_context(ctx)
         return player
 
@@ -96,8 +102,6 @@ class Music(commands.Cog):
     @app_commands.describe(channel='The channel you want the bot to join. Defaults to the channel you are in.')
     async def _join(self, ctx: Context, *, channel: discord.VoiceChannel | None = None):
         player = await self.join(ctx, channel)
-        if player is None:
-            return
         await ctx.reply(f'Joined the voice channel `{player.channel.name}`.')
 
     @commands.hybrid_command(name='leave', aliases=['disconnect', 'dc', 'stop'], description='Makes the bot leave its current voice channel.')
@@ -105,7 +109,7 @@ class Music(commands.Cog):
     async def _leave(self, ctx: Context):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not connected.')
+            raise NoPlayerError
         await player.disconnect()
         await ctx.reply("Player has left the channel.")
 
@@ -116,8 +120,6 @@ class Music(commands.Cog):
         player: Player | None = ctx.voice_client
         if player is None:
             player = await self.join(ctx)
-            if player is None:
-                return
 
         if isinstance(search, wavelink.YouTubePlaylist | SyntheticQueue):
             queued = search.name
@@ -138,14 +140,13 @@ class Music(commands.Cog):
     async def _reconnect(self, ctx: Context):
         old_player: Player | None = ctx.voice_client
         if not old_player:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not old_player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
 
         channel: VoiceChannel | None = getattr(ctx.author.voice, 'channel', None)  # type: ignore # nopep8
         if not channel:
-            await ctx.reply('You must be in a voice channel in order to use this command!')
-            return await ctx.log('Member not in a voice channel.')
+            raise NotInVoiceChannelError
 
         current = old_player.source
         queue = old_player.queue.copy()
@@ -160,13 +161,12 @@ class Music(commands.Cog):
     async def _nowplaying(self, ctx: Context):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
         track = player.source
-        if not isinstance(track, wavelink.YouTubeTrack):
-            await ctx.reply('No track is currently playing.')
-            return await ctx.log('No track is currently playing.')
+        if not isinstance(track, wavelink.Track):
+            raise NoTrackPlayingError
         await ctx.reply(embed=player.now_playing(track))
 
     @commands.hybrid_command(name='queue', aliases=['q'], description='Shows the current song queue.')
@@ -174,13 +174,12 @@ class Music(commands.Cog):
     async def _queue(self, ctx: Context):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
 
         if len(player.queue) < 1:
-            await ctx.reply('The queue is empty. Add some songs to view the queue.')
-            return await ctx.log('Queue is empty.')
+            raise QueueEmptyError
 
         entries: list[wavelink.YouTubeTrack] = list(player.queue)  # type: ignore # nopep8
         await Paginator(QueueSource(entries, ctx.author)).start(ctx)
@@ -191,9 +190,9 @@ class Music(commands.Cog):
     async def _loop(self, ctx: Context, mode: Literal['Song', 'Queue', 'None'] | None = None):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
 
         if mode in ('Song', 'Queue'):
             player.loop_mode = mode
@@ -214,13 +213,12 @@ class Music(commands.Cog):
     async def _remove(self, ctx: Context, index: int):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
 
         if len(player.queue) < 1:
-            await ctx.reply('The queue is empty.')
-            return await ctx.log('Queue is empty.')
+            raise QueueEmptyError
 
         del player.queue[index - 1]
 
@@ -231,40 +229,36 @@ class Music(commands.Cog):
     async def _pause(self, ctx: Context):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
         if player.is_paused():
-            await ctx.reply('The player is already paused.')
-            return await ctx.log('Player is already paused.')
+            raise AlreadyPausedError
 
         if self.is_privileged(ctx):
             await ctx.reply('The player was paused.')
             await player.set_pause(True)
             return
         else:
-            await ctx.reply('Only the original requester may pause the player.')
-            return await ctx.log('Not privileged to pause.')
+            raise NotPrivilegedError('pause')
 
     @commands.hybrid_command(name='resume', aliases=['res', 'r'], description='Resume the current song.')
     @app_commands.guild_only()
     async def _resume(self, ctx: Context):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
         if not player.is_paused():
-            await ctx.send('The player is not paused.')
-            return await ctx.log('Player is not paused.')
+            raise NotPausedError
 
         if self.is_privileged(ctx):
             await ctx.reply('The player was resumed.')
             await player.set_pause(False)
             return
         else:
-            await ctx.reply(f'Only the original requester may resume the player.')
-            return await ctx.log('Not privileged to resume.')
+            raise NotPrivilegedError('resume')
 
     @commands.hybrid_command(name='skip', aliases=['s', 'next'], description='Skips the currently playing song.')
     @app_commands.guild_only()
@@ -272,15 +266,14 @@ class Music(commands.Cog):
     async def _skip(self, ctx: Context, to: int = 1):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
 
         if self.is_privileged(ctx):
             if to > 1:
                 if len(player.queue) < to:
-                    await ctx.reply('The queue is not long enough to skip to that index.')
-                    return await ctx.log('Queue is not long enough to skip to that index.')
+                    raise QueueTooShortError
                 for _ in range(to - 1):
                     del player.queue[0]
                 if len(player.queue) > 0:
@@ -288,35 +281,31 @@ class Music(commands.Cog):
                 else:
                     await ctx.reply('Skipped to the end of the queue.')
             elif to < 1:
-                await ctx.reply('The index must be >= 1.')
-                return await ctx.log('Index must be >= 1.')
+                raise IndexTooSmallError
             else:
                 await ctx.reply(f'Skipped{" **" + player.source.title + "**" if isinstance(player.source, wavelink.YouTubeTrack) else ""}.')
             await player.stop()
             return
         else:
-            await ctx.reply(f'Only the original requester may skip a song.')
-            return await ctx.log('Not privileged to skip.')
+            raise NotPrivilegedError('skip a song.', end=True)
 
     @commands.hybrid_command(name='shuffle', aliases=['mix', 'shuf'], description='Shuffles the queue.')
     @app_commands.guild_only()
     async def _shuffle(self, ctx: Context):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
 
         if self.is_privileged(ctx):
             if len(player.queue) < 1:
-                await ctx.reply('The queue is empty. Add some songs to shuffle the queue.')
-                return await ctx.log('Queue is empty.')
+                raise QueueEmptyError
             await ctx.reply('The queue was shuffled.')
 
             return random.shuffle(player.queue._queue)
         else:
-            await ctx.reply(f'Only the original requester may shuffle the queue.', delete_after=15)
-            return await ctx.log('Not privileged to shuffle.')
+            raise NotPrivilegedError('shuffle the queue.', end=True)
 
     @commands.hybrid_command(name='volume', aliases=['v', 'vol'], description='Changes the players volume.')
     @app_commands.guild_only()
@@ -324,16 +313,15 @@ class Music(commands.Cog):
     async def _volume(self, ctx: Context, *, volume: float | None = None):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
 
         if volume is None:
             return await ctx.reply(f'The volume is currently set to **{player.volume}%**.')
 
         if not self.is_privileged(ctx):
-            await ctx.reply('Only the original requester may change the volume.')
-            return await ctx.log('Not privileged to change the volume.')
+            raise NotPrivilegedError('change the volume.', end=True)
 
         vol = int(volume)
         if vol < 0:
@@ -350,17 +338,15 @@ class Music(commands.Cog):
     async def _seek(self, ctx: Context, *, time: Annotated[int | None, SeekTime]):
         player: Player | None = ctx.voice_client
         if player is None:
-            raise NoPlayerError('Bot is not in voice channel.')
+            raise NoPlayerError
         if not player.is_connected():
-            raise PlayerNotConnectedError('Bot is not connected.')
+            raise PlayerNotConnectedError
 
         if time is None:
-            await ctx.reply('The provided time is invalid.')
-            return await ctx.log('Invalid time provided.')
+            raise InvalidTimeError
 
         if not self.is_privileged(ctx):
-            await ctx.reply(f'Only the original requester may seek in the song.')
-            return await ctx.log('Not privileged to seek.')
+            raise NotPrivilegedError('seek in the song.', end=True)
 
         await player.seek(time * 1000)
         await ctx.reply(f'Set the position to **{convert_seconds(time)}**.')

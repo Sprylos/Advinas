@@ -13,12 +13,12 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 from bot import Advinas
 from common.source import TagSource
 from common.views import Paginator
+from common.errors import TagError
 from common.custom import (
     Context,
     Tag,
     TagAlias,
     TagName,
-    TagError
 )
 
 
