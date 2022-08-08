@@ -112,7 +112,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='play', aliases=['pla', 'p'], description='Plays or queues the given song/songs.')
     @app_commands.guild_only()
     @app_commands.describe(search='The song/songs to play, can be a keyword to search or a direct link.')
-    async def _play(self, ctx: Context, *, search: Annotated[wavelink.YouTubeTrack | wavelink.YouTubePlaylist | SyntheticQueue, SongConverter]):
+    async def _play(self, ctx: Context, *, search: Annotated[wavelink.SoundCloudTrack | wavelink.YouTubeTrack | wavelink.YouTubePlaylist | SyntheticQueue, SongConverter]):
         player: Player | None = ctx.voice_client
         if player is None:
             player = await self.join(ctx)

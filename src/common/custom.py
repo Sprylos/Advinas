@@ -243,17 +243,41 @@ class SyntheticQueue:
 
 
 class SongConverter(commands.Converter):
-    async def convert(self, ctx: Context, song: str | SyntheticQueue) -> wavelink.YouTubeTrack | wavelink.YouTubePlaylist | SyntheticQueue:
+    async def convert(self, ctx: Context, song: str | SyntheticQueue) -> wavelink.SoundCloudTrack | wavelink.YouTubeTrack | wavelink.YouTubePlaylist | SyntheticQueue:
         if isinstance(song, SyntheticQueue):
             return song
         song = song.strip('<>')
-        track = await wavelink.YouTubeTrack.search(song)
-        if track:
+        if 'soundcloud.com' in song:
+            track = await wavelink.SoundCloudTrack.search(song)
+            if not track:
+                raise BadArgument("Could not find track.")
             return track[0]
-        playlist = await wavelink.YouTubePlaylist.search(song)
-        if not playlist:
-            raise BadArgument("Invalid song provided.")
-        return playlist  # type: ignore
+        if 'youtube.com' in song:
+            node = wavelink.NodePool.get_node()
+            try:
+                tracks = await node.get_tracks(wavelink.YouTubeTrack, song)
+            except wavelink.LavalinkException:
+                tracks = None
+            if tracks:
+                return tracks[0]
+            try:
+                playlist = await wavelink.YouTubePlaylist.search(song)
+            except wavelink.LavalinkException:
+                raise BadArgument("Could not find track.")
+            if not playlist:
+                raise BadArgument("Could not find track.")
+            return playlist  # type: ignore
+        tracks = await wavelink.YouTubeTrack.search(song)
+        if tracks:
+            return tracks[0]
+        else:
+            try:
+                playlist = await wavelink.YouTubePlaylist.search(song)
+            except wavelink.LavalinkException:
+                raise BadArgument("Could not find track.")
+            if not playlist:
+                raise BadArgument("Could not find track.")
+            return playlist  # type: ignore
 
 
 class TagName(commands.clean_content):
