@@ -7,7 +7,7 @@ from typing import Annotated, Any, Literal, TYPE_CHECKING
 # packages
 import wavelink
 import discord
-from discord import app_commands, ClientException, VoiceChannel
+from discord import app_commands, VoiceChannel
 from discord.ext import commands
 from common.utils import convert_seconds
 

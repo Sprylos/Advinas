@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import Annotated, Any, Literal, overload, TYPE_CHECKING
+from typing import Annotated, Any, Literal, overload
 
 # packages
 import discord
