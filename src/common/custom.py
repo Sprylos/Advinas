@@ -76,6 +76,7 @@ class SeekTime(commands.Converter):
 
     async def convert(self, ctx: Context, argument: str) -> int | None:
         """Converts the given time into seconds."""
+        argument = argument.replace(' ', '')
         match = self.compiled.fullmatch(argument)
         if match is None or not match.group(0):
             return None
