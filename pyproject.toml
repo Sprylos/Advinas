@@ -1,0 +1,9 @@
+[tool.pyright]
+typeCheckingMode = "basic"
+pythonVersion = "3.10"
+reportUnusedImport = "error"
+reportUnnecessaryTypeIgnoreComment = "error"
+reportIncompatibleMethodOverride = "none"
+reportPrivateUsage = "none"
+reportMissingTypeStubs = "none"
+reportImportCycles = "none"
