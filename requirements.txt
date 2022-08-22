@@ -1,8 +1,9 @@
 git+https://github.com/Rapptz/discord.py@master
 git+https://github.com/Rapptz/discord-ext-menus@master
 git+https://github.com/PythonistaGuild/Wavelink
+git+https://github.com/Gorialis/jishaku@master
 orjson
 Pillow
-motor
 pymongo[srv]
+motor
 infinitode.py

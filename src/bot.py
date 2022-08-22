@@ -51,6 +51,7 @@ class Advinas(commands.Bot):
     async def setup_hook(self):
         for ext in exts:
             await self.load_extension(f'exts.{ext}')
+        await self.load_extension('jishaku')  # jsk
         self.BOT_CHANNELS: list[int] = config.bot_channels
         self.LEVELS: list[str]
         self.DB: AsyncIOMotorDatabase = AsyncIOMotorClient(config.mongo).inf2
@@ -78,7 +79,7 @@ class Advinas(commands.Bot):
         excs = (
             infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
             wavelink.LoadTrackError, commands.MissingRequiredArgument, errors.TagError, commands.ExpectedClosingQuoteError,
-            commands.UnexpectedQuoteError, discord.ClientException,
+            commands.UnexpectedQuoteError, discord.ClientException, commands.TooManyArguments
         )
 
         if isinstance(err, (commands.CommandInvokeError, commands.HybridCommandError)):
