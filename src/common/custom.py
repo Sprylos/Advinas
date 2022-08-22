@@ -105,7 +105,7 @@ class Context(commands.Context['Advinas']):
         color = discord.Color.green() if success else discord.Color.red()
 
         em = discord.Embed(
-            title=f"**{self._command_name.title()} Command** used in `{self.channel}`", colour=color
+            title=f"**{self._command_name} Command** used in `{self.channel}`", colour=color
         ).set_footer(
             text=f"Command run by {self.author}",
             icon_url=self.author.display_avatar.url
@@ -161,7 +161,7 @@ class Context(commands.Context['Advinas']):
             await self.bot._trace.send(tb)
             tb = 'Too long'
         em = discord.Embed(
-            title=f"**{self._command_name.title()} Command** used in `{self.channel}`", colour=discord.Color.red()
+            title=f"**{self._command_name} Command** used in `{self.channel}`", colour=discord.Color.red()
         ).set_footer(
             text=f"Command run by {self.author}",
             icon_url=self.author.display_avatar.url
@@ -205,7 +205,7 @@ class LevelConverter(commands.Converter):
         level = level.replace('_', '.').replace(
             ',', '.').replace('-', '.').replace(' ', '.').lower()
         if not (level in ctx.bot.LEVELS):
-            raise BadLevel("Invalid level provided.")
+            raise BadLevel
         if level.startswith('dq'):
             level = level.upper()
         return level
