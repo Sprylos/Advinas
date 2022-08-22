@@ -31,15 +31,19 @@ if not config.testing:
 
 class Advinas(commands.Bot):
     def __init__(self, prefix: str) -> None:
+        activity = discord.Activity(
+            type=discord.ActivityType.watching, name="You | /invite | v3.4")
+        allowed_mentions = discord.AllowedMentions(
+            everyone=False, users=True, roles=False, replied_user=False)
+        intents = ('guilds', 'members', 'bans', 'voice_states',
+                   'presences', 'messages', 'reactions', 'message_content',)
         super().__init__(
             command_prefix=commands.when_mentioned_or(prefix),
-            activity=discord.Activity(
-                type=discord.ActivityType.watching, name="You | /invite | v3.3"),
-            allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=True, roles=False, replied_user=False),
+            activity=activity,
+            allowed_mentions=allowed_mentions,
             help_command=None,
             case_insensitive=True,
-            intents=discord.Intents.all()
+            intents=discord.Intents(**{intent: True for intent in intents})
         )
 
     async def start(self, token: str, *, reconnect: bool = True):
