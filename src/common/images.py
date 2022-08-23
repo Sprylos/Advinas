@@ -98,7 +98,7 @@ class Images():
         '''Generates the profile image for the profile command'''
         try:
             bg = Image.open(f"assets/images/profile/custom/{userid}.png")
-        except:
+        except FileNotFoundError:
             bg = Image.open(f"assets/images/profile/default/default-dev.png")
 
         badge_keys = list(player.badges.keys())
@@ -209,7 +209,7 @@ class Images():
 
         try:
             lvl_ico = Image.open(f"{path}/levels/{player.level}_new.png")
-        except:
+        except FileNotFoundError:
             lvl_ico = Image.open(f"{path}/levels/30_new.png")
         bg.paste(lvl_ico, (542, 414), lvl_ico)
 
