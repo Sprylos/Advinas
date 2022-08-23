@@ -6,8 +6,8 @@ from math import floor, ceil
 from typing import Any
 
 
-def codeblock(instring: str) -> str:
-    return '```\n' + instring + '```'
+def codeblock(instring: str, /, language: str = '') -> str:
+    return f'```{language}\n{instring}```'
 
 
 def load_json(filename: Any):
