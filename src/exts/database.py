@@ -29,10 +29,10 @@ class Database(commands.Cog):
     async def ready(self):
         await self.bot.wait_until_ready()
         # make sure the DB is ready
-        await asyncio.sleep(1)
+        await asyncio.sleep(3)
         self._discords, self._nicks, self._dailyquests = self.bot.DB.discordnames, self.bot.DB.nicknames, self.bot.DB.dailyquests
         self.save_dailyquest_leaderboard.start()
-        # self.eval_leaderboards.start() # don't
+        # await self.eval_leaderboards() # don't
 
     @staticmethod
     async def find(col: Collection, data: Any) -> Any:
@@ -53,19 +53,22 @@ class Database(commands.Cog):
                                  update={"$set": data}, upsert=True)
 
     # this call is ok. Rainys server allows it just fine
-    async def get_all_leaderboards(self) -> dict[str, Leaderboard]:
+    async def get_all_leaderboards(self, mode: str = 'score', difficulty: str = 'NORMAL') -> dict[str, Leaderboard]:
         ret: dict[str, Leaderboard] = dict()
         for level in self._levels:
-            ret[level] = await self.bot.API.leaderboards(level)
+            try:
+                ret[level] = await self.bot.API.leaderboards(level, mode=mode, difficulty=difficulty)
+            except Exception:
+                pass
         return ret
 
-    # this however is a dumb thing to do. It will make 12600 database calls and stop the bots for several minutes.
-    # I will fix it soon-ish.
     async def _get_all_players(self, all_leaderboards: dict[Any, Leaderboard]) -> list[dict[str, Any]]:
         players: list[dict[str, Any]] = list()
         for _, leaderboard in all_leaderboards.items():
             for score in leaderboard:
-                players.append({score.playerid: {'name': score.nickname, 'key': score.nickname.lower()}})  # type: ignore # nopep8
+                if score.nickname is not None:
+                    players.append(
+                        {score.playerid: {'name': score.nickname, 'key': score.nickname.lower()}})
         await self._add_new_players(players)
         return players
 
@@ -86,12 +89,13 @@ class Database(commands.Cog):
         print('updated')
 
     # this is very expensive.
-    @tasks.loop(hours=12)
     async def eval_leaderboards(self):
         print('started')
-        all_leaderboards = await self.get_all_leaderboards()
+        all_leaderboards = await self.get_all_leaderboards(difficulty='ENDLESS_I')
+        all_leaderboards2 = await self.get_all_leaderboards(mode='waves', difficulty='ENDLESS_I')
         print('got all')
         await self._get_all_players(all_leaderboards)
+        await self._get_all_players(all_leaderboards2)
         print('synced')
 
 
