@@ -261,7 +261,8 @@ class Inf(commands.Cog):
 
     @profile.autocomplete('playerid')
     async def playerid_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
-        return create_choices({i for i in self.PLAYERIDS if i.startswith(current.lower()) or current.lower() in i})
+        current = current.lower()
+        return create_choices({i for i in self.PLAYERIDS if i.lower().startswith(current) or current in i.lower()})
 
 
 async def setup(bot: Advinas):
