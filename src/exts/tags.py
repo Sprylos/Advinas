@@ -14,6 +14,7 @@ from bot import Advinas
 from common.source import TagSource
 from common.views import Paginator
 from common.errors import TagError
+from common.utils import create_choices
 from common.custom import (
     Context,
     Tag,
@@ -308,7 +309,7 @@ class Tags(commands.Cog):
     @_info.autocomplete('name')
     async def t_name_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
         tags = self.cache.get(inter.guild.id, {}).keys()  # type: ignore
-        return [app_commands.Choice(name=name, value=name) for name in tags if name.startswith(current)][:25]
+        return create_choices({i for i in tags if i.startswith(current.lower()) or current.lower() in i})
 
     @tag.command(name='list', description='Shows a list of tags available in this server.')
     @app_commands.guild_only()

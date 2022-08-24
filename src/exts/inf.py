@@ -23,6 +23,7 @@ from common.custom import Context, LevelConverter
 from common.views import Paginator, ScorePaginator
 from common.source import LBSource, ScoreLBSource
 from common.utils import (
+    create_choices,
     round_to_nearest,
     find_safe,
     get_level_bounty,
@@ -198,7 +199,7 @@ class Inf(commands.Cog):
     @level.autocomplete('level')
     @bounty.autocomplete('level')
     async def level_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
-        return [app_commands.Choice(name=i, value=i) for i in self.LEVELS if i.startswith(current.lower())][:25]
+        return create_choices({i for i in self.LEVELS if i.startswith(current.lower()) or current.lower() in i})
 
     # Profile command
     @commands.hybrid_command(name='profile', aliases=['prof'], description='Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).')
@@ -260,7 +261,7 @@ class Inf(commands.Cog):
 
     @profile.autocomplete('playerid')
     async def playerid_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
-        return [app_commands.Choice(name=i, value=i) for i in self.PLAYERIDS if i.startswith(current.lower())][:25]
+        return create_choices({i for i in self.PLAYERIDS if i.startswith(current.lower()) or current.lower() in i})
 
 
 async def setup(bot: Advinas):

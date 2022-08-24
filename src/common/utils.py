@@ -3,7 +3,10 @@ from __future__ import annotations
 # std
 import json
 from math import floor, ceil
-from typing import Any
+from typing import Any, Iterable
+
+# packages
+from discord import app_commands
 
 
 def codeblock(instring: str, /, language: str = '') -> str:
@@ -18,6 +21,10 @@ def load_json(filename: Any):
 def write_json(filename: Any, contents: Any):
     with open(filename, 'w') as outfile:
         json.dump(contents, outfile, ensure_ascii=True, indent=4)
+
+
+def create_choices(iterable: Iterable[str]) -> list[app_commands.Choice[str]]:
+    return [app_commands.Choice(name=i, value=i) for i in sorted(iterable)][:25]
 
 
 def tablify(indict: dict[Any, Any]) -> str:
