@@ -31,6 +31,7 @@ from common.errors import (
 )
 from common.custom import (
     Context,
+    GuildContext,
     Player,
     SeekTime,
     SongConverter,
@@ -58,16 +59,15 @@ class Music(commands.Cog):
             identifier="MAIN"
         )
 
-    def is_privileged(self, ctx: Context) -> bool:
+    def is_privileged(self, ctx: GuildContext) -> bool:
         player: Player | None = ctx.voice_client
-        # always in guild
-        return player and player.dj == ctx.author or ctx.author.guild_permissions.kick_members  # type: ignore
+        return player and player.dj == ctx.author or ctx.author.guild_permissions.kick_members
 
     async def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
             if ctx.channel.id not in (*self.bot.BOT_CHANNELS, 666369102981496832):
                 raise BadChannel
-        return not not ctx.guild  # True if used in a guild
+        return ctx.guild is not None
 
     @commands.Cog.listener()
     async def on_wavelink_track_end(self, player: Player, track: wavelink.YouTubeTrack, reason: Literal['FINISHED', 'REPLACED', 'CLEANUP', 'LOAD_FAILED']) -> None:
@@ -87,9 +87,9 @@ class Music(commands.Cog):
     async def on_wavelink_track_exception(self, player: Player, track: wavelink.YouTubeTrack, **_: Any) -> None:
         await player.do_next()
 
-    async def join(self, ctx: Context, channel: discord.VoiceChannel | None = None) -> Player:
+    async def join(self, ctx: GuildContext, channel: discord.VoiceChannel | None = None) -> Player:
         if channel is None:
-            channel = getattr(ctx.author.voice, 'channel', None)  # type: ignore # nopep8
+            channel = getattr(ctx.author.voice, 'channel', None)
             if channel is None:
                 raise NotInVoiceChannelError
 
@@ -100,13 +100,13 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='join', aliases=['j', 'summon', 'con', 'connect'], description='Makes the bot join your or the given voice channel.')
     @app_commands.guild_only()
     @app_commands.describe(channel='The channel you want the bot to join. Defaults to the channel you are in.')
-    async def _join(self, ctx: Context, *, channel: discord.VoiceChannel | None = None):
+    async def _join(self, ctx: GuildContext, *, channel: discord.VoiceChannel | None = None):
         player = await self.join(ctx, channel)
         await ctx.reply(f'Joined the voice channel `{player.channel.name}`.')
 
     @commands.hybrid_command(name='leave', aliases=['disconnect', 'dc', 'stop'], description='Makes the bot leave its current voice channel.')
     @app_commands.guild_only()
-    async def _leave(self, ctx: Context):
+    async def _leave(self, ctx: GuildContext):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -116,7 +116,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='play', aliases=['pla', 'p'], description='Plays or queues the given song/songs.')
     @app_commands.guild_only()
     @app_commands.describe(search='The song/songs to play, can be a keyword to search or a direct link.')
-    async def _play(self, ctx: Context, *, search: Annotated[wavelink.SoundCloudTrack | wavelink.YouTubeTrack | wavelink.YouTubePlaylist | SyntheticQueue, SongConverter]):
+    async def _play(self, ctx: GuildContext, *, search: Annotated[wavelink.SoundCloudTrack | wavelink.YouTubeTrack | wavelink.YouTubePlaylist | SyntheticQueue, SongConverter]):
         player: Player | None = ctx.voice_client
         if player is None:
             player = await self.join(ctx)
@@ -137,14 +137,15 @@ class Music(commands.Cog):
 
     @commands.hybrid_command(name='reconnect', aliases=['rc'], description='Reconnects to the channel while saving the current queue (In case the bot dies).')
     @app_commands.guild_only()
-    async def _reconnect(self, ctx: Context):
+    async def _reconnect(self, ctx: GuildContext):
         old_player: Player | None = ctx.voice_client
         if not old_player:
             raise NoPlayerError
         if not old_player.is_connected():
             raise PlayerNotConnectedError
 
-        channel: VoiceChannel | None = getattr(ctx.author.voice, 'channel', None)  # type: ignore # nopep8
+        channel: VoiceChannel | None = getattr(
+            ctx.author.voice, 'channel', None)
         if not channel:
             raise NotInVoiceChannelError
 
@@ -158,7 +159,7 @@ class Music(commands.Cog):
 
     @commands.hybrid_command(name='nowplaying', aliases=['np', 'now', 'playing'], description='Shows the currently playing song.')
     @app_commands.guild_only()
-    async def _nowplaying(self, ctx: Context):
+    async def _nowplaying(self, ctx: GuildContext):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -171,7 +172,7 @@ class Music(commands.Cog):
 
     @commands.hybrid_command(name='queue', aliases=['q'], description='Shows the current song queue.')
     @app_commands.guild_only()
-    async def _queue(self, ctx: Context):
+    async def _queue(self, ctx: GuildContext):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -187,7 +188,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='loop', aliases=['l'], description='Changes the loop mode to the given mode.')
     @app_commands.guild_only()
     @app_commands.describe(mode='The mode to change the loop mode to. Can be `Song`, `Queue`, or `None`. Changes to next mode if omitted.')
-    async def _loop(self, ctx: Context, mode: Literal['Song', 'Queue', 'None'] | None = None):
+    async def _loop(self, ctx: GuildContext, mode: Literal['Song', 'Queue', 'None'] | None = None):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -210,7 +211,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='remove', aliases=['rm'], description='Removes a song from the queue.')
     @app_commands.guild_only()
     @app_commands.describe(index='The index of the song that should be removed from the queue (first song = 1).')
-    async def _remove(self, ctx: Context, index: int):
+    async def _remove(self, ctx: GuildContext, index: int):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -226,7 +227,7 @@ class Music(commands.Cog):
 
     @commands.hybrid_command(name='pause', aliases=['pau', 'pa'], description='Pauses the current song.')
     @app_commands.guild_only()
-    async def _pause(self, ctx: Context):
+    async def _pause(self, ctx: GuildContext):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -244,7 +245,7 @@ class Music(commands.Cog):
 
     @commands.hybrid_command(name='resume', aliases=['res', 'r'], description='Resume the current song.')
     @app_commands.guild_only()
-    async def _resume(self, ctx: Context):
+    async def _resume(self, ctx: GuildContext):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -263,7 +264,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='skip', aliases=['s', 'next'], description='Skips the currently playing song.')
     @app_commands.guild_only()
     @app_commands.describe(to='The index of the song that should be skipped to. DEFAULT: 1')
-    async def _skip(self, ctx: Context, to: int = 1):
+    async def _skip(self, ctx: GuildContext, to: int = 1):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -291,7 +292,7 @@ class Music(commands.Cog):
 
     @commands.hybrid_command(name='shuffle', aliases=['mix', 'shuf'], description='Shuffles the queue.')
     @app_commands.guild_only()
-    async def _shuffle(self, ctx: Context):
+    async def _shuffle(self, ctx: GuildContext):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -310,7 +311,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='volume', aliases=['v', 'vol'], description='Changes the players volume.')
     @app_commands.guild_only()
     @app_commands.describe(volume='The amount you want to set the volume to.')
-    async def _volume(self, ctx: Context, *, volume: float | None = None):
+    async def _volume(self, ctx: GuildContext, *, volume: float | None = None):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
@@ -335,7 +336,7 @@ class Music(commands.Cog):
     @commands.hybrid_command(name='seek', aliases=['sk'], description='Changes the players position in the song.')
     @app_commands.guild_only()
     @app_commands.describe(time='The time you want to seek to.')
-    async def _seek(self, ctx: Context, *, time: Annotated[int | None, SeekTime]):
+    async def _seek(self, ctx: GuildContext, *, time: Annotated[int | None, SeekTime]):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError

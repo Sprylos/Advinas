@@ -17,6 +17,7 @@ from common.errors import TagError
 from common.utils import create_choices
 from common.custom import (
     Context,
+    GuildContext,
     Tag,
     TagAlias,
     TagName,
@@ -69,7 +70,7 @@ class Tags(commands.Cog):
                 await self.col.insert_one({'guild': guild_id, 'tags': []})
         return ret
 
-    async def _create_tag(self, ctx: Any, name: str, content: str) -> None:
+    async def _create_tag(self, ctx: GuildContext, name: str, content: str) -> None:
         await self.col.update_one(
             {'guild': ctx.guild.id},
             {'$push': {'tags': {
@@ -77,7 +78,7 @@ class Tags(commands.Cog):
             }}}
         )
 
-    async def _create_alias(self, ctx: Any, new_name: str, old_name: str) -> None:
+    async def _create_alias(self, ctx: GuildContext, new_name: str, old_name: str) -> None:
         await self.col.update_one(
             {'guild': ctx.guild.id},
             {'$push': {'tags': {
@@ -148,13 +149,13 @@ class Tags(commands.Cog):
                 return main_tag
         return tag
 
-    async def create_tag(self, ctx: Any, name: str, content: str) -> None:
+    async def create_tag(self, ctx: GuildContext, name: str, content: str) -> None:
         if await self._get_tag(ctx.guild.id, name):
             raise TagError(f'A tag with the name "{name}" already exists.')
         await self._create_tag(ctx, name, content)
         await ctx.reply(f'Tag "{name}" successfully created.')
 
-    async def create_alias(self, ctx: Any, new_name: str, old_name: str) -> None:
+    async def create_alias(self, ctx: GuildContext, new_name: str, old_name: str) -> None:
         if await self._get_tag(ctx.guild.id, new_name):
             raise TagError(f'A tag with the name "{new_name}" already exists.')
         if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:
@@ -167,8 +168,8 @@ class Tags(commands.Cog):
         await ctx.reply(f'Tag alias "{new_name}" that points to "{old_name}" successfully created.')
 
     @staticmethod
-    def is_privileged(ctx: Context, tag: Tag | TagAlias) -> None:
-        author: Any = ctx.author
+    def is_privileged(ctx: GuildContext, tag: Tag | TagAlias) -> None:
+        author = ctx.author
         if author.id != tag.owner_id:
             if not (author.guild_permissions.manage_guild or author.guild_permissions.administrator):
                 raise TagError(
@@ -182,7 +183,7 @@ class Tags(commands.Cog):
 
     @commands.command(name='cache')
     @commands.is_owner()
-    async def _cache(self, ctx: Context) -> None:
+    async def _cache(self, ctx: GuildContext) -> None:
         await self.cache_tags()
         await ctx.reply('Cache updated.')
 
@@ -235,8 +236,7 @@ class Tags(commands.Cog):
     @commands.hybrid_group(name='tag', aliases=['t'], description='Gets and shows the tag with the given name.', fallback='get')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see.')
-    async def tag(self, ctx: Context, *, name: Annotated[str, TagName]):
-        assert ctx.guild is not None
+    async def tag(self, ctx: GuildContext, *, name: Annotated[str, TagName]):
         tag = await self.get_tag(ctx.guild.id, name)
 
         await ctx.reply(tag.content)
@@ -247,7 +247,7 @@ class Tags(commands.Cog):
     @tag.command(name='create', aliases=['make'], description='Creates a new tag with the given name and content.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the new tag you want to create.', content='The content of the tag.')
-    async def _create(self, ctx: Context, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
+    async def _create(self, ctx: GuildContext, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
         if len(content) > 2000:
             return await ctx.send('Tag content is a maximum of 2000 characters.')
 
@@ -257,15 +257,14 @@ class Tags(commands.Cog):
     @tag.command(name='alias', description='Creates an alias tag that points to another tag.')
     @app_commands.guild_only()
     @app_commands.describe(new_name='The name of the alias.', old_name='The name of the tag you want to refer to.')
-    async def _alias(self, ctx: Context, new_name: Annotated[str, TagName], *, old_name: Annotated[str, TagName]):
+    async def _alias(self, ctx: GuildContext, new_name: Annotated[str, TagName], *, old_name: Annotated[str, TagName]):
         await self.create_alias(ctx, new_name, old_name)
         await self.cache_tags()
 
     @tag.command(name='edit', description='Edits an existing tag. Aliases may not be edited.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the new tag you want to edit.', content='The new content of the tag.')
-    async def _edit(self, ctx: Context, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
-        assert ctx.guild is not None
+    async def _edit(self, ctx: GuildContext, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
         tag = await self.get_tag(ctx.guild.id, name, no_alias=True)
         self.is_privileged(ctx, tag)
 
@@ -276,8 +275,7 @@ class Tags(commands.Cog):
     @tag.command(name='remove', aliases=['delete'], description='Deletes the tag with the given name.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to remove.')
-    async def _remove(self, ctx: Context, name: Annotated[str, TagName]):
-        assert ctx.guild is not None
+    async def _remove(self, ctx: GuildContext, name: Annotated[str, TagName]):
         tag = await self.get_tag(ctx.guild.id, name, return_alias=True)
         self.is_privileged(ctx, tag)
 
@@ -288,8 +286,7 @@ class Tags(commands.Cog):
     @tag.command(name='info', description='Shows useful information about the tag with the given name.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see information about.')
-    async def _info(self, ctx: Context, *, name: Annotated[str, TagName]):
-        assert ctx.guild is not None
+    async def _info(self, ctx: GuildContext, *, name: Annotated[str, TagName]):
         tag = await self.get_tag(ctx.guild.id, name)
 
         em = discord.Embed(title=tag.name, timestamp=tag.created_at)
@@ -313,8 +310,7 @@ class Tags(commands.Cog):
 
     @tag.command(name='list', description='Shows a list of tags available in this server.')
     @app_commands.guild_only()
-    async def _list(self, ctx: Context, *, member: discord.Member | None = None):
-        assert ctx.guild is not None
+    async def _list(self, ctx: GuildContext, *, member: discord.Member | None = None):
         member_id = member.id if member is not None else None
         name = member.name if member is not None else ctx.guild.name
         tag_list = await self.get_tag_list(ctx.guild.id, member_id)

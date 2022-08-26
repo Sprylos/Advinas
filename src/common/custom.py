@@ -200,6 +200,13 @@ class Context(commands.Context['Advinas']):
         await self.bot._trace.send(embed=em)
 
 
+class GuildContext(Context):
+    author: discord.Member
+    guild: discord.Guild
+    channel: discord.VoiceChannel | discord.TextChannel | discord.Thread
+    me: discord.Member
+
+
 class LevelConverter(commands.Converter):
     async def convert(self, ctx: Context, level: str) -> str:
         level = level.replace('_', '.').replace(
