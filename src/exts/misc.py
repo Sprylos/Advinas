@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 # std
+import re
+import traceback
 from typing import TYPE_CHECKING
 
 # packages
@@ -9,8 +11,7 @@ from discord.ext import commands
 
 # local
 from common.views import Invite
-from common.custom import Context
-from common.errors import BadChannel
+from common.custom import codeblock, Context
 
 if TYPE_CHECKING:
     from bot import Advinas
@@ -18,8 +19,49 @@ if TYPE_CHECKING:
 
 class Misc(commands.Cog):
     def __init__(self, bot: Advinas):
-        self.bot: Advinas = bot
         super().__init__()
+        self.bot: Advinas = bot
+        bot.loop.create_task(self.ready())
+
+    async def ready(self):
+        await self.bot.wait_until_ready()
+        self.ISSUE_REGEX = re.compile(r'##(\d{1,7})\D')
+        self.ISSUE_NAME_RE = re.compile(
+            r'<title>(\d{7}): (.*) - Prineside issue tracker<\/title>')
+
+    @commands.Cog.listener('on_message')
+    async def _issue_listener(self, message: discord.Message):
+        if message.author.bot:
+            return
+
+        # 'e' is so that ##0000021 matches but ##00000215 doesn't
+        match = self.ISSUE_REGEX.search(message.content + 'e')
+        if match is None:
+            return
+
+        issue = match.groups()[0]
+        url = 'https://tracker.prineside.com/view.php?id='
+        try:
+            async with self.bot.session.get(url + issue, raise_for_status=True) as r:
+                match = self.ISSUE_NAME_RE.search(await r.text())
+                if match is not None:
+                    issue, name = match.groups()
+                    content = f'Found issue `{issue}`: `{name}`\n{url}{int(issue)}'
+                    await message.reply(content)
+                else:
+                    await message.reply('Could not find issue, sorry.')
+        except Exception as err:
+            tb = codeblock('Error occured in issue listener\n' + ''.join(
+                traceback.format_exception(type(err), err, err.__traceback__)))
+            if len(tb) > 1990:
+                await self.bot._trace.send(codeblock(tb[3:1990]))
+                await self.bot._trace.send(codeblock(tb[1990:-3]))
+            else:
+                await self.bot._trace.send(tb)
+            em = discord.Embed(
+                title=f"Error occured in issue listener in `{message.channel}`", colour=discord.Color.red())
+            em.add_field(name='**Message**', value=f'`{message.content}`')
+            await self.bot._trace.send(embed=em)
 
     def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
