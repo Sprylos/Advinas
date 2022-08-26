@@ -10,6 +10,7 @@ import discord
 from discord.ext import commands
 
 # local
+from common import custom
 from common.views import Invite
 from common.custom import codeblock, Context
 
@@ -63,20 +64,20 @@ class Misc(commands.Cog):
             em.add_field(name='**Message**', value=f'`{message.content}`')
             await self.bot._trace.send(embed=em)
 
-    def cog_check(self, ctx: Context) -> bool:
-        if ctx.guild and ctx.guild.id == 590288287864848387:
-            if ctx.channel.id not in self.bot.BOT_CHANNELS:
-                raise BadChannel
-        return True
+    # @commands.hybrid_command(name='rtfm', aliases=['rtfd'], description='Shows the javadoc entry related to the query.')
+    # @custom.check_channel(590290050051342346, 1012088788949942414)
+    # async def rtfm(self, ctx: Context):
+    #     pass
 
     # ping command
     @commands.hybrid_command(name='ping', description='Shows the bot\'s latency.')
+    @custom.check_channel()
     async def ping(self, ctx: Context):
         await ctx.reply(f'Latency: {round(self.bot.latency * 1000)}ms.', ephemeral=True)
 
     # invite command
-
     @commands.hybrid_command(name='invite', description='Gives you a link to invite the bot to your own server.')
+    @custom.check_channel()
     async def invite(self, ctx: Context):
         em = discord.Embed(
             description=r'[Invite The Bot](https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands)'
@@ -85,8 +86,8 @@ class Misc(commands.Cog):
         await ctx.reply(embed=em, view=Invite())
 
     # uptime command
-
     @commands.hybrid_command(name='uptime', description='Shows the bots uptime since the last reboot.')
+    @custom.check_channel()
     async def uptime(self, ctx: Context):
         delta_uptime = discord.utils.utcnow() - self.bot.online_since
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)

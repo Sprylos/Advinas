@@ -15,10 +15,19 @@ from discord.ext import commands
 
 # local
 from common.utils import codeblock, convert_seconds
-from common.errors import BadLevel
+from common.errors import BadChannel, BadLevel
 
 if TYPE_CHECKING:
     from bot import Advinas
+
+
+def check_channel(*channel_ids: int):
+    async def predicate(ctx: Context) -> bool:
+        if ctx.guild and ctx.guild.id == 590288287864848387:
+            if ctx.channel.id not in (*ctx.bot.BOT_CHANNELS, *channel_ids):
+                raise BadChannel
+        return True
+    return commands.check(predicate)
 
 
 class Player(wavelink.Player):
