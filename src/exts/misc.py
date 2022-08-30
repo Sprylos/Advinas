@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 # packages
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 # local
@@ -100,6 +101,7 @@ class Misc(commands.Cog):
 
     # wiki command
     @commands.hybrid_command(name='wiki', description='Posts a link to the wiki.')
+    @app_commands.describe(query='The query to search the wiki for.')
     async def wiki(self, ctx: Context, *, query: str):
         query = self._convert_query(query)
         url = 'https://infinitode-2.fandom.com/wiki/' + query
