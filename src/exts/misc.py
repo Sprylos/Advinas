@@ -13,6 +13,7 @@ from discord.ext import commands
 # local
 from common import custom
 from common.errors import InCommandError
+from common.utils import create_choices
 from common.views import Invite
 from common.custom import codeblock, Context
 
@@ -107,6 +108,11 @@ class Misc(commands.Cog):
         url = 'https://infinitode-2.fandom.com/wiki/' + query
 
         await ctx.reply(url)
+
+    @wiki.autocomplete('query')
+    async def _wiki_autocomplete(self, inter: discord.Interaction, current: str) -> list[app_commands.Choice]:
+        current = current.replace(' ', '_').lower()
+        return create_choices([self.wiki_keys[t] for t in self.wiki_keys.keys() if current in t])
 
     @commands.Cog.listener('on_message')
     async def _issue_listener(self, message: discord.Message):
