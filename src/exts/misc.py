@@ -11,6 +11,7 @@ from discord.ext import commands
 
 # local
 from common import custom
+from common.errors import InCommandError
 from common.views import Invite
 from common.custom import codeblock, Context
 
@@ -22,13 +23,88 @@ class Misc(commands.Cog):
     def __init__(self, bot: Advinas):
         super().__init__()
         self.bot: Advinas = bot
+        self.wiki_keys: dict[str, str] = {}
+        self.ISSUE_REGEX = re.compile(r'##(\d{1,7})\D')
+        self.ISSUE_NAME_RE = re.compile(
+            r'<title>(\d{7}): (.*) - Prineside issue tracker<\/title>')
+        self.WIKI_RE = re.compile(
+            r'''<li(?: class="allpagesredirect")?><a href="\/wiki\/([A-Za-z0-9-()_.]+)" (?:class="mw-redirect" )?title="(?P<page>[A-Za-z0-9-(). ]+)">(?P=page)<\/a><\/li>''')
+        self.WIKI_ENTRY = re.compile(r'[A-Za-z0-9-()_.]+')
         bot.loop.create_task(self.ready())
 
     async def ready(self):
         await self.bot.wait_until_ready()
-        self.ISSUE_REGEX = re.compile(r'##(\d{1,7})\D')
-        self.ISSUE_NAME_RE = re.compile(
-            r'<title>(\d{7}): (.*) - Prineside issue tracker<\/title>')
+        await self.prepare_wiki()
+
+    async def get_text_from_url(self, url: str, /, message: discord.Message | None = None) -> str:
+        try:
+            async with self.bot.session.get(url, raise_for_status=True) as r:
+                return await r.text()
+        except Exception as err:
+            tb = codeblock(f'Error occured while requesting {url}\n' + ''.join(
+                traceback.format_exception(type(err), err, err.__traceback__)))
+            if len(tb) > 1990:
+                await self.bot._trace.send(codeblock(tb[3:1990]))
+                await self.bot._trace.send(codeblock(tb[1990:-3]))
+            else:
+                await self.bot._trace.send(tb)
+            if message is not None:
+                em = discord.Embed(
+                    title=f"Error occured in issue listener in `{message.channel}`", colour=discord.Color.red())
+                em.add_field(name='**Message**', value=f'`{message.content}`')
+                await self.bot._trace.send(embed=em)
+            raise
+
+    async def prepare_wiki(self):
+        url = 'https://infinitode-2.fandom.com/wiki/Special:AllPages'
+        text = await self.get_text_from_url(url)
+        self.wiki_keys.clear()
+        for match in self.WIKI_RE.finditer(text):
+            key = match.group(1)
+            self.wiki_keys[key.lower()] = key
+
+    def _convert_query(self, query: str) -> str:
+        query = query.replace(' ', '_').lower()
+        if query in ['overview', '0.1', '0.2', '0.3', '0.4',
+                     '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.b1',
+                     '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.b1',
+                     '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.b1',
+                     '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7', '4.8', '4.b1',
+                     '5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.b1', '5.b2',
+                     '6.1', '6.2', '6.3', '6.4', 'rumble', 'dev', 'zecred',
+                     'dq1', 'dq2', 'dq3', 'dq4', 'dq5', 'dq6', 'dq7', 'dq8', 'dq9', 'dq10', 'dq11', 'dq12'
+                     ]:
+            query = 'level_' + query
+        elif query in ['laser', 'minigun', 'freezing', 'flamethrower',
+                       'sniper', 'tesla', 'crusher', 'multishot',
+                       'basic', 'gauss', 'venom', 'cannon',
+                       'missile', 'splash', 'antiair', 'blast'
+                       ]:
+            query += '_(tower)'
+        elif query in [
+            'jet', 'strong', 'healer', 'light', 'toxic', 'heli',
+            'regular', 'armored', 'creep', 'fast', 'fighter', 'icy'
+        ]:
+            query += '_(enemy)'
+        elif query in ['stakey', 'mobchain', 'constructor', 'metaphor', 'broot']:
+            query += '_(boss)'
+        elif query in [
+            'smoke_bomb', 'firestorm', 'fireball', 'windstorm', 'magnet', 'blizzard',
+            'nuke', 'loic', 'bullet_wall', 'thunder', 'ball_lightning', 'overload'
+        ]:
+            query += '_(ability)'
+
+        if query in self.wiki_keys:
+            return self.wiki_keys[query]
+        raise InCommandError('Sorry, could not find article.')
+
+    # wiki command
+    @commands.hybrid_command(name='wiki', description='Posts a link to the wiki.')
+    async def wiki(self, ctx: Context, *, query: str):
+        query = self._convert_query(query)
+        url = 'https://infinitode-2.fandom.com/wiki/' + query
+
+        await ctx.reply(url)
 
     @commands.Cog.listener('on_message')
     async def _issue_listener(self, message: discord.Message):
@@ -42,27 +118,14 @@ class Misc(commands.Cog):
 
         issue = match.groups()[0]
         url = 'https://tracker.prineside.com/view.php?id='
-        try:
-            async with self.bot.session.get(url + issue, raise_for_status=True) as r:
-                match = self.ISSUE_NAME_RE.search(await r.text())
-                if match is not None:
-                    issue, name = match.groups()
-                    content = f'Found issue `{issue}`: `{name}`\n{url}{int(issue)}'
-                    await message.reply(content)
-                else:
-                    await message.reply('Could not find issue, sorry.')
-        except Exception as err:
-            tb = codeblock('Error occured in issue listener\n' + ''.join(
-                traceback.format_exception(type(err), err, err.__traceback__)))
-            if len(tb) > 1990:
-                await self.bot._trace.send(codeblock(tb[3:1990]))
-                await self.bot._trace.send(codeblock(tb[1990:-3]))
-            else:
-                await self.bot._trace.send(tb)
-            em = discord.Embed(
-                title=f"Error occured in issue listener in `{message.channel}`", colour=discord.Color.red())
-            em.add_field(name='**Message**', value=f'`{message.content}`')
-            await self.bot._trace.send(embed=em)
+        text = await self.get_text_from_url(url + issue, message)
+        match = self.ISSUE_NAME_RE.search(text)
+        if match is not None:
+            issue, name = match.groups()
+            content = f'Found issue `{issue}`: `{name}`\n{url}{int(issue)}'
+            await message.reply(content)
+        else:
+            await message.reply('Could not find issue, sorry.')
 
     # @commands.hybrid_command(name='rtfm', aliases=['rtfd'], description='Shows the javadoc entry related to the query.')
     # @custom.check_channel(590290050051342346, 1012088788949942414)
