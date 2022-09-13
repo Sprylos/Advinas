@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 # std
+import io
 import re
 import traceback
 from contextlib import suppress
@@ -207,6 +208,14 @@ class Context(commands.Context['Advinas']):
             inline=False
         )
         await self.bot._trace.send(embed=em)
+
+    async def safe_send(self, content: str, **kwargs: Any) -> discord.Message:
+        if len(content) > 2000:
+            fp = io.BytesIO(content.encode())
+            kwargs.pop('file', None)
+            return await self.send(file=discord.File(fp, filename='too_long.txt'), **kwargs)
+        else:
+            return await self.send(content, **kwargs)
 
 
 class GuildContext(Context):
