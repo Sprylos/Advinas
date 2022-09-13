@@ -289,10 +289,19 @@ class Tags(commands.Cog):
 
         await ctx.reply(embed=em)
 
+    @tag.command(name='raw')
+    @app_commands.guild_only()
+    async def _raw(self, ctx: GuildContext, *, name: Annotated[str, TagName]):
+        tag = await self.get_tag(ctx.guild.id, name)
+
+        escaped = discord.utils.escape_markdown(tag.content)
+        await ctx.safe_send(escaped.replace('<', '\\<'), reference=ctx.message)
+
     @t.autocomplete('name')
     @tag.autocomplete('name')
     @_alias.autocomplete('old_name')
     @_info.autocomplete('name')
+    @_raw.autocomplete('name')
     async def t_name_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
         lower = current.lower()
         tags = self.cache.get(inter.guild.id, {}).keys()  # type: ignore
@@ -315,10 +324,6 @@ class Tags(commands.Cog):
         tag_list = self.get_tag_list(ctx.guild.id, member_id)
 
         await Paginator(TagSource(tag_list, name, ctx.author)).start(ctx)
-
-    # @tag.command(name='search')
-    # async def _search(self, ctx, *, query: commands.clean_content):
-    #     ...
 
 
 async def setup(bot: Advinas):
