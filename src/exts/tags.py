@@ -292,7 +292,6 @@ class Tags(commands.Cog):
     @t.autocomplete('name')
     @tag.autocomplete('name')
     @_alias.autocomplete('old_name')
-    @_remove.autocomplete('name')
     @_info.autocomplete('name')
     async def t_name_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
         lower = current.lower()
@@ -300,6 +299,7 @@ class Tags(commands.Cog):
         return create_choices({i for i in tags if lower in i})
 
     @_edit.autocomplete('name')
+    @_remove.autocomplete('name')
     async def t_edit_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
         lower = current.lower()
         return create_choices({
