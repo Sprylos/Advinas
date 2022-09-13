@@ -301,7 +301,7 @@ class TagName(commands.clean_content):
 
         # get tag command.
         root = ctx.bot.get_command('tag')
-        if isinstance(root, commands.HybridGroup):
+        if isinstance(root, commands.Group):
             if first_word in root.all_commands:
                 raise commands.BadArgument(
                     'This tag name starts with a reserved word.')
