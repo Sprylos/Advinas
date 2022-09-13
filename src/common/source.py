@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # std
-from typing import Any, List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 
 # packages
 import wavelink
@@ -10,7 +10,7 @@ from discord.ext import menus
 from infinitode import Leaderboard
 
 # locals
-from common.custom import Context
+from common.custom import Context, Tag, TagAlias
 from common.utils import codeblock
 
 if TYPE_CHECKING:
@@ -53,14 +53,14 @@ class ScoreLBSource(LBSource):
 
 
 class TagSource(menus.ListPageSource):
-    def __init__(self, entries: list[dict[str, Any]], name: str, user: discord.User | discord.Member):
+    def __init__(self, entries: list[Tag | TagAlias], name: str, user: discord.User | discord.Member):
         self.name = name
         self.user = user
         super().__init__(entries, per_page=20)
 
-    async def format_page(self, menu: Paginator, page: list[dict[str, Any]]):
+    async def format_page(self, menu: Paginator, page: list[Tag | TagAlias]):
         description = '\n'.join(
-            [f"{tag['name']} (Uses: {tag['uses']})" if not tag.get('alias', None) else f"{tag['name']} (Alias to \"{tag['alias']}\")" for tag in page])
+            [f"{tag.name} (Uses: {tag.uses})" if not isinstance(tag, TagAlias) else f"{tag.name} (Alias to \"{tag.alias}\")" for tag in page])
         return discord.Embed(title=f'Tag list for {self.name}', description=codeblock(description), colour=60415
                              ).set_footer(text=f"Requested by {self.user}", icon_url=self.user.display_avatar.url)
 

@@ -98,25 +98,16 @@ class Tags(commands.Cog):
             {'$set': {'tags.$.content': content}}
         )
 
-    async def get_tag_list(self, guild_id: int, member_id: int | None) -> list[dict[str, Any]]:
+    def get_tag_list(self, guild_id: int, member_id: int | None) -> list[Tag | TagAlias]:
         if member_id is not None:
-            resp: Any | None = await self.col.aggregate([
-                {'$unwind': '$tags'},
-                {'$match': {'guild': guild_id, 'tags.owner_id': member_id}},
-                {'$project': {
-                    'name': '$tags.name',
-                    'uses': '$tags.uses',
-                    'alias': '$tags.alias',
-                    '_id': 0
-                }}]).to_list(None)
-            if resp is not None:
-                return resp
+            tag_list = [tag for tag in self.cache.get(
+                guild_id, {}).values() if tag.owner_id == member_id]
         else:
-            resp: Any | None = await self.col.find_one({'guild': guild_id})
-            if resp is not None and resp['tags'] != []:
-                return resp['tags']
-        location = 'for that user' if member_id else 'in that guild'
-        raise TagError(f'No tags found {location}.')
+            tag_list = list(self.cache.get(guild_id, {}).values())
+        if not tag_list:
+            location = 'for that user' if member_id else 'in that guild'
+            raise TagError(f'No tags found {location}.')
+        return tag_list
 
     async def _get_tag(self, guild_id: int, name: str) -> Tag | TagAlias | None:
         if guild_id not in self.cache:
@@ -190,7 +181,7 @@ class Tags(commands.Cog):
     @app_commands.command(name='t', description='Gets and shows the tag with the given name.')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see.')
-    async def t(self, inter: Interaction, name: str) -> None:
+    async def t(self, inter: discord.Interaction, name: str) -> None:
         name = name.lower().strip().replace('\n', '')
         try:
             if not name:
@@ -301,19 +292,27 @@ class Tags(commands.Cog):
     @t.autocomplete('name')
     @tag.autocomplete('name')
     @_alias.autocomplete('old_name')
-    @_edit.autocomplete('name')
     @_remove.autocomplete('name')
     @_info.autocomplete('name')
     async def t_name_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
+        lower = current.lower()
         tags = self.cache.get(inter.guild.id, {}).keys()  # type: ignore
-        return create_choices({i for i in tags if i.startswith(current.lower()) or current.lower() in i})
+        return create_choices({i for i in tags if lower in i})
+
+    @_edit.autocomplete('name')
+    async def t_edit_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
+        lower = current.lower()
+        return create_choices({
+            name for name, tag in self.cache.get(inter.guild.id, {}).items()  # type: ignore # nopep8
+            if tag.owner_id == inter.user.id and lower in name
+        })
 
     @tag.command(name='list', description='Shows a list of tags available in this server.')
     @app_commands.guild_only()
     async def _list(self, ctx: GuildContext, *, member: discord.Member | None = None):
         member_id = member.id if member is not None else None
         name = member.name if member is not None else ctx.guild.name
-        tag_list = await self.get_tag_list(ctx.guild.id, member_id)
+        tag_list = self.get_tag_list(ctx.guild.id, member_id)
 
         await Paginator(TagSource(tag_list, name, ctx.author)).start(ctx)
 
