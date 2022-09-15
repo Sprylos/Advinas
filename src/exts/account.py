@@ -49,7 +49,7 @@ class Account(commands.Cog):
         await asyncio.sleep(3)
         self.accounts: AsyncIOMotorCollection = self.bot.DB.discordnames
         self.nicks: AsyncIOMotorCollection = self.bot.DB.nicknames
-        payload: list[dict[str, Any]] = await self.bot.DB.nicknames.find({}, {'_id': 0}).to_list(None)  # nopep8
+        payload: list[dict[str, Any]] = await self.nicks.find({}, {'_id': 0}).to_list(None)
         self.PLAYERIDS = {next(iter(doc.values()))['key'] for doc in payload} | {
             next(iter(doc)) for doc in payload}
 
@@ -95,8 +95,8 @@ class Account(commands.Cog):
         return next(iter(data))
 
     async def find_by_name(self, name: str) -> dict[str, str] | None:
-        data: dict[str, str] | None = await self.accounts.find_one(
-            {"$text": {"$search": name}}, {'_id': 0},
+        data: dict[str, str] | None = await self.nicks.find_one(
+            {"$text": {"$search": name.lower()}}, {'_id': 0},
         )
         return data
 
