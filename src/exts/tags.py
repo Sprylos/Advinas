@@ -212,18 +212,6 @@ class Tags(commands.Cog):
         await inter.response.send_message(tag.content)
         await self.used_tag(tag)
 
-        if isinstance(inter.client, Advinas):
-            em = discord.Embed(
-                title=f"**Tag Command** used in `{inter.channel}`", colour=discord.Color.green()
-            ).set_footer(
-                text=f"Command run by {inter.user.name}", icon_url=inter.user.display_avatar.url
-            ).add_field(
-                name='**Success**', value='`True`', inline=False
-            ).add_field(
-                name='**Arguments**', value=f'`/t` name=`{name}`', inline=False
-            )
-            await self.bot._log.send(embed=em)
-
     @commands.hybrid_group(name='tag', aliases=['t'], description='Gets and shows the tag with the given name.', fallback='get')
     @app_commands.guild_only()
     @app_commands.describe(name='The name of the tag you want to see.')

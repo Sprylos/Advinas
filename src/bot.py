@@ -74,6 +74,40 @@ class Advinas(commands.Bot):
         self._join = self.get_partial_messageable(config.join_channel)
         print("online")
 
+    async def on_app_command_completion(
+        self, inter: discord.Interaction, command: discord.app_commands.Command | discord.app_commands.ContextMenu
+    ) -> None:
+        """Handles completed application commands."""
+        if isinstance(command, discord.app_commands.Command):
+            slash = True
+        elif command is None or inter.command_failed:
+            return
+        else:
+            slash = False
+        command_name = f'{command.name} Command' if slash else f'{command.name} Context Menu'
+
+        color = discord.Color.green()
+        em = discord.Embed(
+            title=f"**{command_name}** used in `{inter.channel}`", colour=color
+        ).set_footer(
+            text=f"Command run by {inter.user}",
+            icon_url=inter.user.display_avatar.url
+        ).add_field(
+            name='**Success**',
+            value='True'
+        ).add_field(
+            name='**Channel**',
+            value=f'`{inter.channel}` in `{inter.guild.name if inter.guild else "DM"}`',
+        ).add_field(
+            name='**Prefix**',
+            value="/" if slash else "Context Menu",
+            inline=False
+        ).add_field(
+            name='**Command**',
+            value=f'`{command_name}`'
+        )
+        await self._log.send(embed=em)
+
     async def on_command_completion(self, ctx: custom.Context) -> None:
         """Handles completed commands."""
         await ctx.log()
