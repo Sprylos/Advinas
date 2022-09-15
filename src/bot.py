@@ -81,7 +81,7 @@ class Advinas(commands.Bot):
         """Handles completed application commands."""
         if isinstance(command, discord.app_commands.Command):
             slash = True
-        elif command is None or inter.command_failed:
+        elif command is None or inter.command_failed or command.__class__.__name__.startswith('Hybrid'):
             return
         else:
             slash = False
