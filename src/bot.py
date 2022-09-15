@@ -18,6 +18,7 @@ from common import custom, errors
 
 # exts to load
 exts = [
+    'account',
     'admin',
     'database',
     'inf',
