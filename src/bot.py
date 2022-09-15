@@ -79,14 +79,14 @@ class Advinas(commands.Bot):
         self, inter: discord.Interaction, command: discord.app_commands.Command | discord.app_commands.ContextMenu
     ) -> None:
         """Handles completed application commands."""
-        if isinstance(command, discord.app_commands.Command):
-            slash = True
-        elif command is None or inter.command_failed or command.__class__.__name__.startswith('Hybrid'):
-            return
-        else:
-            slash = False
-        command_name = f'{command.name} Command' if slash else f'{command.name} Context Menu'
-
+        if (
+            inter.type is discord.InteractionType.application_command
+            and not command.__class__.__name__.startswith('Hybrid')
+        ):
+            ctx = await self.get_context(inter)
+            ctx.command_failed = inter.command_failed or ctx.command_failed
+            return await ctx.log()
+        command_name = f'{command.name} Context Menu'
         color = discord.Color.green()
         em = discord.Embed(
             title=f"**{command_name}** used in `{inter.channel}`", colour=color
@@ -101,7 +101,7 @@ class Advinas(commands.Bot):
             value=f'`{inter.channel}` in `{inter.guild.name if inter.guild else "DM"}`',
         ).add_field(
             name='**Prefix**',
-            value="/" if slash else "Context Menu",
+            value="`Context Menu`",
             inline=False
         ).add_field(
             name='**Command**',
