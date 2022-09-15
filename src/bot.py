@@ -79,13 +79,14 @@ class Advinas(commands.Bot):
         self, inter: discord.Interaction, command: discord.app_commands.Command | discord.app_commands.ContextMenu
     ) -> None:
         """Handles completed application commands."""
-        if (
-            inter.type is discord.InteractionType.application_command
-            and not command.__class__.__name__.startswith('Hybrid')
-        ):
+        if command.__class__.__name__.startswith('Hybrid'):
+            return
+
+        if inter.type is discord.InteractionType.application_command:
             ctx = await self.get_context(inter)
             ctx.command_failed = inter.command_failed or ctx.command_failed
             return await ctx.log()
+
         command_name = f'{command.name} Context Menu'
         color = discord.Color.green()
         em = discord.Embed(
