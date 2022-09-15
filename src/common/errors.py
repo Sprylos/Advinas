@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 # packages
+from discord import app_commands
 from discord.ext.commands import BadArgument, CheckFailure
 
 
@@ -11,7 +12,7 @@ class BadLevel(BadArgument):
         super().__init__(message)
 
 
-class BadChannel(CheckFailure):
+class BadChannel(CheckFailure, app_commands.CheckFailure):
     """Exception raised when the message channel is not an allowed channel."""
 
     def __init__(self, message: str = 'Command used in wrong channel.') -> None:
