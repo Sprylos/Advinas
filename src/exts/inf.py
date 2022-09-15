@@ -1,27 +1,23 @@
 from __future__ import annotations
 
 # std
-import re
-import time
 from math import floor, ceil
 from typing import Annotated, Any, TYPE_CHECKING
 
 
 # packages
-import aiohttp
 import discord
 from discord import Interaction, app_commands
 from discord.ext import commands
-from infinitode import Player, Leaderboard
+from infinitode import Leaderboard
 from infinitode.errors import APIError, BadArgument
-from motor.motor_asyncio import AsyncIOMotorCollection
 
 # local
 from exts.database import Database
-from common.images import Images
 from common.custom import Context, LevelConverter
 from common.views import Paginator, ScorePaginator
 from common.source import LBSource, ScoreLBSource
+from common.errors import BadChannel, InvalidDateError
 from common.utils import (
     create_choices,
     round_to_nearest,
@@ -31,12 +27,7 @@ from common.utils import (
     tablify,
     load_json,
 )
-from common.errors import (
-    BadChannel,
-    InvalidDateError,
-    InvalidPlayerError,
-    NoPlayerProvidedError,
-)
+
 
 if TYPE_CHECKING:
     from bot import Advinas
@@ -46,21 +37,12 @@ class Inf(commands.Cog):
     def __init__(self, bot: Advinas):
         super().__init__()
         self.bot: Advinas = bot
-        self.mention_regex = re.compile(r'<@!?([0-9]+)>')
         inf = load_json("data/inf.json")
         self.LEVELS: list[str] = list(inf['levels'].keys())
         self.bot.LEVELS = self.LEVELS
         self.LEVEL_INFO: dict[str, dict[str, Any]] = inf['levels']
         self.BOUNTY_DIFFS: dict[str, int | float] = inf['bountyDifficulties']
         self.EMOJIS: dict[str, int] = inf['enemy_emojis']
-        self.images = Images()
-        bot.loop.create_task(self.ready())
-
-    async def ready(self):
-        await self.bot.wait_until_ready()
-        payload: list[dict[str, Any]] = await self.bot.DB.nicknames.find({}, {'_id': 0}).to_list(None)  # nopep8
-        self.PLAYERIDS = {next(iter(doc.values()))['key'] for doc in payload} | {
-            next(iter(doc)) for doc in payload}
 
     def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
@@ -146,7 +128,6 @@ class Inf(commands.Cog):
         await ctx.reply(embed=em, file=file)
 
     # Bounty command
-
     @commands.hybrid_command(name='bounty', aliases=['b'], description='Calculates the optimal timings to place your bounties.')
     @app_commands.describe(
         coins='The maximum amount of coins a bounty gives you per round. Cap: 200. DEFAULT: 65',
@@ -200,69 +181,6 @@ class Inf(commands.Cog):
     @bounty.autocomplete('level')
     async def level_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
         return create_choices({i for i in self.LEVELS if i.startswith(current.lower()) or current.lower() in i})
-
-    # Profile command
-    @commands.hybrid_command(name='profile', aliases=['prof'], description='Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).')
-    @app_commands.describe(playerid='The playerid of the player you want to see the profile of.')
-    async def profile(self, ctx: Context, playerid: str | None = None) -> Any:
-        await ctx.defer()
-        dc_col: AsyncIOMotorCollection = self.bot.DB.discordnames
-        nn_col: AsyncIOMotorCollection = self.bot.DB.nicknames
-        pl: dict[str, Any] = {}
-        player: Player | None = None
-        start_time: float = time.perf_counter()
-        if playerid is None:  # no playerid was given
-            pl = await Database.find(dc_col, str(ctx.author.id)
-                                     ) or await Database.find(nn_col, ctx.author.display_name
-                                                              ) or await Database.find(nn_col, ctx.author.name)
-            if pl:  # the playerid was found in the database using info about the author
-                player = await self.bot.API.player(playerid=next(iter(pl)))
-                playerid = ''  # make typechecker happy
-            else:
-                raise NoPlayerProvidedError
-        else:
-            try:
-                upper = playerid.upper()
-                player = await self.bot.API.player(playerid=upper if upper.startswith('U-') else 'U-' + upper)
-            except (APIError, BadArgument):
-                pass  # The playerid is invalid, but we don't give up yet
-            else:
-                pl = {player.playerid: "<3"}
-        if not player:  # still no luck
-            pl = await Database.find(nn_col, playerid)
-            if not pl:
-                match = self.mention_regex.search(playerid)
-                new_id = match[0] if match else playerid
-                pl = await Database.find(dc_col, new_id)
-                if not pl:
-                    member = discord.utils.get(self.bot.users, name=playerid)
-                    if member:
-                        pl = await Database.find(dc_col, str(member.id))
-                    if not pl:
-                        raise InvalidPlayerError
-        if not player:
-            player = await self.bot.API.player(playerid=next(iter(pl)))
-        data = {player.playerid: {
-            'name': player.nickname, 'key': player.nickname.lower()}}
-        await Database.update(nn_col, data=data)
-        try:
-            r = await self.bot.session.get(player.avatar_link)
-            r.raise_for_status()
-            avatar_bytes = await r.read()
-        except aiohttp.ClientResponseError:
-            avatar_bytes = None
-        await player.fetch_daily_quest(self.bot.API)
-        await player.fetch_skill_point(self.bot.API)
-
-        final_buffer = await self.bot.loop.run_in_executor(None, self.images.profile_gen, player, avatar_bytes, ctx.author.id)
-
-        file = discord.File(filename=f'{player.playerid}.png', fp=final_buffer)
-        await ctx.reply(f'Finished in {time.perf_counter() - start_time:0.3f}s', file=file)
-
-    @profile.autocomplete('playerid')
-    async def playerid_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
-        current = current.lower()
-        return create_choices({i for i in self.PLAYERIDS if i.lower().startswith(current) or current in i.lower()})
 
 
 async def setup(bot: Advinas):
