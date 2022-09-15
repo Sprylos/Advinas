@@ -31,6 +31,15 @@ def check_channel(*channel_ids: int):
     return commands.check(predicate)
 
 
+def app_check_channel(*channel_ids: int):
+    async def predicate(inter: discord.Interaction) -> bool:
+        if inter.guild and inter.guild.id == 590288287864848387:
+            if inter.channel and inter.channel.id not in (*inter.client.BOT_CHANNELS, *channel_ids):  # type: ignore # nopep8
+                raise BadChannel
+        return True
+    return discord.app_commands.check(predicate)
+
+
 class Player(wavelink.Player):
     """Custom wavelink Player class."""
 
