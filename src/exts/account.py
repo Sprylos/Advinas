@@ -123,6 +123,7 @@ class Account(commands.Cog):
     @account.command(name='link', aliases=['add'], description='Links your discord account to any Infinitode 2 account. Used for /profile.')
     @app_commands.describe(playerid='The playerid to link your account to. Format must be U-XXXX-XXXX-XXXXXX.')
     async def _link(self, ctx: Context, playerid: str):
+        await ctx.defer()
         await ctx.bot.API.player(playerid)
 
         await self.add_connection(playerid, ctx.author.id)
