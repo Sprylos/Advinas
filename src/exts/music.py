@@ -304,7 +304,7 @@ class Music(commands.Cog):
                 raise QueueEmptyError
             await ctx.reply('The queue was shuffled.')
 
-            return random.shuffle(player.queue._queue)
+            return random.shuffle(player.queue._queue)  # type: ignore
         else:
             raise NotPrivilegedError('shuffle the queue.', end=True)
 
