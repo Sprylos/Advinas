@@ -248,7 +248,7 @@ class Tags(commands.Cog):
 
     @tag.command(name='edit', description='Edits an existing tag. Aliases may not be edited.')
     @app_commands.guild_only()
-    @app_commands.describe(name='The name of the new tag you want to edit.', content='The new content of the tag.')
+    @app_commands.describe(name='The name of the tag you want to edit.', content='The new content of the tag.')
     async def _edit(self, ctx: GuildContext, name: Annotated[str, TagName], *, content: Annotated[str, commands.clean_content]):
         tag = await self.get_tag(ctx.guild.id, name, no_alias=True)
         self.is_privileged(ctx, tag)
@@ -297,8 +297,9 @@ class Tags(commands.Cog):
 
         await ctx.reply(embed=em)
 
-    @tag.command(name='raw')
+    @tag.command(name='raw', description='Gives you the raw content of a tag.')
     @app_commands.guild_only()
+    @app_commands.describe(name='The name of the tag you want to see the raw version of.')
     async def _raw(self, ctx: GuildContext, *, name: Annotated[str, TagName]):
         tag = await self.get_tag(ctx.guild.id, name)
 
