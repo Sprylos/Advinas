@@ -220,6 +220,7 @@ class Account(commands.Cog):
         ephemeral = False
         if isinstance(err, BadChannel):
             ephemeral = True
+            await inter.response.defer()
             content = 'Use commands in <#616583511826104355>.'
         elif isinstance(err, InCommandError):
             content = err.args[0]
