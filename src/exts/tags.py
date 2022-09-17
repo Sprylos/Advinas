@@ -98,6 +98,12 @@ class Tags(commands.Cog):
             {'$set': {'tags.$.content': content}}
         )
 
+    async def transfer_tag(self, tag: Tag | TagAlias, owner_id: int) -> None:
+        await self.col.update_one(
+            {'guild': tag.guild_id, 'tags.name': tag.name},
+            {'$set': {'tags.$.owner_id': owner_id}}
+        )
+
     def get_tag_list(self, guild_id: int, member_id: int | None) -> list[Tag | TagAlias]:
         if member_id is not None:
             tag_list = [tag for tag in self.cache.get(
@@ -260,6 +266,20 @@ class Tags(commands.Cog):
 
         await self.delete_tag(tag=tag)
         await ctx.reply(f'Tag "{name}" successfully deleted.')
+        await self.cache_tags()
+
+    @tag.command(name='transfer', description='Transfers one of your tags to another member.')
+    @app_commands.guild_only()
+    @app_commands.describe(member='The member you want to transfer the tag to.', name='The name of the tag you want to transfer.')
+    async def _transfer(self, ctx: GuildContext, member: discord.Member, *, name: Annotated[str, TagName]):
+        if member.bot:
+            raise TagError('You cannot transfer a tag to a bot.')
+
+        tag = await self.get_tag(ctx.guild.id, name, return_alias=True)
+        self.is_privileged(ctx, tag)
+
+        await self.transfer_tag(tag, member.id)
+        await ctx.reply(f'Successfully transferred tag `{discord.utils.escape_markdown(tag.name)}` to `{member.display_name}`.')
         await self.cache_tags()
 
     @tag.command(name='info', description='Shows useful information about the tag with the given name.')
