@@ -274,6 +274,8 @@ class Tags(commands.Cog):
     async def _transfer(self, ctx: GuildContext, member: discord.Member, *, name: Annotated[str, TagName]):
         if member.bot:
             raise TagError('You cannot transfer a tag to a bot.')
+        if member.id == ctx.author.id:
+            raise TagError('You cannot transfer a tag to yourself.')
 
         tag = await self.get_tag(ctx.guild.id, name, return_alias=True)
         self.is_privileged(ctx, tag)
