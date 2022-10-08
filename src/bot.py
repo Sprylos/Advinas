@@ -24,6 +24,7 @@ exts = [
     'inf',
     'misc',
     'music',
+    'stats',
     'tags',
 ]
 if not config.testing:
@@ -33,7 +34,7 @@ if not config.testing:
 class Advinas(commands.Bot):
     def __init__(self, prefix: str) -> None:
         activity = discord.Activity(
-            type=discord.ActivityType.watching, name="You | /invite | v3.4")
+            type=discord.ActivityType.watching, name="You | /invite | v3.5")
         allowed_mentions = discord.AllowedMentions(
             everyone=False, users=True, roles=False, replied_user=False)
         intents = ('guilds', 'members', 'bans', 'voice_states',
