@@ -146,23 +146,23 @@ class Context(commands.Context['Advinas']):
             inline=True
         ).add_field(
             name='**Arguments**',
-            value=' '.join([f'`{a}`' for a in self.args[2:]]) or 'None',
+            value=' '.join([f'`{a}`' for a in self.args[2:]])[:1020] or 'None',
             inline=False
         ).add_field(
             name='**Keyword Arguments**',
             value=' '.join(
-                [f'`{k}={v}`' for k, v in self.kwargs.items()]) or 'None',
+                [f'`{k}={v}`' for k, v in self.kwargs.items()])[:1020] or 'None',
             inline=False)
         if self.interaction is None:
             em.add_field(
                 name='**Message**',
-                value=f'`{self.message.content}`',
+                value=f'`{self.message.content[:1020]}`',
                 inline=False
             )
         if reason:
             em.add_field(
                 name='**Reason**',
-                value=f'`{reason}`',
+                value=f'`{reason[:1020]}`',
                 inline=False
             )
         await self.bot._log.send(embed=em)
