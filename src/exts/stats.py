@@ -142,9 +142,16 @@ class Stats(commands.Cog):
         guild = ctx.bot.get_guild(590288287864848387)
         assert guild
         async with ctx.typing():
-            for channel in guild.text_channels:
-                data = await self._fetch_messages(channel)
-                await self._add_channel(data)
+            chs = guild.text_channels[34:]
+            chs.pop(-4)
+            for channel in chs:
+                data = await self._fetch_messages(channel, dt_obj=False)
+                with open(f'data/messages/{channel.id}.json', 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=4)
+                try:
+                    await self._add_channel(data)
+                except Exception:
+                    await ctx.reply(f'couldnt upload {channel.id}')
                 await ctx.reply(f'Finished channel `{channel.name}`')
             await ctx.reply('Done')
 
