@@ -131,7 +131,7 @@ class Advinas(commands.Bot):
         if isinstance(err, discord.app_commands.CommandInvokeError):
             err = err.original
 
-        if isinstance(err, (commands.CommandNotFound, commands.NotOwner)):
+        if isinstance(err, (commands.CommandNotFound, commands.NotOwner, commands.PrivateMessageOnly)):
             return  # Ignore
         elif isinstance(err, errors.BadChannel):
             await ctx.log('Used in wrong channel.')
