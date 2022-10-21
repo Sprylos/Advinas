@@ -6,6 +6,7 @@ logs/
 config.*
 mod.py
 admin.py
+contest.py
 logs.py
 temp.*
 *.spry

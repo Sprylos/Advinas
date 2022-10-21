@@ -20,6 +20,7 @@ from common import custom, errors
 exts = [
     'account',
     'admin',
+    'contest',
     'database',
     'inf',
     'misc',
@@ -74,6 +75,7 @@ class Advinas(commands.Bot):
         self._log = self.get_partial_messageable(config.log_channel)
         self._trace = self.get_partial_messageable(config.trace_channel)
         self._join = self.get_partial_messageable(config.join_channel)
+        self._contest = self.get_partial_messageable(config.contest)
         print("online")
 
     async def on_app_command_completion(
