@@ -122,7 +122,7 @@ class Advinas(commands.Bot):
         excs = (
             infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
             wavelink.LoadTrackError, commands.MissingRequiredArgument, errors.TagError, commands.ExpectedClosingQuoteError,
-            commands.UnexpectedQuoteError, discord.ClientException, commands.TooManyArguments
+            commands.UnexpectedQuoteError, discord.ClientException, commands.TooManyArguments, commands.CheckFailure
         )
 
         if isinstance(err, (commands.CommandInvokeError, commands.HybridCommandError)):
