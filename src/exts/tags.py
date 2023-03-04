@@ -113,7 +113,7 @@ class Tags(commands.Cog):
         if not tag_list:
             location = 'for that user' if member_id else 'in that guild'
             raise TagError(f'No tags found {location}.')
-        return tag_list
+        return sorted(tag_list, key=lambda t: t.name)
 
     async def _get_tag(self, guild_id: int, name: str) -> Tag | TagAlias | None:
         if guild_id not in self.cache:
