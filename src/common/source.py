@@ -56,7 +56,17 @@ class TagSource(menus.ListPageSource):
     def __init__(self, entries: list[Tag | TagAlias], name: str, user: discord.User | discord.Member):
         self.name = name
         self.user = user
+        self.alphabetical_sorted: bool = True
         super().__init__(entries, per_page=20)
+        self.entries: list[Tag | TagAlias]
+
+    def swap_sorting(self):
+        self.alphabetical_sorted = not self.alphabetical_sorted
+        if self.alphabetical_sorted:
+            self.entries.sort(key=lambda t: t.name)
+        else:
+            self.entries.sort(key=lambda t: getattr(
+                t, 'uses', -1), reverse=True)
 
     async def format_page(self, menu: Paginator, page: list[Tag | TagAlias]):
         description = '\n'.join(

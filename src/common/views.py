@@ -9,6 +9,7 @@ from discord.ext import menus
 
 # local
 from common.custom import Context
+from common.source import TagSource
 from .source import LBSource, ScoreLBSource
 
 gray_style = discord.ButtonStyle.gray
@@ -118,6 +119,28 @@ class Paginator(discord.ui.View, menus.MenuPages):
     async def last_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self._source.get_max_pages() - 1)
         await self.show_page(inter, self._source.get_max_pages() - 1)
+
+
+class TagPaginator(Paginator):
+    def __init__(self, source: TagSource):
+        super().__init__(source)
+        self._source: TagSource
+
+    async def show_current_page(self, inter: discord.Interaction | None = None):
+        if self._source.is_paginating():
+            page_number = self.current_page
+            page: Any = await self._source.get_page(page_number)
+            kwargs = await self._get_kwargs_from_page(page)
+            if inter is not None:
+                await inter.response.edit_message(**kwargs)
+            else:
+                await self.message.edit(**kwargs)
+
+    @discord.ui.button(emoji='<:numericalsorting:1081676364366745671>', style=gray_style)
+    async def swap_sorting(self, inter: discord.Interaction, button: Any):
+        self._source.swap_sorting()
+        self.swap_sorting.emoji = '<:numericalsorting:1081676364366745671>' if self._source.alphabetical_sorted else '<:alphabeticalsorting:1081676474924408912>'
+        await self.show_current_page(inter)
 
 
 class ScorePaginator(discord.ui.View, menus.MenuPages):

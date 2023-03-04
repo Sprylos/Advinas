@@ -12,7 +12,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 # local
 from bot import Advinas
 from common.source import TagSource
-from common.views import Paginator
+from common.views import TagPaginator
 from common.errors import TagError
 from common.utils import create_choices
 from common.custom import (
@@ -335,7 +335,7 @@ class Tags(commands.Cog):
         name = member.name if member is not None else ctx.guild.name
         tag_list = self.get_tag_list(ctx.guild.id, member_id)
 
-        await Paginator(TagSource(tag_list, name, ctx.author)).start(ctx)
+        await TagPaginator(TagSource(tag_list, name, ctx.author)).start(ctx)
 
 
 async def setup(bot: Advinas):
