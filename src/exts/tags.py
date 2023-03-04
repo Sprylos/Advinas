@@ -329,6 +329,7 @@ class Tags(commands.Cog):
 
     @tag.command(name='list', description='Shows a list of tags available in this server.')
     @app_commands.guild_only()
+    @app_commands.describe(member='The member you want to see the tag list for.')
     async def _list(self, ctx: GuildContext, *, member: discord.Member | None = None):
         member_id = member.id if member is not None else None
         name = member.name if member is not None else ctx.guild.name
