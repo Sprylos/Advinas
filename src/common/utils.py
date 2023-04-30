@@ -50,16 +50,20 @@ def get_level_bounty(level_diffs: dict[str, int | float], level: str | None, dif
         except KeyError:
             level = 'Invalid Level'
         else:
-            if level == 'dq3':
-                bounties, coins = 10, 50
-            elif level == 'dq4':
-                bounties, coins = 10, 200
-            elif level == 'dq8':
-                bounties, coins = 3, 50
-            elif level == 'rumble':
-                bounties = 3
             if level.startswith('dq'):
                 level = level.upper()
+                coins = 50
+                bounties = 5
+
+                if level == 'DQ3':
+                    bounties = 10
+                elif level == 'DQ4':
+                    bounties, coins = 10, 200
+                elif level == 'DQ8':
+                    bounties = 3
+
+            elif level == 'rumble':
+                bounties = 3
     else:
         level = 'No level provided'
 
