@@ -743,6 +743,32 @@
             "music": "",
             "difficulty": 200
         },
+        "6.5": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "FAST",
+                "HELI",
+                "JET",
+                "ARMORED",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER",
+                "BOSS"
+            ],
+            "quests": {
+                "Wave Clear Score": "+ 5%",
+                "Abilities Max Energy": "+ 1",
+                "Ability Overload Difficulty": "- 1%",
+                "Towers Upgrade Price": "- 3%",
+                "Enemies Speed": "- 2%",
+                "Loot Rarity": "+ 10%"
+            },
+            "base": {},
+            "music": "",
+            "difficulty": 230
+        },
         "rumble": {
             "enemies": [
                 "REGULAR",
@@ -1368,6 +1394,7 @@
         "6.2": 200,
         "6.3": 280,
         "6.4": 200,
+        "6.5": 230,
         "rumble": 370,
         "dev": 290,
         "dq1": 90,
