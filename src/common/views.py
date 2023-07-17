@@ -22,7 +22,13 @@ class Paginator(discord.ui.View, menus.MenuPages):
         self.delete_message_after = False
         self.current_page = 0
 
-    async def start(self, ctx: Context, *, channel: discord.TextChannel | None = None, wait: bool = False) -> None:
+    async def start(
+        self,
+        ctx: Context,
+        *,
+        channel: discord.TextChannel | None = None,
+        wait: bool = False,
+    ) -> None:
         await self._source._prepare_once()
         self.ctx = ctx
         page = await self._source.get_page(0)
@@ -57,8 +63,8 @@ class Paginator(discord.ui.View, menus.MenuPages):
     async def _get_kwargs_from_page(self, page: Any) -> dict[str, Any]:
         value: dict[str, Any]
         value = await super()._get_kwargs_from_page(page)  # type: ignore
-        if 'view' not in value:
-            value.update({'view': self})
+        if "view" not in value:
+            value.update({"view": self})
         return value
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
@@ -66,7 +72,9 @@ class Paginator(discord.ui.View, menus.MenuPages):
         if interaction.user == self.ctx.author:
             return True
         else:
-            await interaction.response.send_message('This is not your interaction!', ephemeral=True)
+            await interaction.response.send_message(
+                "This is not your interaction!", ephemeral=True
+            )
             return False
 
     async def on_timeout(self) -> None:
@@ -95,17 +103,21 @@ class Paginator(discord.ui.View, menus.MenuPages):
             self.next_page.disabled = False
             self.last_page.disabled = False
 
-    @discord.ui.button(emoji='<:leftmost:935926623230910535>', disabled=True, style=gray_style)
+    @discord.ui.button(
+        emoji="<:leftmost:935926623230910535>", disabled=True, style=gray_style
+    )
     async def first_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(0)
         await self.show_page(inter, 0)
 
-    @discord.ui.button(emoji='<:left:893612797743759431>', disabled=True, style=gray_style)
+    @discord.ui.button(
+        emoji="<:left:893612797743759431>", disabled=True, style=gray_style
+    )
     async def before_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self.current_page - 1)
         await self.show_checked_page(inter, self.current_page - 1)
 
-    @discord.ui.button(emoji='<:right:893612798242856962>', style=gray_style)
+    @discord.ui.button(emoji="<:right:893612798242856962>", style=gray_style)
     async def next_page(self, inter: discord.Interaction, button: Any):
         new_page = self.current_page + 1
         if new_page == self._source.get_max_pages():
@@ -115,7 +127,7 @@ class Paginator(discord.ui.View, menus.MenuPages):
         self.manage_buttons(new_page)
         await self.show_checked_page(inter, new_page)
 
-    @discord.ui.button(emoji='<:rightmost:935926623591612506>', style=gray_style)
+    @discord.ui.button(emoji="<:rightmost:935926623591612506>", style=gray_style)
     async def last_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self._source.get_max_pages() - 1)
         await self.show_page(inter, self._source.get_max_pages() - 1)
@@ -136,10 +148,16 @@ class TagPaginator(Paginator):
             else:
                 await self.message.edit(**kwargs)
 
-    @discord.ui.button(emoji='<:numericalsorting:1081676364366745671>', style=gray_style)
+    @discord.ui.button(
+        emoji="<:numericalsorting:1081676364366745671>", style=gray_style
+    )
     async def swap_sorting(self, inter: discord.Interaction, button: Any):
         self._source.swap_sorting()
-        self.swap_sorting.emoji = '<:numericalsorting:1081676364366745671>' if self._source.alphabetical_sorted else '<:alphabeticalsorting:1081676474924408912>'
+        self.swap_sorting.emoji = (
+            "<:numericalsorting:1081676364366745671>"
+            if self._source.alphabetical_sorted
+            else "<:alphabeticalsorting:1081676474924408912>"
+        )
         await self.show_current_page(inter)
 
 
@@ -151,7 +169,13 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
         self.delete_message_after = False
         self.endless: bool = False
 
-    async def start(self, ctx: Context, *, channel: discord.TextChannel | None = None, wait: bool = False) -> None:
+    async def start(
+        self,
+        ctx: Context,
+        *,
+        channel: discord.TextChannel | None = None,
+        wait: bool = False,
+    ) -> None:
         await self._source._prepare_once()
         self.ctx = ctx
         page = await self._source.get_page(self, 0)
@@ -189,8 +213,8 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
     async def _get_kwargs_from_page(self, page: Any) -> dict[str, Any]:
         value: dict[str, Any]
         value = await super()._get_kwargs_from_page(page)  # type: ignore
-        if 'view' not in value:
-            value.update({'view': self})
+        if "view" not in value:
+            value.update({"view": self})
         return value
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
@@ -198,7 +222,9 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
         if interaction.user == self.ctx.author:
             return True
         else:
-            await interaction.response.send_message('This is not your interaction!', ephemeral=True)
+            await interaction.response.send_message(
+                "This is not your interaction!", ephemeral=True
+            )
             return False
 
     async def on_timeout(self) -> None:
@@ -227,22 +253,26 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
             self.next_page.disabled = False
             self.last_page.disabled = False
 
-    @discord.ui.button(emoji='<:leftmost:935926623230910535>', disabled=True, style=gray_style)
+    @discord.ui.button(
+        emoji="<:leftmost:935926623230910535>", disabled=True, style=gray_style
+    )
     async def first_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(0)
         await self.show_page(inter, 0)
 
-    @discord.ui.button(emoji='<:left:893612797743759431>', disabled=True, style=gray_style)
+    @discord.ui.button(
+        emoji="<:left:893612797743759431>", disabled=True, style=gray_style
+    )
     async def before_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self.current_page - 1)
         await self.show_checked_page(inter, self.current_page - 1)
 
-    @discord.ui.button(label='Change Mode', style=gray_style)
+    @discord.ui.button(label="Change Mode", style=gray_style)
     async def normal_endless(self, inter: discord.Interaction, button: Any):
-        self.endless = (not self.endless)
+        self.endless = not self.endless
         await self.show_current_page(inter)
 
-    @discord.ui.button(emoji='<:right:893612798242856962>', style=gray_style)
+    @discord.ui.button(emoji="<:right:893612798242856962>", style=gray_style)
     async def next_page(self, inter: discord.Interaction, button: Any):
         new_page = self.current_page + 1
         if new_page == self._source.get_max_pages():
@@ -252,7 +282,7 @@ class ScorePaginator(discord.ui.View, menus.MenuPages):
         self.manage_buttons(new_page)
         await self.show_checked_page(inter, new_page)
 
-    @discord.ui.button(emoji='<:rightmost:935926623591612506>', style=gray_style)
+    @discord.ui.button(emoji="<:rightmost:935926623591612506>", style=gray_style)
     async def last_page(self, inter: discord.Interaction, button: Any):
         self.manage_buttons(self._source.get_max_pages() - 1)
         await self.show_page(inter, self._source.get_max_pages() - 1)
@@ -265,6 +295,6 @@ class Invite(discord.ui.View):
             discord.ui.Button(
                 label=f"Invite me!",
                 url=r"https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands",
-                style=gray_style
+                style=gray_style,
             )
         )

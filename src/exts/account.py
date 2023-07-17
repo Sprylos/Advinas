@@ -23,21 +23,20 @@ from common.errors import (
     BadChannel,
     InCommandError,
     InvalidPlayerError,
-    NoPlayerProvidedError
+    NoPlayerProvidedError,
 )
 
 if TYPE_CHECKING:
     from bot import Advinas
-    from motor.motor_asyncio import AsyncIOMotorCollection
 
 
 class Account(commands.Cog):
     def __init__(self, bot: Advinas) -> None:
         self.bot = bot
-        self.mention_regex = re.compile(r'<@!?([0-9]+)>')
+        self.mention_regex = re.compile(r"<@!?([0-9]+)>")
         self.images = Images()
         self.ctx_menu = app_commands.ContextMenu(
-            name='profile',
+            name="profile",
             callback=self.profile_context_menu,
         )
         self.ctx_menu.on_error = self.profile_ctx_error
@@ -47,15 +46,17 @@ class Account(commands.Cog):
     async def ready(self) -> None:
         await self.bot.wait_until_ready()
         await asyncio.sleep(3)
-        self.accounts: AsyncIOMotorCollection = self.bot.DB.discordnames
-        self.nicks: AsyncIOMotorCollection = self.bot.DB.nicknames
-        payload: list[dict[str, Any]] = await self.nicks.find({}, {'_id': 0}).to_list(None)
-        self.PLAYERIDS = {next(iter(doc.values()))['key'] for doc in payload} | {
-            next(iter(doc)) for doc in payload}
+        self.accounts = self.bot.DB.discordnames
+        self.nicks = self.bot.DB.nicknames
+        payload: list[dict[str, Any]] = await self.nicks.find({}, {"_id": 0}).to_list(
+            None
+        )
+        self.PLAYERIDS = {next(iter(doc.values()))["key"] for doc in payload} | {
+            next(iter(doc)) for doc in payload
+        }
 
     async def cog_unload(self) -> None:
-        self.bot.tree.remove_command(
-            self.ctx_menu.name, type=self.ctx_menu.type)
+        self.bot.tree.remove_command(self.ctx_menu.name, type=self.ctx_menu.type)
 
     async def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
@@ -65,30 +66,39 @@ class Account(commands.Cog):
 
     async def add_connection(self, playerid: str, user_id: int | str) -> None:
         await self.accounts.update_one(
-            {playerid: {'$exists': True}},
+            {playerid: {"$exists": True}},
             {"$set": {playerid: str(user_id)}},
             upsert=True,
         )
 
     async def add_nickname(self, player: Player) -> None:
-        data = {player.playerid: {
-            'name': player.nickname, 'key': player.nickname.lower()}}
+        data = {
+            player.playerid: {"name": player.nickname, "key": player.nickname.lower()}
+        }
         await self.nicks.update_one(
-            data, {"$set": data},
+            data,
+            {"$set": data},
             upsert=True,
         )
 
     @overload
     async def find_connection(
-        self, user_id: int | str, raw: Literal[False] = False) -> str | None: ...
+        self, user_id: int | str, raw: Literal[False] = False
+    ) -> str | None:
+        ...
 
     @overload
     async def find_connection(
-        self, user_id: int | str, raw: Literal[True] = True) -> dict[str, str] | None: ...
+        self, user_id: int | str, raw: Literal[True] = True
+    ) -> dict[str, str] | None:
+        ...
 
-    async def find_connection(self, user_id: int | str, raw: bool = False) -> dict[str, str] | str | None:
+    async def find_connection(
+        self, user_id: int | str, raw: bool = False
+    ) -> dict[str, str] | str | None:
         data: dict[str, str] | None = await self.accounts.find_one(
-            {"$text": {"$search": str(user_id)}}, {'_id': 0},
+            {"$text": {"$search": str(user_id)}},
+            {"_id": 0},
         )
         if data is None or raw:
             return data
@@ -96,7 +106,8 @@ class Account(commands.Cog):
 
     async def find_by_name(self, name: str) -> dict[str, str] | None:
         data: dict[str, str] | None = await self.nicks.find_one(
-            {"$text": {"$search": name.lower()}}, {'_id': 0},
+            {"$text": {"$search": name.lower()}},
+            {"_id": 0},
         )
         return data
 
@@ -106,52 +117,85 @@ class Account(commands.Cog):
         )
 
     @commands.hybrid_group(
-        name='account', aliases=['ac'],
-        description='Allows to manage connections to your Infinitode 2 Account.'
+        name="account",
+        aliases=["ac"],
+        description="Allows to manage connections to your Infinitode 2 Account.",
     )
     async def account(self, ctx: Context):
         await self._view(ctx)
 
-    @account.command(name='view', aliases=['show'], description='Shows the currently linked playerid.')
+    @account.command(
+        name="view",
+        aliases=["show"],
+        description="Shows the currently linked playerid.",
+    )
     async def _view(self, ctx: Context):
         playerid: str | None = await self.find_connection(ctx.author.id)
         if playerid is None:
-            raise InCommandError('You have not linked an account.')
+            raise InCommandError("You have not linked an account.")
 
-        await ctx.reply(f'Your account is linked to the playerid `{playerid}`.')
+        await ctx.reply(f"Your account is linked to the playerid `{playerid}`.")
 
-    @account.command(name='link', aliases=['add'], description='Links your discord account to any Infinitode 2 account. Used for /profile.')
-    @app_commands.describe(playerid='The playerid to link your account to. Format must be U-XXXX-XXXX-XXXXXX.')
+    @account.command(
+        name="link",
+        aliases=["add"],
+        description="Links your discord account to any Infinitode 2 account. Used for /profile.",
+    )
+    @app_commands.describe(
+        playerid="The playerid to link your account to. Format must be U-XXXX-XXXX-XXXXXX."
+    )
     async def _link(self, ctx: Context, playerid: str):
         await ctx.defer()
         await ctx.bot.API.player(playerid)
 
         await self.add_connection(playerid, ctx.author.id)
-        await ctx.reply(f'Successfully linked your account to playerid `{playerid}`.')
+        await ctx.reply(f"Successfully linked your account to playerid `{playerid}`.")
 
-    @account.command(name='unlink', aliases=['remove'], description='Unlinks the Infinitode 2 account from your discord account.')
+    @account.command(
+        name="unlink",
+        aliases=["remove"],
+        description="Unlinks the Infinitode 2 account from your discord account.",
+    )
     async def _unlink(self, ctx: Context):
         playerid: str | None = await self.find_connection(ctx.author.id)
         if playerid is None:
-            raise InCommandError('You have not linked an account.')
+            raise InCommandError("You have not linked an account.")
         await self.remove_connection(ctx.author.id)
 
-        await ctx.reply(f'Successfully unlinked your account from playerid `{playerid}`.')
+        await ctx.reply(
+            f"Successfully unlinked your account from playerid `{playerid}`."
+        )
 
-    async def _find_player(self, author: discord.Member | discord.User, playerid: str | None = None, *, context_menu: bool = False) -> Player:
+    async def _find_player(
+        self,
+        author: discord.Member | discord.User,
+        playerid: str | None = None,
+        *,
+        context_menu: bool = False,
+    ) -> Player:
         pl: dict[str, Any] | None = {}
         player: Player | None = None
         if playerid is None:  # no playerid was given
-            pl = await self.find_connection(author.id, True) or await self.find_by_name(author.display_name) or await self.find_by_name(author.name)
-            if pl is not None:  # the playerid was found in the database using info about the author
+            pl = (
+                await self.find_connection(author.id, True)
+                or await self.find_by_name(author.display_name)
+                or await self.find_by_name(author.name)
+            )
+            if (
+                pl is not None
+            ):  # the playerid was found in the database using info about the author
                 player = await self.bot.API.player(playerid=next(iter(pl)))
-                playerid = ''  # make typechecker happy
+                playerid = ""  # make typechecker happy
             else:
-                raise NoPlayerProvidedError if not context_menu else NoPlayerProvidedError('Could not fetch profile for this member.')  # nopep8
+                raise NoPlayerProvidedError if not context_menu else NoPlayerProvidedError(
+                    "Could not fetch profile for this member."
+                )  # nopep8
         else:
             try:
                 upper = playerid.upper()
-                player = await self.bot.API.player(playerid=upper if upper.startswith('U-') else 'U-' + upper)
+                player = await self.bot.API.player(
+                    playerid=upper if upper.startswith("U-") else "U-" + upper
+                )
             except (APIError, BadArgument):
                 pass  # The playerid is invalid, but we don't give up yet
         if player is None:  # still no luck
@@ -181,13 +225,21 @@ class Account(commands.Cog):
         await player.fetch_daily_quest(self.bot.API)
         await player.fetch_skill_point(self.bot.API)
 
-        final_buffer = await self.bot.loop.run_in_executor(None, self.images.profile_gen, player, avatar_bytes, user_id)
+        final_buffer = await self.bot.loop.run_in_executor(
+            None, self.images.profile_gen, player, avatar_bytes, user_id
+        )
 
-        return discord.File(filename=f'{player.playerid}.png', fp=final_buffer)
+        return discord.File(filename=f"{player.playerid}.png", fp=final_buffer)
 
     # Profile command
-    @commands.hybrid_command(name='profile', aliases=['prof'], description='Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).')
-    @app_commands.describe(playerid='The playerid of the player you want to see the profile of.')
+    @commands.hybrid_command(
+        name="profile",
+        aliases=["prof"],
+        description="Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).",
+    )
+    @app_commands.describe(
+        playerid="The playerid of the player you want to see the profile of."
+    )
     async def profile(self, ctx: Context, playerid: str | None = None) -> None:
         await ctx.defer()
         start_time: float = time.perf_counter()
@@ -196,16 +248,28 @@ class Account(commands.Cog):
         await self.add_nickname(player)
 
         file = await self._generate_player(ctx.author.id, player)
-        await ctx.reply(f'Finished in {time.perf_counter() - start_time:0.3f}s', file=file)
+        await ctx.reply(
+            f"Finished in {time.perf_counter() - start_time:0.3f}s", file=file
+        )
 
-    @profile.autocomplete('playerid')
-    async def playerid_autocomplete(self, inter: Interaction, current: str) -> list[app_commands.Choice[str]]:
+    @profile.autocomplete("playerid")
+    async def playerid_autocomplete(
+        self, inter: Interaction, current: str
+    ) -> list[app_commands.Choice[str]]:
         current = current.lower()
-        return create_choices({i for i in self.PLAYERIDS if i.lower().startswith(current) or current in i.lower()})
+        return create_choices(
+            {
+                i
+                for i in self.PLAYERIDS
+                if i.lower().startswith(current) or current in i.lower()
+            }
+        )
 
     # Profile context menu
     @app_check_channel()
-    async def profile_context_menu(self, inter: Interaction, member: discord.Member) -> None:
+    async def profile_context_menu(
+        self, inter: Interaction, member: discord.Member
+    ) -> None:
         await inter.response.defer()
         start_time: float = time.perf_counter()
 
@@ -213,41 +277,49 @@ class Account(commands.Cog):
         await self.add_nickname(player)
 
         file = await self._generate_player(member.id, player)
-        await inter.followup.send(f'Finished in {time.perf_counter() - start_time:0.3f}s', file=file)
+        await inter.followup.send(
+            f"Finished in {time.perf_counter() - start_time:0.3f}s", file=file
+        )
 
-    async def profile_ctx_error(self, inter: Interaction, err: app_commands.AppCommandError) -> None:
-        err = getattr(err, 'original', err)
+    async def profile_ctx_error(
+        self, inter: Interaction, err: app_commands.AppCommandError
+    ) -> None:
+        err = getattr(err, "original", err)
         ephemeral = False
         if isinstance(err, BadChannel):
             ephemeral = True
             await inter.response.defer(ephemeral=True)
-            content = 'Use commands in <#616583511826104355>.'
+            content = "Use commands in <#616583511826104355>."
         elif isinstance(err, InCommandError):
             content = err.args[0]
         else:
-            content = 'Something went really wrong and the issue has been reported. Please try again later.'
-            await self.bot._trace.send(codeblock(''.join(traceback.format_exception(type(err), err, err.__traceback__))))
+            content = "Something went really wrong and the issue has been reported. Please try again later."
+            await self.bot._trace.send(
+                codeblock(
+                    "".join(
+                        traceback.format_exception(type(err), err, err.__traceback__)
+                    )
+                )
+            )
         await inter.followup.send(content, ephemeral=ephemeral)
 
         color = discord.Color.red()
-        em = discord.Embed(
-            title=f"**Profile Context Menu** used in `{inter.channel}`", colour=color
-        ).set_footer(
-            text=f"Command run by {inter.user}",
-            icon_url=inter.user.display_avatar.url
-        ).add_field(
-            name='**Success**',
-            value='False'
-        ).add_field(
-            name='**Channel**',
-            value=f'`{inter.channel}` in `{inter.guild.name if inter.guild else "DM"}`',
-        ).add_field(
-            name='**Prefix**',
-            value="Context Menu",
-            inline=False
-        ).add_field(
-            name='**Message**',
-            value=f'`{content}`'
+        em = (
+            discord.Embed(
+                title=f"**Profile Context Menu** used in `{inter.channel}`",
+                colour=color,
+            )
+            .set_footer(
+                text=f"Command run by {inter.user}",
+                icon_url=inter.user.display_avatar.url,
+            )
+            .add_field(name="**Success**", value="False")
+            .add_field(
+                name="**Channel**",
+                value=f'`{inter.channel}` in `{inter.guild.name if inter.guild else "DM"}`',
+            )
+            .add_field(name="**Prefix**", value="Context Menu", inline=False)
+            .add_field(name="**Message**", value=f"`{content}`")
         )
         await self.bot._log.send(embed=em)
 

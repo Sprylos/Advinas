@@ -16,7 +16,6 @@ from common.custom import (
 
 if TYPE_CHECKING:
     from bot import Advinas
-    from motor.motor_asyncio import AsyncIOMotorCollection
 
 
 class Stats(commands.Cog):
@@ -26,18 +25,17 @@ class Stats(commands.Cog):
 
     async def ready(self) -> None:
         await self.bot.wait_until_ready()
-        self.col: AsyncIOMotorCollection = self.bot.DB.messages
+        self.col = self.bot.DB.messages
 
     async def _add_channel(self, data: dict[str, Any]) -> None:
         await self.col.insert_one(data)
 
     async def _add_message(self, channel_id: int, data: dict[str, Any]) -> None:
-        await self.col.update_one(
-            {'_id': channel_id},
-            {'$push': {'messages': data}}
-        )
+        await self.col.update_one({"_id": channel_id}, {"$push": {"messages": data}})
 
-    def _parse_message(self, message: discord.Message, *, dt_obj: bool = True) -> dict[str, Any]:
+    def _parse_message(
+        self, message: discord.Message, *, dt_obj: bool = True
+    ) -> dict[str, Any]:
         author = message.author
         data = {
             "id": message.id,
@@ -49,50 +47,73 @@ class Stats(commands.Cog):
                 "name": author.name,
                 "discriminator": author.discriminator,
                 "bot": author.bot,
-                "system": author.system
+                "system": author.system,
             },
-            "channel_mentions": [{
-                "id": channel_mention.id,
-                "name": channel_mention.name,
-                "category": channel_mention.category.name if channel_mention.category else None,
-                "thread": isinstance(channel_mention, discord.Thread),
-            } for channel_mention in message.channel_mentions],
+            "channel_mentions": [
+                {
+                    "id": channel_mention.id,
+                    "name": channel_mention.name,
+                    "category": channel_mention.category.name
+                    if channel_mention.category
+                    else None,
+                    "thread": isinstance(channel_mention, discord.Thread),
+                }
+                for channel_mention in message.channel_mentions
+            ],
             "channel_mentions_count": len(message.channel_mentions),
             "clean_content": message.clean_content,
             "components_count": len(message.components),
             "content": message.content,
-            "created_at": message.created_at if dt_obj else message.created_at.isoformat(),
-            "edited_at": message.edited_at if message.edited_at is None or dt_obj else message.edited_at.isoformat(),
+            "created_at": message.created_at
+            if dt_obj
+            else message.created_at.isoformat(),
+            "edited_at": message.edited_at
+            if message.edited_at is None or dt_obj
+            else message.edited_at.isoformat(),
             "embeds_count": len(message.embeds),
             "jump_url": message.jump_url,
             "mention_everyone": message.mention_everyone,
-            "mentions": [{
-                "id": mention.id,
-                "name": mention.name,
-                "discriminator": mention.discriminator,
-                "bot": mention.bot,
-                "system": mention.system
-            } for mention in message.mentions],
+            "mentions": [
+                {
+                    "id": mention.id,
+                    "name": mention.name,
+                    "discriminator": mention.discriminator,
+                    "bot": mention.bot,
+                    "system": mention.system,
+                }
+                for mention in message.mentions
+            ],
             "mentions_count": len(message.mentions),
             "pinned": message.pinned,
             "raw_channel_mentions": message.raw_channel_mentions,
             "raw_mentions": message.raw_mentions,
             "raw_role_mentions": message.raw_role_mentions,
-            "reactions": [{
-                "count": reaction.count,
-                "name": reaction.emoji.name if not isinstance(reaction.emoji, str) else reaction.emoji
-            } for reaction in message.reactions],
+            "reactions": [
+                {
+                    "count": reaction.count,
+                    "name": reaction.emoji.name
+                    if not isinstance(reaction.emoji, str)
+                    else reaction.emoji,
+                }
+                for reaction in message.reactions
+            ],
             "reactions_count": len(message.reactions),
             "reference": True if message.reference is not None else False,
-            "role_mentions": [{
-                "id": role_mention.id,
-                "name": role_mention.name,
-            } for role_mention in message.role_mentions],
+            "role_mentions": [
+                {
+                    "id": role_mention.id,
+                    "name": role_mention.name,
+                }
+                for role_mention in message.role_mentions
+            ],
             "role_mentions_count": len(message.role_mentions),
-            "stickers": [{
-                "id": sticker.id,
-                "name": sticker.name,
-            } for sticker in message.stickers],
+            "stickers": [
+                {
+                    "id": sticker.id,
+                    "name": sticker.name,
+                }
+                for sticker in message.stickers
+            ],
             "stickers_count": len(message.stickers),
             "system": message.is_system(),
             "system_content": message.system_content,
@@ -100,13 +121,15 @@ class Stats(commands.Cog):
         }
         return data
 
-    async def _fetch_messages(self, channel: discord.TextChannel, *, dt_obj: bool = True) -> dict[str, Any]:
+    async def _fetch_messages(
+        self, channel: discord.TextChannel, *, dt_obj: bool = True
+    ) -> dict[str, Any]:
         count, channel_id, messages = 0, channel.id, []
         async for message in channel.history(limit=None, oldest_first=True):
             messages.append(self._parse_message(message, dt_obj=dt_obj))
             count += 1
             if count % 1e3 == 0:
-                print(channel_id, f'{count=}')
+                print(channel_id, f"{count=}")
         data = {
             "_id": channel_id,
             "category": channel.category.name if channel.category else None,
@@ -124,7 +147,7 @@ class Stats(commands.Cog):
     #     data = self._parse_message(message)
     #     await self._add_message(message.channel.id, data)
 
-    @commands.command(name='history')
+    @commands.command(name="history")
     @commands.is_owner()
     async def history(self, ctx: Context, channel: discord.TextChannel) -> None:
         async with ctx.typing():
@@ -132,11 +155,10 @@ class Stats(commands.Cog):
             buffer = io.StringIO()
             json.dump(data, buffer)
             buffer.seek(0)
-            file = discord.File(
-                filename=f'{channel.id}.json', fp=buffer)  # type: ignore
+            file = discord.File(filename=f"{channel.id}.json", fp=buffer)  # type: ignore # nopep8
             await ctx.send(file=file)
 
-    @commands.command(name='fetchall')
+    @commands.command(name="fetchall")
     @commands.is_owner()
     async def _fetch_all(self, ctx: Context) -> None:
         guild = ctx.bot.get_guild(590288287864848387)
@@ -146,14 +168,16 @@ class Stats(commands.Cog):
             chs.pop(-4)
             for channel in chs:
                 data = await self._fetch_messages(channel, dt_obj=False)
-                with open(f'data/messages/{channel.id}.json', 'w', encoding='utf-8') as f:
+                with open(
+                    f"data/messages/{channel.id}.json", "w", encoding="utf-8"
+                ) as f:
                     json.dump(data, f, indent=4)
                 try:
                     await self._add_channel(data)
                 except Exception:
-                    await ctx.reply(f'couldnt upload {channel.id}')
-                await ctx.reply(f'Finished channel `{channel.name}`')
-            await ctx.reply('Done')
+                    await ctx.reply(f"couldnt upload {channel.id}")
+                await ctx.reply(f"Finished channel `{channel.name}`")
+            await ctx.reply("Done")
 
 
 async def setup(bot: Advinas):
