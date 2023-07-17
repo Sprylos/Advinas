@@ -14,3 +14,4 @@ temp.*
 *.yml
 _*.*
 !__init__.py
+.vscode/
