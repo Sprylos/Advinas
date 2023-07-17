@@ -4,12 +4,11 @@ from __future__ import annotations
 from typing import Any
 
 # packages
-import wavelink
 import aiohttp
 import discord
 import infinitode
 from discord.ext import commands
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # local
 import config
@@ -18,35 +17,45 @@ from common import custom, errors
 
 # exts to load
 exts = [
-    'account',
-    'admin',
-    'contest',
-    'database',
-    'inf',
-    'misc',
-    'music',
-    'stats',
-    'tags',
+    "account",
+    "admin",
+    "contest",
+    "database",
+    "inf",
+    "misc",
+    "music",
+    "stats",
+    "tags",
 ]
 if not config.testing:
-    exts.append('mod')
+    exts.append("mod")
 
 
 class Advinas(commands.Bot):
     def __init__(self, prefix: str) -> None:
         activity = discord.Activity(
-            type=discord.ActivityType.watching, name="You | /invite | v3.5")
+            type=discord.ActivityType.watching, name="You | /invite | v4.0"
+        )
         allowed_mentions = discord.AllowedMentions(
-            everyone=False, users=True, roles=False, replied_user=False)
-        intents = ('guilds', 'members', 'bans', 'voice_states',
-                   'presences', 'messages', 'reactions', 'message_content',)
+            everyone=False, users=True, roles=False, replied_user=False
+        )
+        intents = (
+            "guilds",
+            "members",
+            "bans",
+            "voice_states",
+            "presences",
+            "messages",
+            "reactions",
+            "message_content",
+        )
         super().__init__(
             command_prefix=commands.when_mentioned_or(prefix),
             activity=activity,
             allowed_mentions=allowed_mentions,
             help_command=None,
             case_insensitive=True,
-            intents=discord.Intents(**{intent: True for intent in intents})
+            intents=discord.Intents(**{intent: True for intent in intents}),
         )
 
     async def start(self, token: str, *, reconnect: bool = True):
@@ -57,14 +66,16 @@ class Advinas(commands.Bot):
 
     async def setup_hook(self):
         for ext in exts:
-            await self.load_extension(f'exts.{ext}')
-        await self.load_extension('jishaku')  # jsk
+            await self.load_extension(f"exts.{ext}")
+        await self.load_extension("jishaku")  # jsk
         self.BOT_CHANNELS: list[int] = config.bot_channels
         self.LEVELS: list[str]
-        self.DB: AsyncIOMotorDatabase = AsyncIOMotorClient(config.mongo).inf2
+        self.DB = AsyncIOMotorClient(config.mongo).inf2
         self.online_since = discord.utils.utcnow()
 
-    async def get_context(self, origin: discord.Message | discord.Interaction, *, cls: Any = None):
+    async def get_context(
+        self, origin: discord.Message | discord.Interaction, *, cls: Any = None
+    ):
         return await super().get_context(origin, cls=custom.Context)
 
     async def on_ready(self) -> None:
@@ -79,10 +90,15 @@ class Advinas(commands.Bot):
         print("online")
 
     async def on_app_command_completion(
-        self, inter: discord.Interaction, command: discord.app_commands.Command | discord.app_commands.ContextMenu
+        self,
+        inter: discord.Interaction,
+        command: discord.app_commands.Command | discord.app_commands.ContextMenu,
     ) -> None:
         """Handles completed application commands."""
-        if command.__class__.__name__.startswith('Hybrid') or not inter.type is discord.InteractionType.application_command:
+        if (
+            command.__class__.__name__.startswith("Hybrid")
+            or not inter.type is discord.InteractionType.application_command
+        ):
             return
 
         if isinstance(command, discord.app_commands.Command):
@@ -90,26 +106,23 @@ class Advinas(commands.Bot):
             ctx.command_failed = inter.command_failed or ctx.command_failed
             return await ctx.log()
 
-        command_name = f'{command.name} Context Menu'
+        command_name = f"{command.name} Context Menu"
         color = discord.Color.green()
-        em = discord.Embed(
-            title=f"**{command_name}** used in `{inter.channel}`", colour=color
-        ).set_footer(
-            text=f"Command run by {inter.user}",
-            icon_url=inter.user.display_avatar.url
-        ).add_field(
-            name='**Success**',
-            value='True'
-        ).add_field(
-            name='**Channel**',
-            value=f'`{inter.channel}` in `{inter.guild.name if inter.guild else "DM"}`',
-        ).add_field(
-            name='**Prefix**',
-            value="`Context Menu`",
-            inline=False
-        ).add_field(
-            name='**Command**',
-            value=f'`{command_name}`'
+        em = (
+            discord.Embed(
+                title=f"**{command_name}** used in `{inter.channel}`", colour=color
+            )
+            .set_footer(
+                text=f"Command run by {inter.user}",
+                icon_url=inter.user.display_avatar.url,
+            )
+            .add_field(name="**Success**", value="True")
+            .add_field(
+                name="**Channel**",
+                value=f'`{inter.channel}` in `{inter.guild.name if inter.guild else "DM"}`',
+            )
+            .add_field(name="**Prefix**", value="`Context Menu`", inline=False)
+            .add_field(name="**Command**", value=f"`{command_name}`")
         )
         await self._log.send(embed=em)
 
@@ -120,9 +133,17 @@ class Advinas(commands.Bot):
     async def on_command_error(self, ctx: custom.Context, err: Exception) -> None:
         """Handles errored commands."""
         excs = (
-            infinitode.errors.APIError, infinitode.errors.BadArgument, commands.BadArgument, commands.BadLiteralArgument,
-            wavelink.LoadTrackError, commands.MissingRequiredArgument, errors.TagError, commands.ExpectedClosingQuoteError,
-            commands.UnexpectedQuoteError, discord.ClientException, commands.TooManyArguments, commands.CheckFailure
+            infinitode.errors.APIError,
+            infinitode.errors.BadArgument,
+            commands.BadArgument,
+            commands.BadLiteralArgument,
+            commands.MissingRequiredArgument,
+            errors.TagError,
+            commands.ExpectedClosingQuoteError,
+            commands.UnexpectedQuoteError,
+            discord.ClientException,
+            commands.TooManyArguments,
+            commands.CheckFailure,
         )
 
         if isinstance(err, (commands.CommandInvokeError, commands.HybridCommandError)):
@@ -131,29 +152,35 @@ class Advinas(commands.Bot):
         if isinstance(err, discord.app_commands.CommandInvokeError):
             err = err.original
 
-        if isinstance(err, (commands.CommandNotFound, commands.NotOwner, commands.PrivateMessageOnly)):
+        if isinstance(
+            err,
+            (commands.CommandNotFound, commands.NotOwner, commands.PrivateMessageOnly),
+        ):
             return  # Ignore
         elif isinstance(err, errors.BadChannel):
-            await ctx.log('Used in wrong channel.')
-            await ctx.send('Use commands in <#616583511826104355>.', delete_after=3, ephemeral=True)
+            await ctx.log("Used in wrong channel.")
+            await ctx.send(
+                "Use commands in <#616583511826104355>.", delete_after=3, ephemeral=True
+            )
             return
         elif isinstance(err, errors.BadLevel | errors.InCommandError):
             content = err.args[0]
-            await ctx.log(getattr(err, 'log', content))
+            await ctx.log(getattr(err, "log", content))
         elif isinstance(err, excs):
             content = str(err)
             await ctx.log(content)
         else:
             await ctx.trace(err)
-            content = 'Something went really wrong and the issue has been reported. Please try again later.'
+            content = "Something went really wrong and the issue has been reported. Please try again later."
         await ctx.reply(content)
 
 
-if __name__ == '__main__':
-    bot = Advinas('a?' if config.testing else 'a!')
+if __name__ == "__main__":
+    bot = Advinas("a?" if config.testing else "a!")
 
     from subprocess import Popen
     import time
-    process = Popen(['java', '-jar', 'Lavalink.jar'])
+
+    process = Popen(["java", "-jar", "Lavalink.jar"])
     time.sleep(10)
     bot.run(config.token)
