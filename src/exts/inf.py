@@ -90,7 +90,7 @@ class Inf(commands.Cog):
     @commands.hybrid_command(
         name="season",
         aliases=["sl", "seasonal"],
-        description="Shows the top 100 players of the season.",
+        description="Shows the top 200 players of the season.",
     )
     async def season(self, ctx: Context):
         await ctx.defer()
