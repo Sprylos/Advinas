@@ -103,6 +103,16 @@ class SeekTime(commands.Converter):
     async def convert(self, ctx: Context, argument: str) -> int | None:
         """Converts the given time into seconds."""
         argument = argument.replace(" ", "")
+
+        if ":" in argument:
+            try:
+                return sum(
+                    int(i) * 60**index
+                    for index, i in enumerate(argument.split(":")[::-1])
+                )
+            except ValueError:
+                pass
+
         match = self.compiled.fullmatch(argument)
         if match is None or not match.group(0):
             return None
@@ -279,13 +289,13 @@ class SongConverter(commands.Converter):
             node = wavelink.NodePool.get_node()
             try:
                 tracks = await node.get_tracks(wavelink.YouTubeTrack, song)
-            except wavelink.InvalidLavalinkResponse:
+            except (wavelink.InvalidLavalinkResponse, ValueError):
                 tracks = None
             if tracks:
                 return tracks[0]
             try:
                 playlist = await wavelink.YouTubePlaylist.search(song)
-            except wavelink.InvalidLavalinkResponse:
+            except (wavelink.InvalidLavalinkResponse, ValueError):
                 raise commands.BadArgument("Could not find track.")
             if not playlist:
                 raise commands.BadArgument("Could not find track.")
@@ -296,7 +306,7 @@ class SongConverter(commands.Converter):
         else:
             try:
                 playlist = await wavelink.YouTubePlaylist.search(song)
-            except wavelink.InvalidLavalinkResponse:
+            except (wavelink.InvalidLavalinkResponse, ValueError):
                 raise commands.BadArgument("Could not find track.")
             if not playlist:
                 raise commands.BadArgument("Could not find track.")
