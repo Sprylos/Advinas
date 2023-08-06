@@ -6,6 +6,7 @@ from typing import Any
 # packages
 import aiohttp
 import discord
+import wavelink
 import infinitode
 from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -144,9 +145,18 @@ class Advinas(commands.Bot):
             discord.ClientException,
             commands.TooManyArguments,
             commands.CheckFailure,
+            ValueError,
+            wavelink.NoTracksError,
         )
 
-        if isinstance(err, (commands.CommandInvokeError, commands.HybridCommandError)):
+        if isinstance(
+            err,
+            (
+                commands.CommandInvokeError,
+                commands.HybridCommandError,
+                commands.ConversionError,
+            ),
+        ):
             err = err.original
 
         if isinstance(err, discord.app_commands.CommandInvokeError):
