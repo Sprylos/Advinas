@@ -147,6 +147,7 @@ class Advinas(commands.Bot):
             commands.CheckFailure,
             ValueError,
             wavelink.NoTracksError,
+            wavelink.WavelinkException,
         )
 
         if isinstance(
