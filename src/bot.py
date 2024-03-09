@@ -35,7 +35,7 @@ if not config.testing:
 class Advinas(commands.Bot):
     def __init__(self, prefix: str) -> None:
         activity = discord.Activity(
-            type=discord.ActivityType.watching, name="You | /invite | v4.0"
+            type=discord.ActivityType.watching, name="You | /invite | v4.1"
         )
         allowed_mentions = discord.AllowedMentions(
             everyone=False, users=True, roles=False, replied_user=False
@@ -66,9 +66,17 @@ class Advinas(commands.Bot):
                 await super().start(token, reconnect=reconnect)
 
     async def setup_hook(self):
+        nodes = [
+            wavelink.Node(
+                uri=config.uri, session=self.session, password=config.password
+            )
+        ]
+        await wavelink.Pool.connect(client=self, nodes=nodes, cache_capacity=100)
+
         for ext in exts:
             await self.load_extension(f"exts.{ext}")
         await self.load_extension("jishaku")  # jsk
+
         self.BOT_CHANNELS: list[int] = config.bot_channels
         self.LEVELS: list[str]
         self.DB = AsyncIOMotorClient(config.mongo).inf2
@@ -146,7 +154,6 @@ class Advinas(commands.Bot):
             commands.TooManyArguments,
             commands.CheckFailure,
             ValueError,
-            wavelink.NoTracksError,
             wavelink.WavelinkException,
         )
 

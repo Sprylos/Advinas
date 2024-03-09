@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 # std
-import random
+import asyncio
+import contextlib
 from typing import Annotated, Literal, TYPE_CHECKING
 
 # packages
@@ -12,19 +13,18 @@ from discord.ext import commands
 from common.utils import convert_ms
 
 # local
-from config import uri, password
 from common.views import Paginator
 from common.source import QueueSource
 from common.errors import (
     AlreadyPausedError,
     BadChannel,
+    InCommandError,
     IndexTooSmallError,
     InvalidTimeError,
     NoPlayerError,
     NoTrackPlayingError,
     NotInVoiceChannelError,
     NotPausedError,
-    NotPrivilegedError,
     QueueEmptyError,
     QueueTooShortError,
 )
@@ -33,8 +33,6 @@ from common.custom import (
     GuildContext,
     Player,
     SeekTime,
-    SongConverter,
-    SyntheticQueue,
 )
 
 if TYPE_CHECKING:
@@ -45,20 +43,9 @@ class Music(commands.Cog):
     def __init__(self, bot: Advinas) -> None:
         self.bot = bot
 
-        bot.loop.create_task(self.start_nodes())
-
-    async def start_nodes(self):
-        await self.bot.wait_until_ready()
-        node: wavelink.Node = wavelink.Node(uri=uri, password=password)
-        await wavelink.NodePool.connect(client=self.bot, nodes=[node])
-
     def is_privileged(self, ctx: GuildContext) -> bool:
         player: Player | None = ctx.voice_client
-        return (
-            player
-            and player.dj == ctx.author
-            or ctx.author.guild_permissions.kick_members
-        )
+        return player is not None and ctx.author.guild_permissions.kick_members
 
     async def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
@@ -66,15 +53,48 @@ class Music(commands.Cog):
                 raise BadChannel
         return ctx.guild is not None
 
-    @commands.Cog.listener()
-    async def on_wavelink_track_end(
+    def now_playing(
         self,
-        payload: wavelink.TrackEventPayload,
+        player: Player,
+        track: wavelink.Playable,
+        original: wavelink.Playable | None = None,
+    ) -> discord.Embed:
+        embed: discord.Embed = discord.Embed(title="Now Playing", url=track.uri)
+        embed.color = 60415
+        embed.description = f"**{track.title}** by `{track.author}`"
+        embed.add_field(
+            name="Duration",
+            value=convert_ms(player.position) + "/" + convert_ms(track.length),
+        )
+
+        if track.artwork:
+            embed.set_thumbnail(url=track.artwork)
+
+        if original and original.recommended:
+            embed.description += f"\n\n`This track was recommended via {track.source}`"
+
+        if track.album.name:
+            embed.add_field(name="Album", value=track.album.name)
+
+        return embed
+
+    @commands.Cog.listener()
+    async def on_wavelink_track_start(
+        self, payload: wavelink.TrackStartEventPayload
     ) -> None:
-        player: Player = payload.player  # type: ignore
-        if payload.reason in ("REPLACED", "LOAD_FAILED"):
+        player = payload.player
+        if not isinstance(player, Player):
             return
-        await player.do_next()
+
+        original: wavelink.Playable | None = payload.original
+        track: wavelink.Playable = payload.track
+
+        if player.controller:
+            with contextlib.suppress(discord.NotFound):
+                await player.controller.delete()
+
+        embed = self.now_playing(player, track, original)
+        player.controller = await player.context.send(embed=embed)
 
     async def join(
         self, ctx: GuildContext, channel: discord.VoiceChannel | None = None
@@ -85,6 +105,7 @@ class Music(commands.Cog):
                 raise NotInVoiceChannelError
 
         player = await channel.connect(cls=Player, self_deaf=True)
+        player.autoplay = wavelink.AutoPlayMode.partial
         player.set_context(ctx)
         return player
 
@@ -101,7 +122,7 @@ class Music(commands.Cog):
         self, ctx: GuildContext, *, channel: discord.VoiceChannel | None = None
     ):
         player = await self.join(ctx, channel)
-        await ctx.reply(f"Joined the voice channel `{player.channel.name}`.")  # type: ignore
+        await ctx.reply(f"Joined the voice channel `{player.channel.name}`.")
 
     @commands.hybrid_command(
         name="leave",
@@ -113,6 +134,7 @@ class Music(commands.Cog):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
+
         await player.disconnect()
         await ctx.reply("Player has left the channel.")
 
@@ -125,34 +147,45 @@ class Music(commands.Cog):
     @app_commands.describe(
         search="The song/songs to play, can be a keyword to search or a direct link."
     )
-    async def _play(
-        self,
-        ctx: GuildContext,
-        *,
-        search: Annotated[
-            wavelink.SoundCloudTrack
-            | wavelink.YouTubeTrack
-            | wavelink.YouTubePlaylist
-            | SyntheticQueue,
-            SongConverter,
-        ],
-    ):
+    async def _play(self, ctx: GuildContext, *, search: str):
         player: Player | None = ctx.voice_client
         if player is None:
             player = await self.join(ctx)
 
-        if isinstance(search, wavelink.YouTubePlaylist | SyntheticQueue):
-            queued = search.name
-            for track in search.tracks:
-                player.queue.put(track)
-        else:
-            queued = search.title
-            player.queue.put(search)
+        tracks: wavelink.Search = await wavelink.Playable.search(search)
+        if not tracks:
+            raise InCommandError("No tracks found.")
 
-        if not player.is_playing():
-            await player.do_next()
-        if len(player.queue) > 0:
-            await ctx.reply(f"Queued **{queued}**.")
+        if isinstance(tracks, wavelink.Playlist):
+            added: int = await player.queue.put_wait(tracks)
+            await ctx.reply(
+                f"Added the playlist **`{tracks.name}`** ({added} songs) to the queue."
+            )
+        else:
+            track: wavelink.Playable = tracks[0]
+            await player.queue.put_wait(track)
+            await ctx.reply(f"Added **`{track}`** to the queue.")
+
+        if not player.playing:
+            await player.play(player.queue.get())
+
+    @commands.hybrid_command(
+        name="autoplay",
+        aliases=["ap", "auto"],
+        description="Toggles autoplaying songs from youtube at the end of the queue.",
+    )
+    @app_commands.guild_only()
+    async def _autoplay(self, ctx: GuildContext):
+        player: Player | None = ctx.voice_client
+        if player is None:
+            raise NoPlayerError
+
+        if player.autoplay == wavelink.AutoPlayMode.partial:
+            player.autoplay = wavelink.AutoPlayMode.enabled
+            await ctx.reply("YouTube autoplay is now enabled.")
+        else:
+            player.autoplay = wavelink.AutoPlayMode.partial
+            await ctx.reply("Youtube autoplay is now disabled.")
 
     @commands.hybrid_command(
         name="reconnect",
@@ -169,12 +202,19 @@ class Music(commands.Cog):
         if not channel:
             raise NotInVoiceChannelError
 
-        current = old_player.current
-        queue = old_player.queue.copy()
-        await old_player.disconnect()
+        volume: int = old_player.volume
+        queue: wavelink.Queue = old_player.queue.copy()
+        current: wavelink.Playable | None = old_player.current
         if current is not None:
-            queue.put_at_front(current)
-        await ctx.invoke(self._play, search=SyntheticQueue(queue))
+            queue.put_at(0, current)
+
+        await old_player.disconnect()
+        await asyncio.sleep(1)
+
+        player = await self.join(ctx, channel)
+        player.queue = queue
+
+        await player.play(player.queue.get(), volume=volume)
 
     @commands.hybrid_command(
         name="nowplaying",
@@ -186,10 +226,12 @@ class Music(commands.Cog):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
+
         track = player.current
         if not isinstance(track, wavelink.Playable):
             raise NoTrackPlayingError
-        await ctx.reply(embed=player.now_playing(track))
+
+        await ctx.reply(embed=self.now_playing(player, track))
 
     @commands.hybrid_command(
         name="queue", aliases=["q"], description="Shows the current song queue."
@@ -203,7 +245,7 @@ class Music(commands.Cog):
         if len(player.queue) < 1:
             raise QueueEmptyError
 
-        entries: list[wavelink.YouTubeTrack] = list(player.queue)  # type: ignore # nopep8
+        entries: list[wavelink.Playable] = list(player.queue)
         await Paginator(QueueSource(entries, ctx.author)).start(ctx)
 
     @commands.hybrid_command(
@@ -222,28 +264,22 @@ class Music(commands.Cog):
         if player is None:
             raise NoPlayerError
 
-        if mode == "Song":
-            player.queue.loop = True
-            player.queue.loop_all = True
-        elif mode == "Queue":
-            player.queue.loop = False
-            player.queue.loop_all = True
-        elif mode == "None":
-            player.queue.loop = False
-            player.queue.loop_all = False
-        else:
-            if player.queue.loop:
-                player.queue.loop = False
-                player.queue.loop_all = True
-                mode = "Queue"
-            elif player.queue.loop_all:
-                player.queue.loop = False
-                player.queue.loop_all = False
-                mode = "None"
-            else:
-                player.queue.loop = True
-                player.queue.loop_all = True
-                mode = "Song"
+        if mode is None:
+            current = player.queue.mode
+            mode = (
+                "Song"
+                if current == wavelink.QueueMode.loop
+                else "Queue" if current == wavelink.QueueMode.loop_all else "None"
+            )
+            return await ctx.reply(f"Loop mode is currently set to `{mode}`.")
+
+        modes = {
+            "Song": wavelink.QueueMode.loop,
+            "Queue": wavelink.QueueMode.loop_all,
+            "None": wavelink.QueueMode.normal,
+        }
+
+        player.queue.mode = modes[mode]
         await ctx.reply(f"Loop mode set to `{mode}`.")
 
     @commands.hybrid_command(
@@ -261,27 +297,22 @@ class Music(commands.Cog):
         if len(player.queue) < 1:
             raise QueueEmptyError
 
-        del player.queue[index - 1]
+        track = player.queue.peek(index - 1)
+        player.queue.delete(index - 1)
+        await ctx.reply(f"Removed **{track.title}** from the queue.")
 
-        await ctx.reply(f"Removed track from the queue.")
-
-    @commands.hybrid_command(
-        name="pause", aliases=["pau", "pa"], description="Pauses the current song."
-    )
+    @commands.hybrid_command(name="pause", description="Pauses the current song.")
     @app_commands.guild_only()
     async def _pause(self, ctx: GuildContext):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
-        if player.is_paused():
+
+        if player.paused:
             raise AlreadyPausedError
 
-        if self.is_privileged(ctx):
-            await ctx.reply("The player was paused.")
-            await player.pause()
-            return
-        else:
-            raise NotPrivilegedError("pause")
+        await player.pause(True)
+        await ctx.reply("The player was paused.")
 
     @commands.hybrid_command(
         name="resume", aliases=["res", "r"], description="Resume the current song."
@@ -291,15 +322,12 @@ class Music(commands.Cog):
         player: Player | None = ctx.voice_client
         if player is None:
             raise NoPlayerError
-        if not player.is_paused():
+
+        if not player.paused:
             raise NotPausedError
 
-        if self.is_privileged(ctx):
-            await ctx.reply("The player was resumed.")
-            await player.resume()
-            return
-        else:
-            raise NotPrivilegedError("resume")
+        await player.pause(False)
+        await ctx.reply("The player was resumed.")
 
     @commands.hybrid_command(
         name="skip",
@@ -315,26 +343,28 @@ class Music(commands.Cog):
         if player is None:
             raise NoPlayerError
 
-        if self.is_privileged(ctx):
-            if to > 1:
-                if len(player.queue) < to:
-                    raise QueueTooShortError
-                for _ in range(to - 1):
-                    del player.queue[0]
-                if len(player.queue) > 0:
-                    await ctx.reply(f"Skipped to **{player.queue[0].title}**.")
-                else:
-                    await ctx.reply("Skipped to the end of the queue.")
-            elif to < 1:
-                raise IndexTooSmallError
+        if to < 1:
+            raise IndexTooSmallError
+        elif to == 1:
+            skipped = await player.skip()
+            if isinstance(skipped, wavelink.Playable):
+                await ctx.reply(f"Skipped **{skipped.title}**.")
             else:
-                await ctx.reply(
-                    f'Skipped{" **" + player.current.title + "**" if isinstance(player.current, wavelink.Playable) else ""}.'
-                )
-            await player.stop()
+                await ctx.reply("Nothing was skipped.")
             return
+
+        if len(player.queue) < to:
+            raise QueueTooShortError
+
+        for _ in range(to - 1):
+            del player.queue[0]
+
+        await player.skip()
+
+        if player.current is not None:
+            await ctx.reply(f"Skipped to **{player.current.title}**.")
         else:
-            raise NotPrivilegedError("skip a song.", end=True)
+            await ctx.reply("Skipped to the end of the queue.")
 
     @commands.hybrid_command(
         name="shuffle", aliases=["mix", "shuf"], description="Shuffles the queue."
@@ -345,14 +375,11 @@ class Music(commands.Cog):
         if player is None:
             raise NoPlayerError
 
-        if self.is_privileged(ctx):
-            if len(player.queue) < 1:
-                raise QueueEmptyError
-            await ctx.reply("The queue was shuffled.")
+        if len(player.queue) < 1:
+            raise QueueEmptyError
 
-            return random.shuffle(player.queue._queue)
-        else:
-            raise NotPrivilegedError("shuffle the queue.", end=True)
+        player.queue.shuffle()
+        await ctx.reply("The queue was shuffled.")
 
     @commands.hybrid_command(
         name="volume", aliases=["v", "vol"], description="Changes the players volume."
@@ -368,9 +395,6 @@ class Music(commands.Cog):
             return await ctx.reply(
                 f"The volume is currently set to **{player.volume}%**."
             )
-
-        if not self.is_privileged(ctx):
-            raise NotPrivilegedError("change the volume.", end=True)
 
         vol = int(volume)
         if vol < 0:
@@ -396,11 +420,9 @@ class Music(commands.Cog):
         if time is None:
             raise InvalidTimeError
 
-        if not self.is_privileged(ctx):
-            raise NotPrivilegedError("seek in the song.", end=True)
-
-        await player.seek(time * 1000)
-        await ctx.reply(f"Set the position to **{convert_ms(time*1000)}**.")
+        time = time * 1000
+        await player.seek(time)
+        await ctx.reply(f"Set the position to **{convert_ms(time)}**.")
 
 
 async def setup(bot: Advinas):

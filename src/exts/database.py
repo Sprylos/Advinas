@@ -8,7 +8,7 @@ from typing import Any, Mapping, TYPE_CHECKING
 # packages
 import discord
 from discord.ext import commands, tasks
-from infinitode.leaderboard import Leaderboard
+from infinitode import Leaderboard
 
 # local
 from common.utils import load_json

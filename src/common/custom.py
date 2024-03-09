@@ -4,7 +4,6 @@ from __future__ import annotations
 import io
 import re
 import traceback
-from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, TYPE_CHECKING
@@ -15,7 +14,7 @@ import discord
 from discord.ext import commands
 
 # local
-from common.utils import codeblock, convert_ms
+from common.utils import codeblock
 from common.errors import BadChannel, BadLevel
 
 if TYPE_CHECKING:
@@ -50,44 +49,9 @@ class Player(wavelink.Player):
 
         self.controller: discord.Message | None = None
         self.context: Context
-        self.dj: discord.Member
-
-    def now_playing(
-        self, track: wavelink.Playable, *, new: bool = False
-    ) -> discord.Embed:
-        if track.is_stream:
-            title = f":red_circle: **LIVE** {track.title}"
-        else:
-            title = track.title
-        thumbnail = getattr(track, "thumbnail", None)
-        embed = discord.Embed(
-            title=title,
-            description=f"Duration: {convert_ms(self.position if not new else 0)}/{convert_ms(track.length)}",
-            url=track.uri,
-        ).set_footer(text=f"Author: {track.author}", icon_url=thumbnail)
-        return embed.set_thumbnail(url=thumbnail)
-
-    async def do_next(self) -> None:
-        if self.controller:
-            with suppress(discord.HTTPException):
-                await self.controller.delete()
-
-        try:
-            track: wavelink.YouTubeTrack = self.queue.get()  # type: ignore
-        except wavelink.QueueEmpty:
-            return  # await self.teardown()
-
-        await self.play(track)
-        if hasattr(self, "context"):
-            self.controller = await self.context.send(
-                embed=self.now_playing(track, new=True)
-            )
 
     def set_context(self, ctx: Context):
         self.context = ctx
-        # always in guild
-        if isinstance(ctx.author, discord.Member):
-            self.dj = ctx.author
 
 
 class SeekTime(commands.Converter):
@@ -265,52 +229,6 @@ class LevelConverter(commands.Converter):
         if level.startswith("dq"):
             level = level.upper()
         return level
-
-
-class SyntheticQueue:
-    def __init__(self, queue: wavelink.BaseQueue) -> None:
-        self.tracks = queue
-        self.name = str(len(queue)) + " tracks"
-
-
-class SongConverter(commands.Converter):
-    async def convert(
-        self, ctx: Context, song: str | SyntheticQueue
-    ) -> wavelink.SoundCloudTrack | wavelink.YouTubeTrack | wavelink.YouTubePlaylist | SyntheticQueue:
-        if isinstance(song, SyntheticQueue):
-            return song
-        song = song.strip("<>")
-        if "soundcloud.com" in song:
-            track = await wavelink.SoundCloudTrack.search(song)
-            if not track:
-                raise commands.BadArgument("Could not find track.")
-            return track[0]
-        if "youtube.com" in song:
-            node = wavelink.NodePool.get_node()
-            try:
-                tracks = await node.get_tracks(wavelink.YouTubeTrack, song)
-            except (wavelink.InvalidLavalinkResponse, ValueError):
-                tracks = None
-            if tracks:
-                return tracks[0]
-            try:
-                playlist = await wavelink.YouTubePlaylist.search(song)
-            except (wavelink.InvalidLavalinkResponse, ValueError):
-                raise commands.BadArgument("Could not find track.")
-            if not playlist:
-                raise commands.BadArgument("Could not find track.")
-            return playlist  # type: ignore
-        tracks = await wavelink.YouTubeTrack.search(song)
-        if tracks:
-            return tracks[0]
-        else:
-            try:
-                playlist = await wavelink.YouTubePlaylist.search(song)
-            except (wavelink.InvalidLavalinkResponse, ValueError):
-                raise commands.BadArgument("Could not find track.")
-            if not playlist:
-                raise commands.BadArgument("Could not find track.")
-            return playlist  # type: ignore
 
 
 class TagName(commands.clean_content):

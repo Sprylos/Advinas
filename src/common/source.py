@@ -103,12 +103,12 @@ class TagSource(menus.ListPageSource):
 
 class QueueSource(menus.ListPageSource):
     def __init__(
-        self, entries: List[wavelink.YouTubeTrack], user: discord.User | discord.Member
+        self, entries: List[wavelink.Playable], user: discord.User | discord.Member
     ):
         self.user = user
         super().__init__(entries, per_page=15)
 
-    async def format_page(self, menu: Paginator, page: List[wavelink.YouTubeTrack]):
+    async def format_page(self, menu: Paginator, page: List[wavelink.Playable]):
         description = "\n".join(
             [
                 f"{menu.current_page * 15 + c}. [{track.title}]({track.uri}) by {track.author}"
