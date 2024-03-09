@@ -296,6 +296,8 @@ class Music(commands.Cog):
 
         if len(player.queue) < 1:
             raise QueueEmptyError
+        elif len(player.queue) < index:
+            raise QueueTooShortError
 
         track = player.queue.peek(index - 1)
         player.queue.delete(index - 1)
