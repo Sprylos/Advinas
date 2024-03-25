@@ -43,7 +43,7 @@ class Advinas(commands.Bot):
         intents = (
             "guilds",
             "members",
-            "bans",
+            "moderation",
             "voice_states",
             "presences",
             "messages",

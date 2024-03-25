@@ -116,14 +116,18 @@ class Inf(commands.Cog):
     )
     async def dailyquest(self, ctx: Context, date: str | None = None):
         lb = await self.bot.API.daily_quest_leaderboards(date, warning=False)
-        if lb.is_empty:
+        if lb.is_empty is True:
             entry = await Database.find_by_key(self.bot.DB.dailyquests, date)
             try:
                 scores = entry.get(lb.date)
             except (AttributeError, KeyError):
                 raise InvalidDateError from None
+            
             payload = {"player": {"total": 69420}, "leaderboards": scores}
             lb = Leaderboard.from_payload("", "", "", "", None, payload, date=lb.date)
+        else:
+            data = {lb.date: lb.raw["leaderboards"]}
+            await Database.update(self.bot.DB.dailyquests, data=data)
 
         ctx.kwargs["date"] = lb.date
 
