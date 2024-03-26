@@ -189,7 +189,7 @@ class Account(commands.Cog):
             else:
                 raise NoPlayerProvidedError if not context_menu else NoPlayerProvidedError(
                     "Could not fetch profile for this member."
-                )  # nopep8
+                )
         else:
             try:
                 upper = playerid.upper()
@@ -292,6 +292,8 @@ class Account(commands.Cog):
             content = "Use commands in <#616583511826104355>."
         elif isinstance(err, InCommandError):
             content = err.args[0]
+        elif isinstance(err, (APIError, BadArgument)):
+            content = str(err)
         else:
             content = "Something went really wrong and the issue has been reported. Please try again later."
             await self.bot._trace.send(
