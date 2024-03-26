@@ -101,9 +101,15 @@ class Database(commands.Cog):
             "%Y-%m-%d"
         )
         leaderboards = await self.bot.API.daily_quest_leaderboards(date)
+
         data = {date: leaderboards.raw["leaderboards"]}
         await self.update(self._dailyquests, data=data)
-        print("updated")
+        
+        await self.bot.task_completion(self.save_dailyquest_leaderboard, fields={"Date": date})
+
+    @save_dailyquest_leaderboard.error
+    async def task_error(self, err: BaseException):
+        await self.bot.task_error(self.save_dailyquest_leaderboard, err)
 
     # this is very expensive.
     async def eval_leaderboards(self):

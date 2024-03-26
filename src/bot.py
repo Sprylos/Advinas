@@ -1,20 +1,21 @@
 from __future__ import annotations
 
 # std
-from typing import Any
+from typing import Any, Callable, Coroutine
 
 # packages
 import aiohttp
 import discord
 import wavelink
+import traceback
 import infinitode
-from discord.ext import commands
+from discord.ext import commands, tasks
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # local
 import config
 from common import custom, errors
-
+from common.utils import codeblock
 
 # exts to load
 exts = [
@@ -93,10 +94,58 @@ class Advinas(commands.Bot):
     async def ready(self):
         await self.wait_until_ready()
         self._log = self.get_partial_messageable(config.log_channel)
+        self._task = self.get_partial_messageable(config.task_channel)
         self._trace = self.get_partial_messageable(config.trace_channel)
         self._join = self.get_partial_messageable(config.join_channel)
         self._contest = self.get_partial_messageable(config.contest)
         print("online")
+
+    async def task_completion(
+        self,
+        loop: tasks.Loop[Callable[..., Coroutine[Any, Any, Any]]],
+        fields: dict[str, str] | None = None,
+    ) -> None:
+        em = discord.Embed(
+            title=f"**{loop.coro.__name__}** completed", colour=discord.Color.green()
+        )
+
+        dt = "%d.%m.%Y %H:%M"
+        em.add_field(name="Time", value=discord.utils.utcnow().strftime(dt))
+        if loop.next_iteration is not None:
+            em.add_field(name="Next", value=loop.next_iteration.strftime(dt))
+
+        if fields is not None:
+            for name, value in fields.items():
+                em.add_field(name=name, value=value, inline=False)
+
+        await self._task.send(embed=em)
+
+    async def task_error(
+        self,
+        loop: tasks.Loop[Callable[..., Coroutine[Any, Any, Any]]],
+        err: BaseException,
+    ) -> None:
+        em = discord.Embed(
+            title=f"**{loop.coro.__name__}** failed", colour=discord.Color.red()
+        )
+
+        dt = "%d.%m.%Y %H:%M"
+        em.add_field(name="Time", value=discord.utils.utcnow().strftime(dt))
+        if loop.next_iteration is not None:
+            em.add_field(name="Next", value=loop.next_iteration.strftime(dt))
+
+        fmt = "".join(traceback.format_exception(type(err), err, err.__traceback__))
+        tb = f"Error occured in task {loop.coro.__name__}\n" + fmt
+
+        if len(tb) > 1990:
+            await self._trace.send(codeblock(tb[:1990]))
+            await self._trace.send(codeblock(tb[1990:]))
+        elif len(tb) > 1000:
+            await self._trace.send(codeblock(tb))
+        else:
+            em.add_field(name="Traceback", value=codeblock(tb), inline=False)
+
+        await self._trace.send(embed=em)
 
     async def on_app_command_completion(
         self,
