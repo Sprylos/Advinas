@@ -89,8 +89,8 @@ class Music(commands.Cog):
         original: wavelink.Playable | None = payload.original
         track: wavelink.Playable = payload.track
 
-        if player.controller:
-            with contextlib.suppress(discord.NotFound):
+        if player.controller is not None:
+            with contextlib.suppress(discord.HTTPException):
                 await player.controller.delete()
 
         embed = self.now_playing(player, track, original)
