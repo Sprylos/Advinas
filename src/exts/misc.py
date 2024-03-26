@@ -52,17 +52,17 @@ class Misc(commands.Cog):
                 + "".join(traceback.format_exception(type(err), err, err.__traceback__))
             )
             if len(tb) > 1990:
-                await self.bot._trace.send(codeblock(tb[3:1990]))
-                await self.bot._trace.send(codeblock(tb[1990:-3]))
+                await self.bot.trace_channel.send(codeblock(tb[3:1990]))
+                await self.bot.trace_channel.send(codeblock(tb[1990:-3]))
             else:
-                await self.bot._trace.send(tb)
+                await self.bot.trace_channel.send(tb)
             if message is not None:
                 em = discord.Embed(
                     title=f"Error occured in issue listener in `{message.channel}`",
                     colour=discord.Color.red(),
                 )
                 em.add_field(name="**Message**", value=f"`{message.content}`")
-                await self.bot._trace.send(embed=em)
+                await self.bot.trace_channel.send(embed=em)
             raise
 
     async def prepare_wiki(self):

@@ -84,14 +84,12 @@ class Account(commands.Cog):
     @overload
     async def find_connection(
         self, user_id: int | str, raw: Literal[False] = False
-    ) -> str | None:
-        ...
+    ) -> str | None: ...
 
     @overload
     async def find_connection(
         self, user_id: int | str, raw: Literal[True] = True
-    ) -> dict[str, str] | None:
-        ...
+    ) -> dict[str, str] | None: ...
 
     async def find_connection(
         self, user_id: int | str, raw: bool = False
@@ -187,8 +185,12 @@ class Account(commands.Cog):
                 player = await self.bot.API.player(playerid=next(iter(pl)))
                 playerid = ""  # make typechecker happy
             else:
-                raise NoPlayerProvidedError if not context_menu else NoPlayerProvidedError(
-                    "Could not fetch profile for this member."
+                raise (
+                    NoPlayerProvidedError
+                    if not context_menu
+                    else NoPlayerProvidedError(
+                        "Could not fetch profile for this member."
+                    )
                 )
         else:
             try:
@@ -296,7 +298,7 @@ class Account(commands.Cog):
             content = str(err)
         else:
             content = "Something went really wrong and the issue has been reported. Please try again later."
-            await self.bot._trace.send(
+            await self.bot.trace_channel.send(
                 codeblock(
                     "".join(
                         traceback.format_exception(type(err), err, err.__traceback__)
@@ -323,7 +325,7 @@ class Account(commands.Cog):
             .add_field(name="**Prefix**", value="Context Menu", inline=False)
             .add_field(name="**Message**", value=f"`{content}`")
         )
-        await self.bot._log.send(embed=em)
+        await self.bot.log_channel.send(embed=em)
 
 
 async def setup(bot: Advinas):

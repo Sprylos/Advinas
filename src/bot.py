@@ -93,11 +93,11 @@ class Advinas(commands.Bot):
 
     async def ready(self):
         await self.wait_until_ready()
-        self._log = self.get_partial_messageable(config.log_channel)
-        self._task = self.get_partial_messageable(config.task_channel)
-        self._trace = self.get_partial_messageable(config.trace_channel)
-        self._join = self.get_partial_messageable(config.join_channel)
-        self._contest = self.get_partial_messageable(config.contest)
+        self.log_channel = self.get_partial_messageable(config.log_channel)
+        self.task_channel = self.get_partial_messageable(config.task_channel)
+        self.trace_channel = self.get_partial_messageable(config.trace_channel)
+        self.join_channel = self.get_partial_messageable(config.join_channel)
+        self.contest_channel = self.get_partial_messageable(config.contest)
         print("online")
 
     async def task_completion(
@@ -118,7 +118,7 @@ class Advinas(commands.Bot):
             for name, value in fields.items():
                 em.add_field(name=name, value=value, inline=False)
 
-        await self._task.send(embed=em)
+        await self.task_channel.send(embed=em)
 
     async def task_error(
         self,
@@ -138,14 +138,14 @@ class Advinas(commands.Bot):
         tb = f"Error occured in task {loop.coro.__name__}\n" + fmt
 
         if len(tb) > 1990:
-            await self._trace.send(codeblock(tb[:1990]))
-            await self._trace.send(codeblock(tb[1990:]))
+            await self.trace_channel.send(codeblock(tb[:1990]))
+            await self.trace_channel.send(codeblock(tb[1990:]))
         elif len(tb) > 1000:
-            await self._trace.send(codeblock(tb))
+            await self.trace_channel.send(codeblock(tb))
         else:
             em.add_field(name="Traceback", value=codeblock(tb), inline=False)
 
-        await self._trace.send(embed=em)
+        await self.trace_channel.send(embed=em)
 
     async def on_app_command_completion(
         self,
@@ -182,7 +182,7 @@ class Advinas(commands.Bot):
             .add_field(name="**Prefix**", value="`Context Menu`", inline=False)
             .add_field(name="**Command**", value=f"`{command_name}`")
         )
-        await self._log.send(embed=em)
+        await self.log_channel.send(embed=em)
 
     async def on_command_completion(self, ctx: custom.Context) -> None:
         """Handles completed commands."""

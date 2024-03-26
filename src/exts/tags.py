@@ -156,8 +156,7 @@ class Tags(commands.Cog):
         *,
         no_alias: bool = False,
         return_alias: Literal[False] = False,
-    ) -> Tag:
-        ...
+    ) -> Tag: ...
 
     @overload
     async def get_tag(
@@ -167,8 +166,7 @@ class Tags(commands.Cog):
         *,
         no_alias: bool = False,
         return_alias: Literal[True] = True,
-    ) -> Tag | TagAlias:
-        ...
+    ) -> Tag | TagAlias: ...
 
     async def get_tag(
         self,
@@ -276,7 +274,7 @@ class Tags(commands.Cog):
                     )
                     .add_field(name="**Reason", value=e, inline=False)
                 )
-                await self.bot._log.send(embed=em)
+                await self.bot.log_channel.send(embed=em)
             return
 
         await inter.response.send_message(tag.content)

@@ -146,7 +146,7 @@ class Context(commands.Context["Advinas"]):
             )
         if reason:
             em.add_field(name="**Reason**", value=f"`{reason[:1020]}`", inline=False)
-        await self.bot._log.send(embed=em)
+        await self.bot.log_channel.send(embed=em)
 
     async def trace(self, err: Exception):
         """Called when an unhandled Exception occurs to inform me about the issue."""
@@ -156,11 +156,11 @@ class Context(commands.Context["Advinas"]):
             + "".join(traceback.format_exception(type(err), err, err.__traceback__))
         )
         if len(tb) > 1990:
-            await self.bot._trace.send(codeblock(tb[3:1990]))
-            await self.bot._trace.send(codeblock(tb[1990:-3]))
+            await self.bot.trace_channel.send(codeblock(tb[3:1990]))
+            await self.bot.trace_channel.send(codeblock(tb[1990:-3]))
             tb = "Too long"
         elif len(tb) > 1000:
-            await self.bot._trace.send(tb)
+            await self.bot.trace_channel.send(tb)
             tb = "Too long"
         em = (
             discord.Embed(
@@ -195,7 +195,7 @@ class Context(commands.Context["Advinas"]):
                 name="**Message**", value=f"`{self.message.content}`", inline=False
             )
         em.add_field(name="**Traceback**", value=tb, inline=False)
-        await self.bot._trace.send(embed=em)
+        await self.bot.trace_channel.send(embed=em)
 
     async def safe_send(self, content: str, **kwargs: Any) -> discord.Message:
         if len(content) > 2000:
