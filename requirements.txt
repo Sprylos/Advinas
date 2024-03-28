@@ -1,9 +1,10 @@
-git+https://github.com/Rapptz/discord.py@master
 git+https://github.com/Rapptz/discord-ext-menus@master
-git+https://github.com/Gorialis/jishaku@master
 git+https://github.com/Sprylos/infinitode.py
+discord.py
+jishaku
 wavelink
 orjson
 Pillow
 pymongo[srv]
 motor
+lru_dict
