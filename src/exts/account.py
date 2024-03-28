@@ -143,7 +143,7 @@ class Account(commands.Cog):
         playerid="The playerid to link your account to. Format must be U-XXXX-XXXX-XXXXXX."
     )
     async def _link(self, ctx: Context, playerid: str):
-        await ctx.defer()
+        await ctx.typing()
         await ctx.bot.API.player(playerid)
 
         await self.add_connection(playerid, ctx.author.id)
@@ -243,7 +243,7 @@ class Account(commands.Cog):
         playerid="The playerid of the player you want to see the profile of."
     )
     async def profile(self, ctx: Context, playerid: str | None = None) -> None:
-        await ctx.defer()
+        await ctx.typing()
         start_time: float = time.perf_counter()
 
         player: Player = await self._find_player(ctx.author, playerid)

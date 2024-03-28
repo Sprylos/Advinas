@@ -93,7 +93,7 @@ class Inf(commands.Cog):
         description="Shows the top 200 players of the season.",
     )
     async def season(self, ctx: Context):
-        await ctx.defer()
+        await ctx.typing()
         lb = await self.bot.API.seasonal_leaderboard()
 
         await Paginator(
