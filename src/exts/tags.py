@@ -180,7 +180,8 @@ class Tags(commands.Cog):
         if tag is None:
             raise TagError("Tag not found.")
         if isinstance(tag, TagAlias):
-            if (main_tag := await self._get_tag(tag.guild_id, tag.alias)) is None:
+            main_tag = await self._get_tag(tag.guild_id, tag.alias)
+            if main_tag is None or isinstance(main_tag, TagAlias):
                 await self.delete_tag(Tag.minimal(name, guild_id))
                 await self.cache_tags()
                 raise TagError("Tag not found.")
@@ -203,9 +204,8 @@ class Tags(commands.Cog):
             raise TagError(f'A tag with the name "{new_name}" already exists.')
         if (tag := await self._get_tag(ctx.guild.id, old_name)) is None:
             raise TagError(f'A tag with the name "{old_name}" does not exist.')
-        else:
-            if isinstance(tag, TagAlias):
-                raise TagError("Cannot link an alias to another alias.")
+        elif isinstance(tag, TagAlias):
+            raise TagError("Cannot link an alias to another alias.")
         await self._create_alias(ctx, new_name, old_name)
         await ctx.reply(
             f'Tag alias "{new_name}" that points to "{old_name}" successfully created.'
@@ -224,6 +224,7 @@ class Tags(commands.Cog):
                 )
 
     async def cache_tags(self) -> None:
+        self.cache.clear()
         async for doc in self.col.find({}, {"_id": 0, "guild": 1, "tags": 1}):
             tags = doc["tags"]
             self.cache[doc["guild"]] = {

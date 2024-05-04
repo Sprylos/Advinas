@@ -239,6 +239,9 @@ class Advinas(commands.Bot):
         else:
             await ctx.trace(err)
             content = "Something went really wrong and the issue has been reported. Please try again later."
+
+        if isinstance(err, wavelink.LavalinkLoadException):
+            content = "Failed to load tracks: " + err.error
         await ctx.reply(content)
 
 

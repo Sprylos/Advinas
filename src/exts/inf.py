@@ -122,7 +122,7 @@ class Inf(commands.Cog):
                 scores = entry.get(lb.date)
             except (AttributeError, KeyError):
                 raise InvalidDateError from None
-            
+
             payload = {"player": {"total": 69420}, "leaderboards": scores}
             lb = Leaderboard.from_payload("", "", "", "", None, payload, date=lb.date)
         else:
@@ -207,10 +207,10 @@ class Inf(commands.Cog):
             coins=coins,
         )
         keep = coins * 50
-        difSlope = 1 + ((difficulty - 100) / 200)
-        lBounties, lCost, lBuy = [], [], []
+        dif_slope = 1 + ((difficulty - 100) / 200)
+        l_bounties, l_cost, l_buy = [], [], []
         for i in range(1, bounties + 1):
-            val = floor((difSlope) * (1.60000002384186 ** (1.15 * (i - 1)) * 180))
+            val = floor((dif_slope) * (1.60000002384186 ** (1.15 * (i - 1)) * 180))
             if val < 500:
                 cost = round_to_nearest(val, 5)
             elif val < 5000:
@@ -221,9 +221,9 @@ class Inf(commands.Cog):
                 buy = int((ceil(cost * (i - 1) / 50) * 50) + cost)
             else:
                 buy = int((ceil(coins * (i - 1) / i) * 50) + cost)
-            lBounties.append(str(i))
-            lCost.append(str(cost))
-            lBuy.append(str(find_safe(i=i, buy=buy, cost=cost, coins=coins)))
+            l_bounties.append(str(i))
+            l_cost.append(str(cost))
+            l_buy.append(str(find_safe(i=i, buy=buy, cost=cost, coins=coins)))
 
         description = (
             f"Coins: `{coins}`\nDifficulty: `{difficulty}`\nKeepForMax: `{keep}`"
@@ -231,19 +231,19 @@ class Inf(commands.Cog):
         if level:
             description += f"\nLevel: `{level}`"
 
-        em = (
-            discord.Embed(
-                title="Bounty Calculator", description=description, colour=60415
-            )
-            .set_footer(
-                text=f"Requested by {ctx.author}",
-                icon_url=ctx.author.display_avatar.url,
-            )
-            .add_field(
-                name="Bounty", value=codeblock("\n".join(lBounties)), inline=True
-            )
-            .add_field(name="Cost", value=codeblock("\n".join(lCost)), inline=True)
-            .add_field(name="Safe Buy", value=codeblock("\n".join(lBuy)), inline=True)
+        em = discord.Embed(
+            title="Bounty Calculator", description=description, colour=60415
+        )
+        
+        em.set_footer(
+            text=f"Requested by {ctx.author}",
+            icon_url=ctx.author.display_avatar.url,
+        ).add_field(
+            name="Bounty", value=codeblock("\n".join(l_bounties)), inline=True
+        ).add_field(
+            name="Cost", value=codeblock("\n".join(l_cost)), inline=True
+        ).add_field(
+            name="Safe Buy", value=codeblock("\n".join(l_buy)), inline=True
         )
 
         await ctx.reply(embed=em)
