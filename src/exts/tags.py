@@ -11,7 +11,7 @@ from discord.ext import commands
 # local
 from bot import Advinas
 from common.source import TagSource
-from common.views import TagPaginator
+from common.pagination import TagPaginator
 from common.errors import TagError
 from common.utils import create_choices
 from common.custom import (
@@ -33,30 +33,8 @@ class Tags(commands.Cog):
         await self.bot.wait_until_ready()
         self.col = self.bot.DB.tags
         await self.cache_tags()
-        """
-        Document Schema:
-        {
-            "_id": ObjectId(12345678987654321),
-            "guild": 48652105811346421,
-            "tags": [
-                {
-                    "name": "some random tag name", 
-                    "content": "lol",
-                    "uses": 0,
-                    "owner_id": 305106531053107,
-                    "created_at": "Wed Apr  6 10:50:12 2022"
-                },
-                {
-                    "name": "some random alias name",
-                    "alias": "original tag name",
-                    "owner_id": 305106531053107,
-                    "created_at": "Wed Apr  6 11:35:17 2022"
-                }
-            ]
-        }
-        """
 
-    async def cog_check(self, ctx: Context) -> bool:
+    def cog_check(self, ctx: Context) -> bool:
         return ctx.guild is not None
 
     async def _fetch_tag(self, guild_id: int, name: str) -> dict[str, Any] | None:
@@ -473,7 +451,8 @@ class Tags(commands.Cog):
         name = member.name if member is not None else ctx.guild.name
         tag_list = self.get_tag_list(ctx.guild.id, member_id)
 
-        await TagPaginator(TagSource(tag_list, name, ctx.author)).start(ctx)
+        source = TagSource(tag_list, name, ctx.author)
+        await TagPaginator.start_with_source(ctx, source)
 
 
 async def setup(bot: Advinas):

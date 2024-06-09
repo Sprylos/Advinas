@@ -15,8 +15,8 @@ from infinitode.errors import APIError, BadArgument
 # local
 from exts.database import Database
 from common.custom import Context, LevelConverter
-from common.views import Paginator, ScorePaginator
-from common.source import LBSource, ScoreLBSource
+from common.source import LeaderboardSource
+from common.pagination import LeaderboardPaginator
 from common.errors import BadChannel, InvalidDateError
 from common.utils import (
     create_choices,
@@ -43,6 +43,7 @@ class Inf(commands.Cog):
         self.LEVEL_INFO: dict[str, dict[str, Any]] = inf["levels"]
         self.BOUNTY_DIFFS: dict[str, int | float] = inf["bountyDifficulties"]
         self.EMOJIS: dict[str, int] = inf["enemy_emojis"]
+        self.ENDLESS: dict[bool, str] = {False: "NORMAL", True: "ENDLESS_I"}
 
     def cog_check(self, ctx: Context) -> bool:
         if ctx.guild and ctx.guild.id == 590288287864848387:
@@ -60,12 +61,16 @@ class Inf(commands.Cog):
         level="The level which you want to see the score leaderboard for."
     )
     async def score(self, ctx: Context, level: Annotated[str, LevelConverter]):
-        normal = await self.bot.API.leaderboards(level)
-        endless = await self.bot.API.leaderboards(level, difficulty="ENDLESS_I")
+        title = f"Level {level} Leaderboards (Score)"
+        source = LeaderboardSource(
+            title,
+            ctx.author,
+            lambda beta, endless: self.bot.API.leaderboards(
+                level, difficulty=self.ENDLESS[endless], beta=beta
+            ),
+        )
 
-        await ScorePaginator(
-            ScoreLBSource(ctx, normal, endless, f"Level {level} Leaderboards (Score)")
-        ).start(ctx)
+        await LeaderboardPaginator.start_with_source(ctx, source)
 
     # Wave command
     @commands.hybrid_command(
@@ -77,14 +82,16 @@ class Inf(commands.Cog):
         level="The level which you want to see the wave leaderboard for."
     )
     async def waves(self, ctx: Context, level: Annotated[str, LevelConverter]):
-        normal = await self.bot.API.leaderboards(level, mode="waves")
-        endless = await self.bot.API.leaderboards(
-            level, mode="waves", difficulty="ENDLESS_I"
+        title = f"Level {level} Leaderboards (Waves)"
+        source = LeaderboardSource(
+            title,
+            ctx.author,
+            lambda beta, endless: self.bot.API.leaderboards(
+                level, mode="waves", difficulty=self.ENDLESS[endless], beta=beta
+            ),
         )
 
-        await ScorePaginator(
-            ScoreLBSource(ctx, normal, endless, f"Level {level} Leaderboards (Waves)")
-        ).start(ctx)
+        await LeaderboardPaginator.start_with_source(ctx, source)
 
     # Season command
     @commands.hybrid_command(
@@ -93,17 +100,13 @@ class Inf(commands.Cog):
         description="Shows the top 200 players of the season.",
     )
     async def season(self, ctx: Context):
-        await ctx.typing()
-        lb = await self.bot.API.seasonal_leaderboard()
+        source = LeaderboardSource(
+            lambda lb: f"Season {lb.season} Leaderboards",
+            ctx.author,
+            lambda beta, _: self.bot.API.seasonal_leaderboard(beta=beta),
+        )
 
-        await Paginator(
-            LBSource(
-                ctx,
-                lb,
-                f"Season {lb.season} Leaderboards",
-                headline=f"Player Count: {lb.total}",
-            )
-        ).start(ctx)
+        await LeaderboardPaginator.start_with_source(ctx, source, has_endless=False)
 
     # Dailyquest command
     @commands.hybrid_command(
@@ -115,25 +118,38 @@ class Inf(commands.Cog):
         date="The date you want to see the leaderboard for. Only available beyond 2022-02-09. FORMAT: YYYY-MM-DD!"
     )
     async def dailyquest(self, ctx: Context, date: str | None = None):
-        lb = await self.bot.API.daily_quest_leaderboards(date, warning=False)
-        if lb.is_empty is True:
-            entry = await Database.find_by_key(self.bot.DB.dailyquests, date)
+        async def internal_mapper(beta: bool) -> Leaderboard:
+            lb = await self.bot.API.daily_quest_leaderboards(date, beta=beta)
+            if lb.is_empty is False:
+                data = {
+                    "date": lb.date,
+                    f"{'beta' if beta else 'live'}": lb.raw["leaderboards"],
+                }
+                await Database.upsert(
+                    self.bot.DB.dailyquests, {"date": lb.date}, data=data
+                )
+                return lb
+
+            entry = await Database.find(self.bot.DB.dailyquests, date)
             try:
-                scores = entry.get(lb.date)
+                data = entry.get("beta" if beta else "live")
             except (AttributeError, KeyError):
                 raise InvalidDateError from None
 
-            payload = {"player": {"total": 69420}, "leaderboards": scores}
-            lb = Leaderboard.from_payload("", "", "", "", None, payload, date=lb.date)
-        else:
-            data = {lb.date: lb.raw["leaderboards"]}
-            await Database.update(self.bot.DB.dailyquests, data=data)
+            payload = {
+                "player": {"total": data["total"]},
+                "leaderboards": data["leaderboards"],
+            }
+            return Leaderboard.from_payload("", "", "", "", None, payload, date=lb.date)
 
-        ctx.kwargs["date"] = lb.date
+        source = LeaderboardSource(
+            lambda lb: f"Dailyquest Leaderboards ({lb.date})",
+            ctx.author,
+            lambda beta, _: internal_mapper(beta),
+        )
 
-        await Paginator(
-            LBSource(ctx, lb, f"Dailyquest Leaderboards ({lb.date})")
-        ).start(ctx)
+        await LeaderboardPaginator.start_with_source(ctx, source, has_endless=False)
+        ctx.kwargs["date"] = date
 
     # Level command
     @commands.hybrid_command(
@@ -158,9 +174,7 @@ class Inf(commands.Cog):
 
         em = discord.Embed(title=f"Level {level} Info", colour=60415)
         em.set_image(url=f"attachment://{filename}")
-        em.add_field(
-            name="Difficulty", value=f"{data['difficulty']}%", inline=True
-        )  # nopep8
+        em.add_field(name="Difficulty", value=f"{data['difficulty']}%", inline=True)
         em.add_field(name="Enemies", value=enemy_emojis, inline=True)
         em.set_footer(
             text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url
@@ -169,7 +183,7 @@ class Inf(commands.Cog):
             rt_lb = await self.bot.API.runtime_leaderboards(level, "U-T68Z-T3JV-HK3DJY")
             em.add_field(
                 name="Top 1% Threshold", value="{:,}".format(int(rt_lb[200].score))
-            )  # nopep8
+            )
         except (APIError, BadArgument):
             pass
         if base:
@@ -208,7 +222,10 @@ class Inf(commands.Cog):
         )
         keep = coins * 50
         dif_slope = 1 + ((difficulty - 100) / 200)
-        l_bounties, l_cost, l_buy = [], [], []
+        l_bounties: list[str] = []
+        l_cost: list[str] = []
+        l_buy: list[str] = []
+
         for i in range(1, bounties + 1):
             val = floor((dif_slope) * (1.60000002384186 ** (1.15 * (i - 1)) * 180))
             if val < 500:
@@ -234,7 +251,7 @@ class Inf(commands.Cog):
         em = discord.Embed(
             title="Bounty Calculator", description=description, colour=60415
         )
-        
+
         em.set_footer(
             text=f"Requested by {ctx.author}",
             icon_url=ctx.author.display_avatar.url,

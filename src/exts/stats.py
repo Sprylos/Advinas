@@ -124,7 +124,8 @@ class Stats(commands.Cog):
     async def _fetch_messages(
         self, channel: discord.TextChannel, *, dt_obj: bool = True
     ) -> dict[str, Any]:
-        count, channel_id, messages = 0, channel.id, []
+        count, channel_id = 0, channel.id
+        messages: list[dict[str, Any]] = []
         async for message in channel.history(limit=None, oldest_first=True):
             messages.append(self._parse_message(message, dt_obj=dt_obj))
             count += 1

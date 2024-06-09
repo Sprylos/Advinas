@@ -14,11 +14,21 @@ from discord.ext import commands
 from common import custom
 from common.errors import InCommandError
 from common.utils import create_choices
-from common.views import Invite
 from common.custom import codeblock, Context
 
 if TYPE_CHECKING:
     from bot import Advinas
+
+
+class Invite(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(
+            discord.ui.Button(
+                label=f"Invite me!",
+                url=r"https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands",
+            )
+        )
 
 
 class Misc(commands.Cog):
@@ -221,7 +231,7 @@ class Misc(commands.Cog):
     @wiki.autocomplete("query")
     async def _wiki_autocomplete(
         self, inter: discord.Interaction, current: str
-    ) -> list[app_commands.Choice]:
+    ) -> list[app_commands.Choice[str]]:
         current = current.replace(" ", "_").lower()
         return create_choices(
             [self.wiki_keys[t] for t in self.wiki_keys.keys() if current in t]

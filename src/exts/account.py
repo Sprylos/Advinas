@@ -172,19 +172,13 @@ class Account(commands.Cog):
         context_menu: bool = False,
     ) -> Player:
         pl: dict[str, Any] | None = {}
-        player: Player | None = None
         if playerid is None:  # no playerid was given
             pl = (
                 await self.find_connection(author.id, True)
                 or await self.find_by_name(author.display_name)
                 or await self.find_by_name(author.name)
             )
-            if (
-                pl is not None
-            ):  # the playerid was found in the database using info about the author
-                player = await self.bot.API.player(playerid=next(iter(pl)))
-                playerid = ""  # make typechecker happy
-            else:
+            if pl is None:
                 raise (
                     NoPlayerProvidedError
                     if not context_menu
@@ -192,29 +186,38 @@ class Account(commands.Cog):
                         "Could not fetch profile for this member."
                     )
                 )
+            # the playerid was found in the database using info about the author
+            return await self.bot.API.player(playerid=next(iter(pl)))
+        
+        try:
+            upper = playerid.upper()
+            player = await self.bot.API.player(
+                playerid=upper if upper.startswith("U-") else "U-" + upper
+            )
+        except (APIError, BadArgument):
+            pass  # The playerid is invalid, but we don't give up yet
         else:
-            try:
-                upper = playerid.upper()
-                player = await self.bot.API.player(
-                    playerid=upper if upper.startswith("U-") else "U-" + upper
-                )
-            except (APIError, BadArgument):
-                pass  # The playerid is invalid, but we don't give up yet
-        if player is None:  # still no luck
-            pl = await self.find_by_name(playerid)
-            if pl is None:
-                match = self.mention_regex.search(playerid)
-                new_id = match[0] if match else playerid
-                pl = await self.find_connection(new_id, True)
-                if pl is None:
-                    member = discord.utils.get(self.bot.users, name=playerid)
-                    if member:
-                        pl = await self.find_connection(member.id, True)
-                    if pl is None:
-                        raise InvalidPlayerError
-        if player is None:
-            player = await self.bot.API.player(playerid=next(iter(pl)))
-        return player
+            return player
+
+        pl = (
+            await self.find_by_name(playerid)
+            or await self._find_player_mention(playerid)
+            or await self._find_player_name(playerid)
+        )
+        if pl is None:
+            raise InvalidPlayerError
+
+        return await self.bot.API.player(playerid=next(iter(pl)))
+
+    async def _find_player_mention(self, playerid: str) -> dict[str, str] | None:
+        match = self.mention_regex.search(playerid)
+        id = match[0] if match else playerid
+        return await self.find_connection(id, True)
+
+    async def _find_player_name(self, playerid: str) -> dict[str, str] | None:
+        member = discord.utils.get(self.bot.users, name=playerid)
+        if member:
+            return await self.find_connection(member.id, True)
 
     async def _generate_player(self, user_id: int, player: Player) -> discord.File:
         try:

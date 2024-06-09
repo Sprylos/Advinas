@@ -36,7 +36,7 @@ if not config.testing:
 class Advinas(commands.Bot):
     def __init__(self, prefix: str) -> None:
         activity = discord.Activity(
-            type=discord.ActivityType.watching, name="You | /invite | v4.1"
+            type=discord.ActivityType.watching, name="You | /invite | v4.2"
         )
         allowed_mentions = discord.AllowedMentions(
             everyone=False, users=True, roles=False, replied_user=False
@@ -150,7 +150,7 @@ class Advinas(commands.Bot):
     async def on_app_command_completion(
         self,
         inter: discord.Interaction,
-        command: discord.app_commands.Command | discord.app_commands.ContextMenu,
+        command: discord.app_commands.Command[Any, Any, Any] | discord.app_commands.ContextMenu,
     ) -> None:
         """Handles completed application commands."""
         if (
@@ -252,5 +252,5 @@ if __name__ == "__main__":
     import time
 
     process = Popen(["java", "-jar", "Lavalink.jar"])
-    time.sleep(10)
+    time.sleep(15)
     bot.run(config.token)

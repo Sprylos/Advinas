@@ -34,7 +34,7 @@ def check_channel(*channel_ids: int):
 def app_check_channel(*channel_ids: int):
     async def predicate(inter: discord.Interaction) -> bool:
         if inter.guild and inter.guild.id == 590288287864848387:
-            if inter.channel and inter.channel.id not in (*inter.client.BOT_CHANNELS, *channel_ids):  # type: ignore # nopep8
+            if inter.channel and inter.channel.id not in (*inter.client.BOT_CHANNELS, *channel_ids):  # type: ignore
                 raise BadChannel
         return True
 
@@ -54,7 +54,7 @@ class Player(wavelink.Player):
         self.context = ctx
 
 
-class SeekTime(commands.Converter):
+class SeekTime(commands.Converter["int | None"]):
     compiled = re.compile(
         """
            (?:(?P<hours>[0-9]{1,5})(?:hours?|h))?        # e.g. 12h
@@ -215,10 +215,10 @@ class GuildContext(Context):
     me: discord.Member
 
 
-class LevelConverter(commands.Converter):
-    async def convert(self, ctx: Context, level: str) -> str:
+class LevelConverter(commands.Converter[str]):
+    async def convert(self, ctx: Context, argument: str) -> str:
         level = (
-            level.replace("_", ".")
+            argument.replace("_", ".")
             .replace(",", ".")
             .replace("-", ".")
             .replace(" ", ".")

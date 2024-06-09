@@ -10,10 +10,10 @@ import wavelink
 import discord
 from discord import app_commands, VoiceChannel
 from discord.ext import commands
-from common.utils import convert_ms
+from common.utils import convert_ms, convert_ms_literal
 
 # local
-from common.views import Paginator
+from common.pagination import Paginator
 from common.source import QueueSource
 from common.errors import (
     AlreadyPausedError,
@@ -245,8 +245,10 @@ class Music(commands.Cog):
         if len(player.queue) < 1:
             raise QueueEmptyError
 
-        entries: list[wavelink.Playable] = list(player.queue)
-        await Paginator(QueueSource(entries, ctx.author)).start(ctx)
+        queue = list(player.queue)
+        duration = convert_ms_literal(sum(track.length for track in queue))
+        source = QueueSource(queue, f"Current Queue ({duration})", ctx.author)
+        await Paginator[QueueSource].start_with_source(ctx, source)
 
     @commands.hybrid_command(
         name="loop",

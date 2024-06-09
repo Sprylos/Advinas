@@ -32,7 +32,7 @@ def tablify(indict: dict[Any, Any]) -> str:
     return "\n".join([f"{key} {vals[keys.index(key)]}" for key in keys])
 
 
-def convert_ms(ms: float) -> str:
+def convert_ms(ms: int) -> str:
     """Converts miliseconds to a better readable time format."""
     s = ms // 1000
     if s < 0:
@@ -40,6 +40,17 @@ def convert_ms(ms: float) -> str:
     m = int(s // 60)
     s = int(s % 60)
     return f"{m}:{s:02d}"
+
+
+def convert_ms_literal(ms: int) -> str:
+    """Converts miliseconds to a better readable time format."""
+    s = ms // 1000
+    if s < 0:
+        return "0h 00m 00s"
+    h = s // 3600
+    m = (s // 60) % 60
+    s = s % 60
+    return f"{h}h {m}m {s}s"
 
 
 def get_level_bounty(
