@@ -252,5 +252,5 @@ if __name__ == "__main__":
     import time
 
     process = Popen(["java", "-jar", "Lavalink.jar"])
-    time.sleep(15)
+    time.sleep(10)
     bot.run(config.token)

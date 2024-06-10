@@ -188,7 +188,7 @@ class Account(commands.Cog):
                 )
             # the playerid was found in the database using info about the author
             return await self.bot.API.player(playerid=next(iter(pl)))
-        
+
         try:
             upper = playerid.upper()
             player = await self.bot.API.player(
@@ -240,17 +240,35 @@ class Account(commands.Cog):
     @commands.hybrid_command(
         name="profile",
         aliases=["prof"],
-        description="Shows your in game profile in an image (NO ENDLESS LEADERBOARD DUE TO API LIMITATIONS).",
+        description="Shows your in game profile in an image (normal mode score only).",
     )
     @app_commands.describe(
-        playerid="The playerid of the player you want to see the profile of."
+        playerid="The playerid of the player you want to see the profile of.",
+        version="The version of the game to use. Beta version requires the playerid to be given.",
     )
-    async def profile(self, ctx: Context, playerid: str | None = None) -> None:
+    async def profile(
+        self,
+        ctx: Context,
+        playerid: str | None = None,
+        version: Literal["Live", "Beta"] = "Live",
+    ) -> None:
         await ctx.typing()
         start_time: float = time.perf_counter()
 
-        player: Player = await self._find_player(ctx.author, playerid)
-        await self.add_nickname(player)
+        if version == "Beta":
+            if playerid is None:
+                raise NoPlayerProvidedError(
+                    "You must provide a playerid for the beta version."
+                )
+
+            upper = playerid.upper()
+            player = await self.bot.API.player(
+                playerid=upper if upper.startswith("U-") else "U-" + upper, beta=True
+            )
+
+        else:
+            player: Player = await self._find_player(ctx.author, playerid)
+            await self.add_nickname(player)
 
         file = await self._generate_player(ctx.author.id, player)
         await ctx.reply(
