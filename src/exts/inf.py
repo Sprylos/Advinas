@@ -180,12 +180,14 @@ class Inf(commands.Cog):
             text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url
         )
         try:
-            rt_lb = await self.bot.API.runtime_leaderboards(level, "U-T68Z-T3JV-HK3DJY")
-            em.add_field(
-                name="Top 1% Threshold", value="{:,}".format(int(rt_lb[200].score))
-            )
+            rt_lb: Leaderboard = await self.bot.API.runtime_leaderboards(level, "U-T68Z-T3JV-HK3DJY")
         except (APIError, BadArgument):
             pass
+        else:
+            if len(rt_lb) > 200:
+                em.add_field(
+                    name="Top 1% Threshold", value="{:,}".format(int(rt_lb[200].score))
+                )
         if base:
             em.add_field(name="Base Effects", value=base, inline=False)
         if quests:
