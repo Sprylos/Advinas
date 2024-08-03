@@ -41,7 +41,7 @@ class Inf(commands.Cog):
         self.LEVELS: list[str] = list(inf["levels"].keys())
         self.bot.LEVELS = self.LEVELS
         self.LEVEL_INFO: dict[str, dict[str, Any]] = inf["levels"]
-        self.BOUNTY_DIFFS: dict[str, int | float] = inf["bountyDifficulties"]
+        self.BOUNTY_DIFFS: dict[str, int | float] = {l: data["difficulty"] for l, data in self.LEVEL_INFO.items()}
         self.EMOJIS: dict[str, int] = inf["enemy_emojis"]
         self.ENDLESS: dict[bool, str] = {False: "NORMAL", True: "ENDLESS_I"}
 
@@ -174,7 +174,7 @@ class Inf(commands.Cog):
 
         em = discord.Embed(title=f"Level {level} Info", colour=60415)
         em.set_image(url=f"attachment://{filename}")
-        em.add_field(name="Difficulty", value=f"{data['difficulty']}%", inline=True)
+        em.add_field(name="Difficulty", value=f"{int(data['difficulty'])}%", inline=True)
         em.add_field(name="Enemies", value=enemy_emojis, inline=True)
         em.set_footer(
             text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url

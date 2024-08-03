@@ -77,7 +77,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 105
         },
         "1.3": {
             "enemies": ["REGULAR", "STRONG"],
@@ -86,7 +86,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 110
         },
         "1.4": {
             "enemies": ["REGULAR", "STRONG"],
@@ -96,7 +96,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 110
         },
         "1.5": {
             "enemies": ["REGULAR", "STRONG", "FAST"],
@@ -107,7 +107,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 110
         },
         "1.6": {
             "enemies": ["REGULAR", "STRONG", "FAST"],
@@ -118,7 +118,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 115
         },
         "1.7": {
             "enemies": ["REGULAR", "STRONG", "FAST"],
@@ -127,7 +127,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 115
         },
         "1.8": {
             "enemies": ["REGULAR", "STRONG", "FAST", "BOSS"],
@@ -140,7 +140,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 122
         },
         "1.b1": {
             "enemies": ["REGULAR", "STRONG", "FAST"],
@@ -164,7 +164,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 110
         },
         "2.2": {
             "enemies": ["REGULAR", "FAST", "HELI"],
@@ -174,7 +174,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 117
         },
         "2.3": {
             "enemies": ["REGULAR", "FAST", "HELI"],
@@ -187,7 +187,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 120
         },
         "2.4": {
             "enemies": ["REGULAR", "STRONG", "HELI"],
@@ -199,7 +199,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 115
         },
         "2.5": {
             "enemies": ["REGULAR", "STRONG", "FAST"],
@@ -209,7 +209,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 125
+            "difficulty": 140
         },
         "2.6": {
             "enemies": ["REGULAR", "STRONG", "FAST"],
@@ -220,7 +220,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 125
+            "difficulty": 145
         },
         "2.7": {
             "enemies": ["REGULAR", "STRONG", "FAST", "HELI"],
@@ -229,7 +229,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 120
         },
         "2.8": {
             "enemies": ["REGULAR", "STRONG", "FAST", "JET", "BOSS"],
@@ -240,7 +240,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 100
+            "difficulty": 134
         },
         "2.b1": {
             "enemies": ["REGULAR", "STRONG", "FAST", "HELI"],
@@ -262,7 +262,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 125
+            "difficulty": 140
         },
         "3.2": {
             "enemies": ["REGULAR", "STRONG", "FAST", "ARMORED"],
@@ -273,7 +273,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 125
+            "difficulty": 153
         },
         "3.3": {
             "enemies": ["REGULAR", "STRONG", "JET", "ARMORED"],
@@ -283,7 +283,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 125
+            "difficulty": 160
         },
         "3.4": {
             "enemies": ["REGULAR", "FAST", "JET", "ARMORED"],
@@ -294,7 +294,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 130
+            "difficulty": 160
         },
         "3.5": {
             "enemies": ["REGULAR", "STRONG", "FAST", "JET", "ARMORED"],
@@ -303,7 +303,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 135
+            "difficulty": 160
         },
         "3.6": {
             "enemies": ["REGULAR", "STRONG", "ARMORED", "HEALER"],
@@ -313,7 +313,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 130
+            "difficulty": 160
         },
         "3.7": {
             "enemies": ["REGULAR", "FAST", "JET", "HEALER"],
@@ -325,7 +325,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 135
+            "difficulty": 165
         },
         "3.8": {
             "enemies": [
@@ -339,7 +339,7 @@
             "quests": {},
             "base": {},
             "music": "",
-            "difficulty": 135
+            "difficulty": 171
         },
         "3.b1": {
             "enemies": ["REGULAR", "STRONG", "JET", "HEALER", "FIGHTER"],
@@ -352,7 +352,7 @@
                 "Tesla Attack Speed": "+ 15%"
             },
             "music": "",
-            "difficulty": 145
+            "difficulty": 155
         },
         "4.1": {
             "enemies": ["REGULAR", "STRONG", "FAST", "HELI", "ARMORED"],
@@ -362,7 +362,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 140
+            "difficulty": 165
         },
         "4.2": {
             "enemies": ["REGULAR", "STRONG", "HELI", "JET", "ARMORED"],
@@ -373,7 +373,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 140
+            "difficulty": 170
         },
         "4.3": {
             "enemies": [
@@ -392,7 +392,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 122
+            "difficulty": 150
         },
         "4.4": {
             "enemies": [
@@ -410,7 +410,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 140
+            "difficulty": 163
         },
         "4.5": {
             "enemies": [
@@ -424,7 +424,7 @@
             "quests": {},
             "base": {},
             "music": "",
-            "difficulty": 145
+            "difficulty": 165
         },
         "4.6": {
             "enemies": [
@@ -442,7 +442,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 150
+            "difficulty": 175
         },
         "4.7": {
             "enemies": ["REGULAR", "FAST", "HELI", "JET", "TOXIC", "ICY"],
@@ -452,7 +452,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 150
+            "difficulty": 180
         },
         "4.8": {
             "enemies": [
@@ -472,7 +472,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 150
+            "difficulty": 185
         },
         "4.b1": {
             "enemies": [
@@ -493,7 +493,7 @@
                 "Flamethrower Burning Time": "+ 10%"
             },
             "music": "",
-            "difficulty": 150
+            "difficulty": 160
         },
         "5.1": {
             "enemies": [
@@ -514,7 +514,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 150
+            "difficulty": 170
         },
         "5.2": {
             "enemies": ["FAST", "JET", "HEALER", "TOXIC", "ICY", "FIGHTER"],
@@ -524,7 +524,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 155
+            "difficulty": 185
         },
         "5.3": {
             "enemies": [
@@ -543,7 +543,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 140
+            "difficulty": 185
         },
         "5.4": {
             "enemies": [
@@ -561,7 +561,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 160
+            "difficulty": 220
         },
         "5.5": {
             "enemies": [
@@ -580,7 +580,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 159
+            "difficulty": 192
         },
         "5.6": {
             "enemies": [
@@ -600,7 +600,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 165
+            "difficulty": 188
         },
         "5.7": {
             "enemies": [
@@ -619,7 +619,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 165
+            "difficulty": 225
         },
         "5.8": {
             "enemies": [
@@ -641,7 +641,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 180
+            "difficulty": 261.25
         },
         "5.b1": {
             "enemies": [
@@ -658,7 +658,7 @@
             "quests": {},
             "base": {},
             "music": "",
-            "difficulty": 190
+            "difficulty": 210
         },
         "5.b2": {
             "enemies": [
@@ -677,7 +677,7 @@
             "quests": {},
             "base": {},
             "music": "",
-            "difficulty": 190
+            "difficulty": 210
         },
         "6.1": {
             "enemies": [
@@ -719,7 +719,7 @@
             },
             "base": {},
             "music": "",
-            "difficulty": 200
+            "difficulty": 183.333
         },
         "6.3": {
             "enemies": ["BOSS"],
@@ -768,6 +768,35 @@
             "base": {},
             "music": "",
             "difficulty": 230
+        },
+        "6.6": {
+            "enemies": [
+                "REGULAR",
+                "STRONG",
+                "HELI",
+                "JET",
+                "HEALER",
+                "TOXIC",
+                "ICY",
+                "FIGHTER",
+                "LIGHT",
+                "BOSS"
+            ],
+            "quests": {
+                "Wave Interval": "+ 2s",
+                "Range (Windstorm)": "+ 2",
+                "Amount of loot slots in miners": "+ 1",
+                "Duration (Windstorm)": "+ 2s",
+                "Mining speed": "+ 5%"
+            },
+            "base": {
+                "Enemies Walk On Platforms": "= Enabled",
+                "Max enemy path searches": "+ 10",
+                "Gauss": "= Enabled",
+                "Crusher": "= Enabled"
+            },
+            "music": "",
+            "difficulty": 260
         },
         "rumble": {
             "enemies": [
@@ -826,7 +855,7 @@
             "quests": {},
             "base": {},
             "music": "",
-            "difficulty": 290
+            "difficulty": 310
         },
         "zecred": {
             "enemies": [
@@ -1342,66 +1371,6 @@
             "music": "",
             "difficulty": 120
         }
-    },
-    "bountyDifficulties": {
-        "1.1": 100,
-        "1.2": 100,
-        "1.3": 100,
-        "1.4": 100,
-        "1.5": 100,
-        "1.6": 100,
-        "1.7": 100,
-        "1.8": 100,
-        "1.b1": 105,
-        "2.1": 100,
-        "2.2": 100,
-        "2.3": 100,
-        "2.4": 100,
-        "2.5": 125,
-        "2.6": 125,
-        "2.7": 100,
-        "2.8": 100,
-        "2.b1": 120,
-        "3.1": 125,
-        "3.2": 125,
-        "3.3": 125,
-        "3.4": 130,
-        "3.5": 135,
-        "3.6": 130,
-        "3.7": 135,
-        "3.8": 135,
-        "3.b1": 145,
-        "4.1": 140,
-        "4.2": 140,
-        "4.3": 122.5,
-        "4.4": 140,
-        "4.5": 145,
-        "4.6": 150,
-        "4.7": 150,
-        "4.8": 150,
-        "4.b1": 150,
-        "5.1": 150,
-        "5.2": 155,
-        "5.3": 140,
-        "5.4": 160,
-        "5.5": 159,
-        "5.6": 165,
-        "5.7": 165,
-        "5.8": 180.4,
-        "5.b1": 190,
-        "5.b2": 190,
-        "6.1": 190,
-        "6.2": 200,
-        "6.3": 280,
-        "6.4": 200,
-        "6.5": 230,
-        "rumble": 370,
-        "dev": 290,
-        "dq1": 90,
-        "dq3": 100,
-        "dq4": 85,
-        "dq7": 85,
-        "dq8": 100
     },
     "enemy_emojis": {
         "enemy_regular": 897851514612244533,

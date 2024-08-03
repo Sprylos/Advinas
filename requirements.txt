@@ -1,7 +1,7 @@
 infinitode.py
 discord.py
 jishaku
-wavelink
+wavelink==3.4.0
 orjson
 Pillow
 pymongo[srv]
