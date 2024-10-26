@@ -1,9 +1,0 @@
-infinitode.py
-discord.py
-jishaku
-wavelink==3.4.0
-orjson
-Pillow
-pymongo[srv]
-motor
-lru_dict

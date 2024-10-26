@@ -1,0 +1,9 @@
+services:
+  lavalink:
+    build:
+      context: ./lavalink/
+  bot-core:
+    build:
+      context: ./bot-core/
+    depends_on:
+      - lavalink

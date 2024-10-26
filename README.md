@@ -22,4 +22,4 @@ It is completely typed and documented.
 - [ ] Automatic Run tracking and stats commands
 - [x] Database optimizations and performance (Apr 13th 2022)
 
-Feel free to DM me on [Discord](https://discord.gg/hESyUZA) (Sprylos#0701) for questions.
+Feel free to DM me on [Discord](https://discord.gg/hESyUZA) (Sprylos) for questions.

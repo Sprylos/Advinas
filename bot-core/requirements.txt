@@ -1,0 +1,9 @@
+infinitode.py
+discord.py
+jishaku
+wavelink==3.4.0
+orjson
+Pillow
+motor>=3.6
+pymongo
+lru_dict

@@ -11,7 +11,8 @@ logs.py
 temp.*
 *.spry
 *.jar
-*.yml
+application.yml
 _*.*
 !__init__.py
 .vscode/
+jsons/
