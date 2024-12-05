@@ -1,8 +1,15 @@
 services:
   lavalink:
-    build:
-      context: ./lavalink/
+    image: ghcr.io/lavalink-devs/lavalink:4
+    container_name: lavalink
+    restart: unless-stopped
+    volumes:
+      - ./application.yml:/opt/Lavalink/application.yml
+      - ./plugins/:/opt/Lavalink/plugins/
+    expose:
+      - 3030
   bot-core:
+    container_name: bot-core
     build:
       context: ./bot-core/
     depends_on:

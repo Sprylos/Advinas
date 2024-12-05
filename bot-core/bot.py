@@ -36,7 +36,7 @@ if not config.testing:
 class Advinas(commands.Bot):
     def __init__(self, prefix: str) -> None:
         activity = discord.Activity(
-            type=discord.ActivityType.watching, name="You | /invite | v4.2"
+            type=discord.ActivityType.watching, name="You | /invite | v4.3"
         )
         allowed_mentions = discord.AllowedMentions(
             everyone=False, users=True, roles=False, replied_user=False

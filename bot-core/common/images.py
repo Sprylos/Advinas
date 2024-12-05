@@ -211,12 +211,6 @@ class Images:
                     anchor="rs",
                     font=self.font_scores,
                 )
-                write.text(
-                    (scores_x2, scores_y),
-                    "#{:,}".format(lvl_rank),
-                    anchor="rs",
-                    font=self.font_scores,
-                )
                 scores_y = 698 - (5 * 128)
                 scores_x += 128 * 3
                 scores_x2 += 128 * 3
