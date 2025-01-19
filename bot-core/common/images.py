@@ -252,7 +252,12 @@ class Images:
                     colour_code[badge_values[badge_keys.index(badge_name)][1]]
                 )
 
-            badge = Image.open(f"{path}/badges/pb-{rar}-{badge_name}{extra}.png")
+            try:
+                badge = Image.open(f"{path}/badges/pb-{rar}-{badge_name}{extra}.png")
+            except FileNotFoundError:
+                badge_c -= 1
+                continue
+            
             bg.paste(badge, (badge_x, badge_y), badge)
 
             if badge_c == 9:
