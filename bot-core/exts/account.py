@@ -102,13 +102,6 @@ class Account(commands.Cog):
             return data
         return next(iter(data))
 
-    async def find_by_name(self, name: str) -> dict[str, str] | None:
-        data: dict[str, str] | None = await self.nicks.find_one(
-            {"$text": {"$search": name.lower()}},
-            {"_id": 0},
-        )
-        return data
-
     async def remove_connection(self, user_id: int):
         await self.accounts.delete_one(
             {"$text": {"$search": str(user_id)}},
@@ -164,21 +157,31 @@ class Account(commands.Cog):
             f"Successfully unlinked your account from playerid `{playerid}`."
         )
 
+    async def try_fetch_player(self, playerid: str, *, beta: bool = False) -> Player | None:
+        try:
+            if playerid.startswith("U-"):
+                return await self.bot.API.player(playerid, beta=beta)
+            
+            return await self.bot.API.player(nickname=playerid, beta=beta)
+        except (APIError, BadArgument):
+            return None
+
+
     async def _find_player(
         self,
-        author: discord.Member | discord.User,
+        member: discord.Member | discord.User,
         playerid: str | None = None,
         *,
         context_menu: bool = False,
     ) -> Player:
-        pl: dict[str, Any] | None = {}
         if playerid is None:  # no playerid was given
-            pl = (
-                await self.find_connection(author.id, True)
-                or await self.find_by_name(author.display_name)
-                or await self.find_by_name(author.name)
-            )
-            if pl is None:
+            connection = await self.find_connection(member.id, True)
+            if connection is not None:
+                # the playerid was found in the database using info about the member
+                return await self.bot.API.player(playerid=next(iter(connection)))
+                
+            player = await self.try_fetch_player(member.display_name)
+            if not player:
                 raise (
                     NoPlayerProvidedError
                     if not context_menu
@@ -186,33 +189,19 @@ class Account(commands.Cog):
                         "Could not fetch profile for this member."
                     )
                 )
-            # the playerid was found in the database using info about the author
-            return await self.bot.API.player(playerid=next(iter(pl)))
-
-        try:
-            upper = playerid.upper()
-            player = await self.bot.API.player(
-                playerid=upper if upper.startswith("U-") else "U-" + upper
-            )
-        except (APIError, BadArgument):
-            pass  # The playerid is invalid, but we don't give up yet
-        else:
             return player
 
-        pl = (
-            await self.find_by_name(playerid)
-            or await self._find_player_mention(playerid)
-            or await self._find_player_name(playerid)
-        )
-        if pl is None:
+        player = await self.try_fetch_player(playerid)
+        if not player:
             raise InvalidPlayerError
+        
+        return player
 
-        return await self.bot.API.player(playerid=next(iter(pl)))
 
     async def _find_player_mention(self, playerid: str) -> dict[str, str] | None:
         match = self.mention_regex.search(playerid)
-        id = match[0] if match else playerid
-        return await self.find_connection(id, True)
+        _id = match[0] if match else playerid
+        return await self.find_connection(_id, True)
 
     async def _find_player_name(self, playerid: str) -> dict[str, str] | None:
         member = discord.utils.get(self.bot.users, name=playerid)
@@ -257,17 +246,19 @@ class Account(commands.Cog):
 
         if version == "Beta":
             if playerid is None:
-                raise NoPlayerProvidedError(
-                    "You must provide a playerid for the beta version."
-                )
+                player = await self.try_fetch_player(ctx.author.display_name, beta=True)
+                if not player:
+                    raise NoPlayerProvidedError(
+                        "You must provide a playerid for the beta version."
+                    )
 
-            upper = playerid.upper()
-            player = await self.bot.API.player(
-                playerid=upper if upper.startswith("U-") else "U-" + upper, beta=True
-            )
+            elif playerid.startswith("U-"):
+                player = await self.bot.API.player(playerid, beta=True)
+            else:
+                player = await self.bot.API.player(nickname=playerid, beta=True)
 
         else:
-            player: Player = await self._find_player(ctx.author, playerid)
+            player = await self._find_player(ctx.author, playerid)
             await self.add_nickname(player)
 
         file = await self._generate_player(ctx.author.id, player)
