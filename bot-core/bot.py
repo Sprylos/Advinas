@@ -36,7 +36,7 @@ if not config.testing:
 class Advinas(commands.Bot):
     def __init__(self, prefix: str) -> None:
         activity = discord.Activity(
-            type=discord.ActivityType.watching, name="You | /invite | v4.3"
+            type=discord.ActivityType.watching, name="You | /invite | v4.4"
         )
         allowed_mentions = discord.AllowedMentions(
             everyone=False, users=True, roles=False, replied_user=False
@@ -102,7 +102,7 @@ class Advinas(commands.Bot):
 
     async def task_completion(
         self,
-        loop: tasks.Loop[Callable[..., Coroutine[Any, Any, Any]]],
+        loop: tasks.Loop[Any],
         fields: dict[str, str] | None = None,
     ) -> None:
         em = discord.Embed(
@@ -122,7 +122,7 @@ class Advinas(commands.Bot):
 
     async def task_error(
         self,
-        loop: tasks.Loop[Callable[..., Coroutine[Any, Any, Any]]],
+        loop: tasks.Loop[Any],
         err: BaseException,
     ) -> None:
         em = discord.Embed(

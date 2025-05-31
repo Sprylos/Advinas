@@ -4,7 +4,6 @@ from __future__ import annotations
 from math import floor, ceil
 from typing import Annotated, Any, TYPE_CHECKING
 
-
 # packages
 import discord
 from discord import Interaction, app_commands
@@ -115,27 +114,21 @@ class Inf(commands.Cog):
         description="Shows the top dailyquest scores of today or the given the day.",
     )
     @app_commands.describe(
-        date="The date you want to see the leaderboard for. Only available beyond 2022-02-09. FORMAT: YYYY-MM-DD!"
+        date="The date you want to see the leaderboard for. Only available beyond 2021-05-06. FORMAT: YYYY-MM-DD!"
     )
     async def dailyquest(self, ctx: Context, date: str | None = None):
-        async def internal_mapper(beta: bool) -> Leaderboard:
-            lb = await self.bot.API.daily_quest_leaderboards(date, beta=beta)
-            if lb.is_empty is False:
-                data = {
-                    "date": lb.date,
-                    f"{'beta' if beta else 'live'}": lb.raw["leaderboards"],
-                }
-                await Database.upsert(
-                    self.bot.DB.dailyquests, {"date": lb.date}, data=data
-                )
+        async def mapper(beta: bool, endless: bool) -> Leaderboard:
+            lb: Leaderboard = await self.bot.API.daily_quest_leaderboards(date, beta=beta)
+            if lb:
                 return lb
 
-            entry = await Database.find(self.bot.DB.dailyquests, date)
-            try:
-                data = entry.get("beta" if beta else "live")
-            except (AttributeError, KeyError):
-                raise InvalidDateError from None
+            entry = await self.bot.DB.dailyquest.find_one({"date": date}, {"_id": 0})
+            if not entry:
+                raise InvalidDateError(
+                    f"No dailyquest leaderboard found for date: {date}"
+                )
 
+            data = entry["live"] if not beta else entry["beta"]
             payload = {
                 "player": {"total": data["total"]},
                 "leaderboards": data["leaderboards"],
@@ -145,7 +138,7 @@ class Inf(commands.Cog):
         source = LeaderboardSource(
             lambda lb: f"Dailyquest Leaderboards ({lb.date})",
             ctx.author,
-            lambda beta, _: internal_mapper(beta),
+            mapper,
         )
 
         await LeaderboardPaginator.start_with_source(ctx, source, has_endless=False)

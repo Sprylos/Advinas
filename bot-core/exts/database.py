@@ -27,10 +27,6 @@ class Database(commands.Cog):
         self.save_dailyquest_leaderboard.start()
 
     @staticmethod
-    async def find(col: AsyncIOMotorCollection, data: Any) -> Any:
-        return await col.find_one({"$text": {"$search": str(data)}}, {"_id": 0})
-
-    @staticmethod
     async def find_by_key(col: AsyncIOMotorCollection, data: Any) -> Any:
         return await col.find_one({str(data): {"$exists": True}})
 
