@@ -35,7 +35,9 @@ class Tags(commands.Cog):
         await self.cache_tags()
 
     def cog_check(self, ctx: Context) -> bool:
-        return ctx.guild is not None
+        if ctx.guild is None:
+            raise commands.NoPrivateMessage()
+        return True
 
     async def _fetch_tag(self, guild_id: int, name: str) -> dict[str, Any] | None:
         ret: dict[str, Any] | None = await self.col.find_one(
