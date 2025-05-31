@@ -14,7 +14,7 @@ from discord.ext import commands
 from common import custom
 from common.errors import InCommandError
 from common.utils import create_choices
-from common.custom import codeblock, Context
+from common.custom import codeblock, Context, GuildContext
 
 if TYPE_CHECKING:
     from bot import Advinas
@@ -296,6 +296,49 @@ class Misc(commands.Cog):
         await ctx.reply(
             content=f"Time since last reboot: **{days}d, {hours}h, {minutes}m, {seconds}s.**"
         )
+
+    @commands.hybrid_command(
+        name="slowmode",
+        description="Sets the slowmode for a channel or increments by one minute if minutes and seconds are missing.",
+    )
+    @app_commands.describe(
+        channel="The channel to set the slowmode for. Defaults to the current channel.",
+        minutes="The number of minutes to set the slowmode for.",
+        seconds="The number of seconds to set the slowmode for.",
+    )
+    @app_commands.default_permissions(manage_channels=True)
+    @commands.guild_only()
+    async def slowmode(
+        self,
+        ctx: GuildContext,
+        channel: discord.TextChannel | None = None,
+        minutes: int | None = None,
+        seconds: int | None = None,
+    ):
+        if not ctx.author.guild_permissions.manage_channels:
+            return await ctx.reply("You don't have permission to manage channels.")
+
+        if channel is None:
+            if not isinstance(ctx.channel, discord.TextChannel):
+                return await ctx.reply("You can only set slowmode in text channels.")
+
+            channel = ctx.channel
+
+        if not channel.permissions_for(ctx.me).manage_channels:
+            return await ctx.reply("I don't have permission to manage the channel.")
+
+        if minutes is None and seconds is None:
+            seconds = channel.slowmode_delay + 60
+        else:
+            seconds = (minutes or 0) * 60 + (seconds or 0)
+
+        if seconds < 0 or seconds > 21600:
+            return await ctx.reply(
+                "Slowmode must be between 0 and 21600 seconds (6 hours)."
+            )
+
+        await channel.edit(slowmode_delay=seconds)
+        await ctx.reply(f"Set `#{channel.name}` slowmode to {seconds} seconds.")
 
 
 async def setup(bot: Advinas):
