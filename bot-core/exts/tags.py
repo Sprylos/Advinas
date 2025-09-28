@@ -196,11 +196,11 @@ class Tags(commands.Cog):
         author = ctx.author
         if author.id != tag.owner_id:
             if not (
-                author.guild_permissions.manage_guild
+                author.guild_permissions.manage_messages
                 or author.guild_permissions.administrator
             ):
                 raise TagError(
-                    "This is not your tag and you do not have the `manage server` permission."
+                    "This is not your tag and you do not have the `manage messages` permission."
                 )
 
     async def cache_tags(self) -> None:
