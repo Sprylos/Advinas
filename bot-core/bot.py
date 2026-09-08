@@ -26,7 +26,6 @@ exts = [
     "inf",
     "misc",
     "music",
-    "stats",
     "tags",
 ]
 if not config.testing:
