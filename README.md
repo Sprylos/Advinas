@@ -1,25 +1,25 @@
 # Advinas
 
-[![Discord](https://discordapp.com/api/guilds/590288287864848387/embed.png)](https://discord.gg/hESyUZA)
+Advinas is a Discord bot built for the **Infinitode 2 community**, bringing game data and community tools directly into Discord.
 
-Advinas is a Discord Bot which collects data from the Infinitode 2 API and shows it in easily accessible commands on discord.
+It provides player profiles, leaderboards, moderation tools, contests, tags, music, and other server utilities.
 
-Add the bot to your own server using [this link](https://discord.com/api/oauth2/authorize?client_id=824289599065030756&permissions=309238025280&scope=bot%20applications.commands).
+## Website
 
-**IF YOU ARE LOOKING FOR THE INFINITODE API COMMUNICATION**
+More information about Advinas, including its privacy policy, is available at:
 
-I moved the API wrapper to its own [repository](https://github.com/Sprylos/infinitode.py)
+**https://sprylos.github.io/Advinas/**
 
-It is completely typed and documented.
+## Infinitode API
 
+The Infinitode 2 API wrapper used by Advinas is maintained separately as [`infinitode.py`](https://github.com/Sprylos/infinitode.py).
 
-## Future Plans
+It is asynchronous, typed, and documented for use outside of Advinas as well.
 
-- [ ] Customizable Profile Command (Background, Grid, etc.)
-- [x] Music Player within Discord Voice Channels (Mar 08th 2022)
-- [x] Fully functional Tag System (Apr 13th 2022)
-- [x] Seperate Infinitode API package (Feb 17th 2022) (Moved to [different Repo](https://github.com/Sprylos/infinitode.py))
-- [ ] Automatic Run tracking and stats commands
-- [x] Database optimizations and performance (Apr 13th 2022)
+## Contact
 
-Feel free to DM me on [Discord](https://discord.gg/hESyUZA) (Sprylos) for questions.
+Questions or issues can be directed to **Sprylos** through the [community Discord server](https://discord.gg/hESyUZA).
+
+## License
+
+Advinas is licensed under the [MIT License](./LICENSE.txt).
