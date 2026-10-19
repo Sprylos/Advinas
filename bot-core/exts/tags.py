@@ -204,10 +204,10 @@ class Tags(commands.Cog):
                 )
 
     async def cache_tags(self) -> None:
-        self.cache.clear()
+        new_cache: dict[int, dict[str, Tag | TagAlias]] = {}
         async for doc in self.col.find({}, {"_id": 0, "guild": 1, "tags": 1}):
             tags = doc["tags"]
-            self.cache[doc["guild"]] = {
+            new_cache[doc["guild"]] = {
                 t["name"]: (
                     Tag(**t, guild_id=doc["guild"])
                     if "alias" not in t
@@ -215,6 +215,7 @@ class Tags(commands.Cog):
                 )
                 for t in tags
             }
+        self.cache = new_cache
 
     @commands.command(name="cache")
     @commands.is_owner()

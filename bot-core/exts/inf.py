@@ -123,12 +123,12 @@ class Inf(commands.Cog):
                 return lb
 
             entry = await self.bot.DB.dailyquest.find_one({"date": date}, {"_id": 0})
-            if not entry:
+            data = entry.get("beta" if beta else "live") if entry else None
+            if not data:
                 raise InvalidDateError(
                     f"No dailyquest leaderboard found for date: {date}"
                 )
 
-            data = entry["live"] if not beta else entry["beta"]
             payload = {
                 "player": {"total": data["total"]},
                 "leaderboards": data["leaderboards"],

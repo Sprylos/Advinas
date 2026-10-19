@@ -33,25 +33,22 @@ if not config.testing:
 
 
 class Advinas(commands.Bot):
-    def __init__(self, prefix: str) -> None:
+    def __init__(self) -> None:
         activity = discord.Activity(
-            type=discord.ActivityType.watching, name="You | /invite | v4.4"
+            type=discord.ActivityType.watching, name="You | /invite | v4.5"
         )
         allowed_mentions = discord.AllowedMentions(
             everyone=False, users=True, roles=False, replied_user=False
         )
         intents = (
             "guilds",
-            "members",
             "moderation",
             "voice_states",
-            "presences",
             "messages",
             "reactions",
-            "message_content",
         )
         super().__init__(
-            command_prefix=commands.when_mentioned_or(prefix),
+            command_prefix=commands.when_mentioned,
             activity=activity,
             allowed_mentions=allowed_mentions,
             help_command=None,
@@ -245,5 +242,5 @@ class Advinas(commands.Bot):
 
 
 if __name__ == "__main__":
-    bot = Advinas(config.prefix)
+    bot = Advinas()
     bot.run(config.token)

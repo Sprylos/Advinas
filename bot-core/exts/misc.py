@@ -36,7 +36,6 @@ class Misc(commands.Cog):
         super().__init__()
         self.bot: Advinas = bot
         self.wiki_keys: dict[str, str] = {}
-        self.ISSUE_REGEX = re.compile(r"##(\d{1,7})\D")
         self.ISSUE_NAME_RE = re.compile(
             r"<title>(\d{7}): (.*) - Prineside issue tracker<\/title>"
         )
@@ -50,9 +49,7 @@ class Misc(commands.Cog):
         await self.bot.wait_until_ready()
         await self.prepare_wiki()
 
-    async def get_text_from_url(
-        self, url: str, /, message: discord.Message | None = None
-    ) -> str:
+    async def get_text_from_url(self, url: str, /) -> str:
         try:
             async with self.bot.session.get(url, raise_for_status=True) as r:
                 return await r.text()
@@ -66,13 +63,6 @@ class Misc(commands.Cog):
                 await self.bot.trace_channel.send(codeblock(tb[1990:-3]))
             else:
                 await self.bot.trace_channel.send(tb)
-            if message is not None:
-                em = discord.Embed(
-                    title=f"Error occured in issue listener in `{message.channel}`",
-                    colour=discord.Color.red(),
-                )
-                em.add_field(name="**Message**", value=f"`{message.content}`")
-                await self.bot.trace_channel.send(embed=em)
             raise
 
     async def prepare_wiki(self):
@@ -237,26 +227,21 @@ class Misc(commands.Cog):
             [self.wiki_keys[t] for t in self.wiki_keys.keys() if current in t]
         )
 
-    @commands.Cog.listener("on_message")
-    async def _issue_listener(self, message: discord.Message):
-        if message.author.bot:
-            return
-
-        # 'e' is so that ##0000021 matches but ##00000215 doesn't
-        match = self.ISSUE_REGEX.search(message.content + "e")
-        if match is None:
-            return
-
-        issue = match.groups()[0]
+    @commands.hybrid_command(
+        name="issue", description="Looks up an issue in the Prineside issue tracker."
+    )
+    @app_commands.describe(issue_id="The issue number to look up.")
+    async def issue(self, ctx: Context, issue_id: commands.Range[int, 1, 9_999_999]):
+        await ctx.defer()
         url = "https://tracker.prineside.com/view.php?id="
-        text = await self.get_text_from_url(url + issue, message)
+        text = await self.get_text_from_url(url + str(issue_id))
         match = self.ISSUE_NAME_RE.search(text)
         if match is not None:
             issue, name = match.groups()
             content = f"Found issue `{issue}`: `{name}`\n{url}{int(issue)}"
-            await message.reply(content)
+            await ctx.reply(content)
         else:
-            await message.reply("Could not find issue, sorry.")
+            await ctx.reply("Could not find issue, sorry.")
 
     # @commands.hybrid_command(name='rtfm', aliases=['rtfd'], description='Shows the javadoc entry related to the query.')
     # @custom.check_channel(590290050051342346, 1012088788949942414)

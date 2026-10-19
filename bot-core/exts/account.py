@@ -203,11 +203,6 @@ class Account(commands.Cog):
         _id = match[0] if match else playerid
         return await self.find_connection(_id, True)
 
-    async def _find_player_name(self, playerid: str) -> dict[str, str] | None:
-        member = discord.utils.get(self.bot.users, name=playerid)
-        if member:
-            return await self.find_connection(member.id, True)
-
     async def _generate_player(self, user_id: int, player: Player) -> discord.File:
         try:
             r = await self.bot.session.get(player.avatar_link, raise_for_status=True)
