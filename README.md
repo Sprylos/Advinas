@@ -8,7 +8,7 @@ It provides player profiles, leaderboards, moderation tools, contests, tags, mus
 
 More information about Advinas, including its privacy policy, is available at:
 
-**https://sprylos.github.io/Advinas/**
+**https://advinas.sprylos.com/privacy**
 
 ## Infinitode API
 
